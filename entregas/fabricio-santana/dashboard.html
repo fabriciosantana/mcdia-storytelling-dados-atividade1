@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quem governa as cidades?</title>
+  <style>
+    :root{--bg:#f7f4f8;--ink:#20222a;--muted:#626573;--women:#8b4c8f;--men:#2f6877;--gold:#d99a2b;--line:#d9dce2;--card:#fff}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}main{max-width:1120px;margin:auto;padding:28px 18px 56px}.eyebrow,.tag{color:var(--women);font-size:.77rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.tag{display:inline-block;background:#eee4f0;border-radius:999px;padding:5px 10px;letter-spacing:.04em}h1{font-size:clamp(2.5rem,7vw,5.4rem);line-height:.95;letter-spacing:-.06em;max-width:820px;margin:16px 0}h2{font-size:1.35rem;line-height:1.15;margin:0 0 5px}h3{color:var(--muted);font-size:.9rem;font-weight:600;margin:0 0 15px}p{color:var(--muted);max-width:780px}.lede{font-size:1.15rem;max-width:760px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:30px 0 42px}.card,.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 5px 20px #3224420a}.card{padding:20px}.small{font-size:.76rem;font-weight:800;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}.big{font-size:2.15rem;font-weight:850;line-height:1;color:var(--women);margin:8px 0 4px}.note{font-size:.83rem;color:var(--muted)}.section{margin:42px 0}.panel{padding:22px}.two{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}.chart{width:100%;overflow:hidden}.chart svg{display:block;width:100%;height:auto}.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:.83rem;margin:5px 0 12px}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}.callout{border-left:4px solid var(--gold);padding:8px 0 8px 14px;margin:14px 0}.callout strong{color:var(--ink)}footer{border-top:1px solid var(--line);padding-top:18px;margin-top:45px}@media(max-width:720px){main{padding:22px 13px 44px}.grid,.two{grid-template-columns:1fr}.panel{padding:15px}h1{font-size:3.4rem}}
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <span class="tag">Tema 1 · eleições municipais de 2024</span>
+    <div class="eyebrow" style="margin-top:18px">Para uma comissão do Legislativo</div>
+    <h1>Quem governa as cidades?</h1>
+    <p class="lede">As mulheres foram eleitas para comandar 734 dos 5.553 municípios analisados. A diferença é nacional, mas não é igual em todo lugar: o Nordeste lidera a presença feminina entre as regiões, enquanto algumas UFs ficam bem abaixo da média brasileira.</p>
+  </header>
+  <section class="grid" aria-label="Indicadores nacionais">
+    <div class="card"><div class="small">Municípios analisados</div><div class="big">5.553</div><div class="note">uma linha por prefeito eleito</div></div>
+    <div class="card"><div class="small">Prefeitas</div><div class="big">13,2%</div><div class="note">734 municípios</div></div>
+    <div class="card"><div class="small">Distância da paridade</div><div class="big">36,8 p.p.</div><div class="note">até uma divisão de 50% / 50%</div></div>
+  </section>
+
+  <section class="section panel">
+    <h2>A cada oito prefeituras, aproximadamente uma é comandada por uma mulher</h2>
+    <h3>Prefeitos eleitos por categoria de gênero cadastrada no TSE · 2024</h3>
+    <div class="chart" id="national" aria-label="Barra nacional: 13,2 por cento feminino e 86,8 por cento masculino"></div>
+    <div class="legend"><span><i class="dot" style="background:#8b4c8f"></i>Feminino · 734</span><span><i class="dot" style="background:#2f6877"></i>Masculino · 4.819</span></div>
+    <p class="note">A categoria é a publicada no campo <code>genero_tse</code>; não é uma inferência sobre identidade. A base retrata os eleitos de 2024, não necessariamente quem exerce o cargo hoje.</p>
+  </section>
+
+  <section class="section panel">
+    <h2>O Nordeste tem a maior presença feminina — ainda longe do equilíbrio</h2>
+    <h3>Participação de prefeitas e prefeitos dentro de cada região</h3>
+    <div class="chart" id="regions" aria-label="Barras empilhadas com a proporção de prefeitas e prefeitos por região"></div>
+    <div class="legend"><span><i class="dot" style="background:#8b4c8f"></i>Prefeitas</span><span><i class="dot" style="background:#2f6877"></i>Prefeitos</span><span><i class="dot" style="background:#d99a2b"></i>média nacional: 13,2%</span></div>
+    <p class="note">O percentual é calculado dentro de cada região. Nordeste: 332 de 1.791; Sudeste: 152 de 1.656.</p>
+  </section>
+
+  <section class="section two">
+    <div class="panel"><h2>Onde olhar com mais atenção?</h2><h3>UFs ordenadas pela proporção de prefeitas · mínimo e máximo do recorte</h3><div class="chart" id="states" aria-label="Ranking de UFs pela proporção de prefeitas"></div><p class="note">Cada barra traz percentual e número de prefeitas. Percentuais de UFs pequenas devem ser lidos com seus totais.</p></div>
+    <div class="panel"><h2>A continuidade também tem gênero</h2><h3>Declaração de candidatura à reeleição entre prefeitos eleitos</h3><div class="chart" id="reelection" aria-label="Barras comparando reeleição declarada por gênero"></div><div class="callout"><strong>45,2%</strong> das prefeitas declararam candidatura à reeleição; entre prefeitos, foram <strong>44,3%</strong>.</div><p class="note">“Reeleito” é a declaração eleitoral do TSE. Não é auditoria individual de mandato anterior.</p></div>
+  </section>
+
+  <section class="section"><div class="eyebrow">Mensagem para a audiência</div><h2>A sub-representação é nacional, mas a agenda não precisa ser uniforme</h2><p>O ponto de partida é claro: mulheres são minoria no comando municipal em todas as regiões. O Nordeste se destaca positivamente e estados como Rio Grande do Norte e Paraíba têm os maiores percentuais; isso ajuda a comissão a trocar uma média nacional abstrata por perguntas territoriais mais precisas.</p></section>
+  <footer><div class="small">Fonte e método</div><p class="note">`dados/eleitos.csv`, eleições municipais ordinárias de 2024, extração indicada no dicionário em 01/10/2026. Foram filtradas as 5.553 linhas com <code>cargo = Prefeito</code>; municípios foram contados por <code>codigo_municipio_tse</code>. Ausências não foram convertidas em “Não”. Os percentuais são descritivos do recorte confirmado e não permitem concluir causas da desigualdade nem situação atual do mandato. Dados agregados embutidos neste HTML; nenhum arquivo local é lido.</p></footer>
+</main>
+<script>
+const regions=[['Nordeste',18.54,1791],['Norte',16.48,449],['Centro-Oeste',13.06,467],['Sul',9.66,1190],['Sudeste',9.18,1656]];
+const states=[['RR',26.67,4,15],['RN',25.15,42,167],['PB',24.22,54,223],['AL',23.53,24,102],['CE',20.65,38,184],['PA',19.58,28,143],['MA',19.35,42,217],['TO',17.99,25,139],['AM',17.74,11,62],['SE',17.33,13,75],['MS',16.46,13,79],['PE',16.39,30,183],['RJ',15.56,14,90],['BA',14.42,60,416],['GO',14.23,35,246],['SC',13.22,39,295],['PI',12.95,29,224],['AP',12.50,2,16],['SP',10.69,68,636],['PR',9.30,37,398],['MT',9.15,13,142],['RS',7.85,39,497],['RO',5.77,3,52],['AC',4.55,1,22],['ES',2.56,2,78]];
+const re=[['Prefeitas',45.2],['Prefeitos',44.3]];const ns='http://www.w3.org/2000/svg';function S(w,h){const s=document.createElementNS(ns,'svg');s.setAttribute('viewBox',`0 0 ${w} ${h}`);s.setAttribute('role','img');return s}function E(t,a,txt){const e=document.createElementNS(ns,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!==undefined)e.textContent=txt;return e}function add(id,s){document.getElementById(id).append(s)}
+function national(){const s=S(760,105),x=34,y=27,w=690; s.append(E('rect',{x,y,width:w,height:38,rx:8,fill:'#2f6877'}));s.append(E('rect',{x,y,width:w*.132,height:38,rx:8,fill:'#8b4c8f'}));s.append(E('line',{x1:x+w*.5,y1:18,x2:x+w*.5,y2:76,stroke:'#d99a2b','stroke-width':3}));s.append(E('text',{x:x+w*.066,y:y+25,'text-anchor':'middle',fill:'#fff','font-size':14,'font-weight':700},'13,2%'));s.append(E('text',{x:x+w*.68,y:y+25,'text-anchor':'middle',fill:'#fff','font-size':14,'font-weight':700},'86,8%'));s.append(E('text',{x:x+w*.5,y:98,'text-anchor':'middle',fill:'#a66f18','font-size':11},'50% — referência de paridade'));return s}
+function regionChart(){const s=S(760,270),x=142,w=520;regions.forEach((d,i)=>{const y=18+i*48,wp=w*d[1]/100;s.append(E('text',{x:x-10,y:y+20,'text-anchor':'end',fill:'#20222a','font-size':12},d[0]));s.append(E('rect',{x,y,width:w,height:25,rx:4,fill:'#2f6877'}));s.append(E('rect',{x,y,width:wp,height:25,rx:4,fill:'#8b4c8f'}));s.append(E('line',{x1:x+w*.132,y1:y-4,x2:x+w*.132,y2:y+29,stroke:'#d99a2b','stroke-width':2}));s.append(E('text',{x:x+wp+8,y:y+18,fill:'#8b4c8f','font-size':12,'font-weight':700},d[1].toFixed(1).replace('.',',')+'%'));s.append(E('text',{x:x+w+8,y:y+18,fill:'#626573','font-size':11},'n='+d[2].toLocaleString('pt-BR')));});return s}
+function stateChart(){const s=S(760,590),x=65,w=570,h=22;states.forEach((d,i)=>{const y=8+i*22,ww=w*d[1]/30;s.append(E('text',{x:x-9,y:y+16,'text-anchor':'end',fill:'#20222a','font-size':11},d[0]));s.append(E('rect',{x,y,width:ww,height:h,rx:3,fill:i<3?'#8b4c8f':'#c7b2ca'}));s.append(E('text',{x:x+ww+7,y:y+16,fill:'#626573','font-size':10},d[1].toFixed(1).replace('.',',')+'% · '+d[2]));if(i===0||i===states.length-1){s.append(E('line',{x1:x,y1:y-2,x2:x+w*0.132,y2:y-2,stroke:'#d99a2b','stroke-width':2}))}});return s}
+function reChart(){const s=S(460,150),x=148,w=230;re.forEach((d,i)=>{const y=28+i*52,ww=w*d[1]/100;s.append(E('text',{x:x-9,y:y+18,'text-anchor':'end',fill:'#20222a','font-size':12},d[0]));s.append(E('rect',{x,y,width:w,height:24,rx:4,fill:'#d9dce2'}));s.append(E('rect',{x,y,width:ww,height:24,rx:4,fill:i===0?'#8b4c8f':'#2f6877'}));s.append(E('text',{x:x+ww+8,y:y+17,fill:'#20222a','font-size':12,'font-weight':700},d[1].toFixed(1).replace('.',',')+'%'))});return s}
+add('national',national());add('regions',regionChart());add('states',stateChart());add('reelection',reChart());
+</script>
+</body>
+</html>
