@@ -33,3 +33,36 @@ sim, mauricio-marinho, gh está autenticado, gostaria que, se tiveres que gerar 
 ```
 
 **O que funcionou / o que mudei:** A restrição de cor deu identidade visual ao painel. Continuidade virou azul escuro, renovação azul claro, o contexto ficou em cinza e o laranja passou a marcar só a média nacional, os extremos e os pontos de atenção. O Claude validou a paleta com um script de daltonismo e contraste, e precisou de algumas iterações até os dois azuis ficarem distinguíveis também no modo escuro. Depois de renderizar o dashboard em 1200px e 390px, apareceu um bug: no celular, a linha "Brasil 44,5%" ficava deslocada, porque era calculada em pixels. A correção foi posicioná-la com CSS proporcional, e essa regra entrou na skill. Também revisei um título que sugeria causa ("a legenda importa mais…") e troquei por uma comparação descritiva. Além disso, conferi as frases com os números: o "PSD é o único partido de maioria reeleita" estava errado, porque o União tem 50,1%, e corrigi.
+
+---
+
+## Prompt 4
+
+```
+Carregue o dashboard no browser para eu ver, por favor.
+```
+
+**O que funcionou / o que mudei:** Ver o painel no navegador, e não só em imagens, mostrou que a história funcionava, mas que o painel era estático. Para uma turma que quer comparar a própria realidade com a dos outros, faltava poder explorar. Isso motivou o prompt seguinte.
+
+---
+
+## Prompt 5
+
+```
+Muito legal. GOstaria de fazer algumas modificações, gostaria de criar e utilizar um skill, como parte do projeto, que imprimisse minha personalidade. Gostaria que houvesse alguma interatividade nos gráficos, com agrupamentos e filtros sempre que possível, Utilizar tons e sobretons de azul e cinza e laranja para destaques. As interatividades devem ser suaves, com transição suave. Busco um dashboard de impacto com sofisticação. Podes gerar um skill que capture esta ideia, implantá-lo, atualizar o dashboard e a entrega em um novo pullrequest?
+```
+
+**O que funcionou / o que mudei:** O Claude criou a skill `assinatura-visual-marinho` com regras concretas, e não adjetivos:
+- tokens de movimento (easing, 180/450/750ms);
+- o padrão de filtro cruzado ("um gráfico destaca a própria dimensão, filtra pelas outras");
+- reordenação FLIP;
+- o hero azul-noite com números que contam até o valor;
+- a regra "títulos descrevem o quadro geral, a leitura do recorte descreve o filtro".
+
+A skill foi instalada em `~/.claude/skills/` e carregada pelo Claude Code antes de reconstruir o dashboard. Ajustes no caminho:
+- O primeiro cubo de dados tinha quase uma linha por prefeito; foi dividido em três cubos menores para respeitar a regra de dados agregados.
+- No celular, a barra de filtros colapsou e a pílula de leitura quebrava o texto em colunas; ambos foram corrigidos após as capturas de tela.
+- O tooltip tratava a região "Norte" (índice 0) como "sem filtro"; o bug foi corrigido.
+- Os exemplos da skill citavam números desta base e foram trocados por exemplos genéricos, para a skill servir a qualquer projeto.
+
+Validei com um teste automatizado (Playwright): clicar em "Sul" leva o painel a 37,1% e 1.190 municípios; cruzar Sul, mais de 100 mil votos e PSD mostra o aviso de recorte pequeno (9 municípios); o clique na barra "Norte" sincroniza o filtro do topo. Não houve erros no console.

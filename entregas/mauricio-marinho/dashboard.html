@@ -4,311 +4,336 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Continuidade e renovação nas prefeituras</title>
-<meta name="description" content="Dashboard para a aula inaugural de uma escola de governo: o equilíbrio entre prefeitos reeleitos e novos prefeitos nas eleições municipais de 2024.">
+<meta name="description" content="Dashboard interativo para a aula inaugural de uma escola de governo: o equilíbrio entre prefeitos reeleitos e novos prefeitos nas eleições municipais de 2024.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
 <style>
   :root {
     color-scheme: light;
-    --bg: #f3f5f8;
-    --surface: #ffffff;
-    --surface-2: #eef2f7;
-    --ink: #142235;
-    --ink-2: #47566b;
-    --ink-3: #6b7889;
-    --rule: #dbe1e9;
-    --grid: #e6eaf0;
-    --neutral-mark: #c3ccd8;
-    --cont: #2B63B0;      /* continuidade: prefeitos reeleitos */
-    --renov: #6FA4E6;     /* renovação: prefeitos novos */
-    --accent: #E36A1E;    /* destaque */
-    --accent-ink: #b34f10;
-    --accent-soft: #fdf0e6;
-    --shadow: 0 1px 2px rgba(20,34,53,.06), 0 4px 16px rgba(20,34,53,.05);
+    --bg: #f3f5f8; --surface: #ffffff; --surface-2: #eef2f7;
+    --ink: #142235; --ink-2: #47566b; --ink-3: #6b7889;
+    --rule: #dbe1e9; --neutral-mark: #c3ccd8;
+    --cont: #2B63B0; --renov: #6FA4E6; --apoio: #A9C6EC;
+    --accent: #E36A1E; --accent-ink: #b34f10; --accent-soft: #fdf0e6;
+    --noite: #0E2240; --noite-2: #17386a;
+    --sombra: 0 1px 2px rgba(14,34,64,.05), 0 8px 28px rgba(14,34,64,.06);
+    --sombra-hover: 0 2px 4px rgba(14,34,64,.06), 0 14px 36px rgba(14,34,64,.10);
+    --ease: cubic-bezier(.22, 1, .36, 1);
+    --t-rapido: 180ms; --t-medio: 450ms; --t-longo: 750ms;
+    --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --sans: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       color-scheme: dark;
-      --bg: #0f141b;
-      --surface: #18202a;
-      --surface-2: #1f2935;
-      --ink: #eef2f7;
-      --ink-2: #b9c4d2;
-      --ink-3: #8e9bab;
-      --rule: #2b3644;
-      --grid: #253040;
-      --neutral-mark: #3d4a5b;
-      --cont: #2E61B2;
-      --renov: #6497DA;
-      --accent: #E2671F;
-      --accent-ink: #f29a5e;
-      --accent-soft: #2e2016;
-      --shadow: none;
+      --bg: #0f141b; --surface: #18202a; --surface-2: #1f2935;
+      --ink: #eef2f7; --ink-2: #b9c4d2; --ink-3: #8e9bab;
+      --rule: #2b3644; --neutral-mark: #3d4a5b;
+      --cont: #2E61B2; --renov: #6497DA; --apoio: #294A75;
+      --accent: #E2671F; --accent-ink: #f29a5e; --accent-soft: #2e2016;
+      --noite: #0A1626; --noite-2: #10294a;
+      --sombra: none; --sombra-hover: 0 10px 30px rgba(0,0,0,.35);
     }
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
     --bg: #0f141b; --surface: #18202a; --surface-2: #1f2935;
     --ink: #eef2f7; --ink-2: #b9c4d2; --ink-3: #8e9bab;
-    --rule: #2b3644; --grid: #253040; --neutral-mark: #3d4a5b;
-    --cont: #2E61B2; --renov: #6497DA; --accent: #E2671F;
-    --accent-ink: #f29a5e; --accent-soft: #2e2016; --shadow: none;
+    --rule: #2b3644; --neutral-mark: #3d4a5b;
+    --cont: #2E61B2; --renov: #6497DA; --apoio: #294A75;
+    --accent: #E2671F; --accent-ink: #f29a5e; --accent-soft: #2e2016;
+    --noite: #0A1626; --noite-2: #10294a;
+    --sombra: none; --sombra-hover: 0 10px 30px rgba(0,0,0,.35);
   }
   * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
-  body {
-    margin: 0; background: var(--bg); color: var(--ink);
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    font-size: 16px; line-height: 1.55;
-  }
-  main { max-width: 1040px; margin: 0 auto; padding: 32px 16px 64px; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.6; transition: background var(--t-medio) var(--ease), color var(--t-medio) var(--ease); }
   .num { font-variant-numeric: tabular-nums; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
 
-  /* Cabeçalho */
-  header.capa { padding: 24px 0 8px; }
-  .kicker { font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
-  h1 { font-size: clamp(28px, 4.6vw, 44px); line-height: 1.12; margin: 10px 0 14px; letter-spacing: -.01em; text-wrap: balance; }
-  .lead { font-size: clamp(17px, 2vw, 19px); color: var(--ink-2); max-width: 720px; margin: 0; }
-  .tema-toggle {
-    float: right; margin-top: -4px; font: inherit; font-size: 13px; color: var(--ink-2);
-    background: var(--surface); border: 1px solid var(--rule); border-radius: 999px; padding: 6px 12px; cursor: pointer;
-  }
+  /* ---------- Hero ---------- */
+  .hero { background: radial-gradient(1200px 500px at 85% -10%, var(--noite-2), transparent 60%), var(--noite); color: #fff; padding: 40px 0 56px; position: relative; overflow: hidden; }
+  .hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: linear-gradient(90deg, var(--accent) 0 18%, transparent 18%); }
+  .hero .topo { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .hero .kicker { font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: #a9c6ec; }
+  .tema-toggle { font: inherit; font-size: 13px; color: #dbe6f5; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); border-radius: 999px; padding: 6px 14px; cursor: pointer; white-space: nowrap; flex: none; transition: background var(--t-rapido) var(--ease); }
+  .tema-toggle:hover { background: rgba(255,255,255,.16); }
+  .hero h1 { font-family: var(--serif); font-weight: 600; font-size: clamp(34px, 5.4vw, 58px); line-height: 1.08; letter-spacing: -.015em; margin: 22px 0 16px; max-width: 900px; text-wrap: balance; }
+  .hero h1 em { font-style: normal; color: #f6a56b; }
+  .hero .lead { font-size: clamp(17px, 2vw, 19px); color: #c9d6e8; max-width: 720px; margin: 0; }
+  .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin-top: 36px; background: rgba(255,255,255,.12); border-radius: 16px; overflow: hidden; }
+  .kpi { background: rgba(14,34,64,.55); padding: 20px 22px; backdrop-filter: blur(4px); }
+  :root[data-theme="dark"] .kpi { background: rgba(10,22,38,.7); }
+  .kpi .v { font-size: clamp(30px, 4vw, 42px); font-weight: 700; line-height: 1.1; letter-spacing: -.02em; }
+  .kpi .v.laranja { color: #f6a56b; }
+  .kpi .l { font-size: 13.5px; color: #b4c4da; margin-top: 4px; line-height: 1.4; }
 
-  /* Seções */
-  section.bloco {
-    background: var(--surface); border: 1px solid var(--rule); border-radius: 14px;
-    padding: clamp(18px, 3vw, 32px); margin-top: 24px; box-shadow: var(--shadow);
-  }
-  .passo { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--cont); }
+  /* ---------- Barra de filtros fixa ---------- */
+  .filtros-bar { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: saturate(1.4) blur(12px); -webkit-backdrop-filter: saturate(1.4) blur(12px); border-bottom: 1px solid var(--rule); }
+  .filtros-bar .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding-top: 12px; padding-bottom: 12px; }
+  .fgrupo { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .fgrupo > span { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+  .rolagem { overflow-x: auto; scrollbar-width: none; max-width: 100%; }
+  .rolagem::-webkit-scrollbar { display: none; }
+  select.part { font: inherit; font-size: 13.5px; color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 999px; padding: 6px 30px 6px 12px; appearance: none; cursor: pointer;
+    background-image: linear-gradient(45deg, transparent 50%, var(--ink-3) 50%), linear-gradient(135deg, var(--ink-3) 50%, transparent 50%);
+    background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%; background-size: 5px 5px; background-repeat: no-repeat; transition: border-color var(--t-rapido) var(--ease); }
+  select.part:hover { border-color: var(--ink-3); }
+  .limpar { font: inherit; font-size: 13px; font-weight: 600; color: var(--accent-ink); background: none; border: 0; cursor: pointer; padding: 6px 4px; opacity: 0; pointer-events: none; transition: opacity var(--t-medio) var(--ease); }
+  .limpar.on { opacity: 1; pointer-events: auto; }
+  .resumo { margin-left: auto; font-size: 13px; color: var(--ink-2); white-space: nowrap; }
+  .resumo b { color: var(--ink); }
+
+  /* Controle segmentado */
+  .seg-ctl { position: relative; display: inline-flex; background: var(--surface-2); border: 1px solid var(--rule); border-radius: 999px; padding: 3px; flex: none; }
+  .seg-ctl .ind { position: absolute; top: 3px; bottom: 3px; left: 0; border-radius: 999px; background: var(--ink); transition: transform var(--t-medio) var(--ease), width var(--t-medio) var(--ease); box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+  .seg-ctl button { position: relative; z-index: 1; font: inherit; font-size: 13px; font-weight: 500; color: var(--ink-2); background: none; border: 0; border-radius: 999px; padding: 5px 13px; cursor: pointer; white-space: nowrap; transition: color var(--t-medio) var(--ease); }
+  .seg-ctl button[aria-pressed="true"] { color: var(--surface); }
+  .seg-ctl button:hover:not([aria-pressed="true"]) { color: var(--ink); }
+  button:focus-visible, select:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---------- Blocos ---------- */
+  main.wrap { padding-top: 36px; padding-bottom: 72px; }
+  section.bloco { background: var(--surface); border: 1px solid var(--rule); border-radius: 16px; padding: clamp(20px, 3.4vw, 38px); margin-top: 28px; box-shadow: var(--sombra); }
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity 700ms var(--ease), transform 700ms var(--ease); }
+  .reveal.visivel { opacity: 1; transform: none; }
+  .cab { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+  .passo { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--cont); display: flex; align-items: center; gap: 10px; }
+  .passo b { font-family: var(--serif); font-size: 15px; color: var(--accent-ink); letter-spacing: 0; }
   :root[data-theme="dark"] .passo { color: var(--renov); }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .passo { color: var(--renov); } }
-  h2 { font-size: clamp(21px, 2.8vw, 27px); line-height: 1.25; margin: 6px 0 10px; text-wrap: balance; }
-  .texto { color: var(--ink-2); max-width: 760px; margin: 0 0 18px; }
+  h2 { font-family: var(--serif); font-weight: 600; font-size: clamp(23px, 3vw, 31px); line-height: 1.2; margin: 10px 0 10px; text-wrap: balance; letter-spacing: -.005em; max-width: 880px; }
+  .texto { color: var(--ink-2); max-width: 720px; margin: 0 0 18px; }
   .texto strong { color: var(--ink); }
-  .fonte { font-size: 13px; color: var(--ink-3); margin: 14px 0 0; }
+  .controles { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 4px 0 18px; }
+  .controles .rot { font-size: 12px; color: var(--ink-3); }
+  .recorte { display: inline-block; font-size: 13.5px; line-height: 1.5; color: var(--ink-2); background: var(--surface-2); border-radius: 999px; padding: 6px 14px; margin-top: 18px; transition: background var(--t-medio) var(--ease); }
+  .recorte::before { content: ""; display: inline-block; vertical-align: 1px; margin-right: 8px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+  .recorte b { color: var(--ink); }
+  .recorte .cautela { color: var(--accent-ink); font-weight: 600; }
+  .fonte { font-size: 13px; color: var(--ink-3); margin: 14px 0 0; max-width: 820px; }
+  .dica { font-size: 12.5px; color: var(--ink-3); }
+  .legenda { display: flex; flex-wrap: wrap; gap: 18px; font-size: 13.5px; color: var(--ink-2); margin: 0 0 12px; }
+  .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: 0; }
+  .sw.c { background: var(--cont); } .sw.r { background: var(--renov); } .sw.a { background: var(--accent); }
 
-  /* Herói */
-  .heroi { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 32px; align-items: center; }
-  .heroi .grande { font-size: clamp(56px, 10vw, 92px); font-weight: 750; line-height: 1; color: var(--cont); letter-spacing: -.02em; }
-  :root[data-theme="dark"] .heroi .grande { color: var(--renov); }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .heroi .grande { color: var(--renov); } }
-  .heroi .rotulo { font-size: 17px; color: var(--ink-2); margin-top: 8px; }
-  .barra-total { display: flex; height: 56px; gap: 2px; margin: 8px 0 10px; }
-  .barra-total > div { height: 100%; position: relative; cursor: default; }
-  .barra-total .c { background: var(--cont); border-radius: 6px 0 0 6px; }
-  .barra-total .r { background: var(--renov); border-radius: 0 6px 6px 0; }
-  .legenda-total { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; }
-  .legenda-total b { display: block; font-size: 20px; color: var(--ink); }
-  .legenda-total span { color: var(--ink-2); }
-  .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: 1px; }
-  .sw.c { background: var(--cont); } .sw.r { background: var(--renov); } .sw.a { background: var(--accent); } .sw.n { background: var(--neutral-mark); }
-
-  .alerta {
-    display: flex; gap: 12px; align-items: flex-start; margin-top: 22px; padding: 14px 16px;
-    background: var(--accent-soft); border-left: 4px solid var(--accent); border-radius: 8px; color: var(--ink);
-  }
-  .alerta .ic { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 800; display: grid; place-items: center; font-size: 14px; }
+  .alerta { display: flex; gap: 14px; align-items: flex-start; margin-top: 24px; padding: 16px 18px; background: var(--accent-soft); border-left: 4px solid var(--accent); border-radius: 10px; }
+  .alerta .ic { flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 800; display: grid; place-items: center; font-size: 14px; }
   .alerta p { margin: 0; color: var(--ink-2); }
   .alerta strong { color: var(--ink); }
 
-  /* Filtros */
-  .filtros { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 18px; }
-  .filtros button {
-    font: inherit; font-size: 14px; padding: 7px 14px; border-radius: 999px; cursor: pointer;
-    background: var(--surface); color: var(--ink-2); border: 1px solid var(--rule);
-  }
-  .filtros button:hover { border-color: var(--ink-3); }
-  .filtros button[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
-  .filtros button:focus-visible, .tema-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-  /* Cartões de região */
-  .regioes { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-bottom: 22px; }
-  .reg { background: var(--surface-2); border-radius: 10px; padding: 12px; border: 2px solid transparent; }
-  .reg.ativo { border-color: var(--cont); }
-  .reg .nome { font-size: 13px; color: var(--ink-2); }
-  .reg .v { font-size: 26px; font-weight: 700; line-height: 1.2; }
-  .reg .n { font-size: 12px; color: var(--ink-3); }
-  .reg.extremo .v { color: var(--accent-ink); }
-
-  /* Gráfico de barras horizontais (HTML) */
+  /* ---------- Barras horizontais (componente) ---------- */
+  .barras-area { --nome: 120px; --val: 64px; --gap: 12px; position: relative; padding-top: 26px; }
   .barras { position: relative; }
-  .barras-area { --nome: 112px; --val: 58px; --gap: 10px; }
-  .linha { display: grid; grid-template-columns: var(--nome) minmax(0, 1fr) var(--val); align-items: center; gap: var(--gap); min-height: 26px; padding: 2px 0; border-radius: 6px; }
-  .linha .nome { font-size: 14px; color: var(--ink-2); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .linha .trilho { position: relative; height: 16px; }
-  .linha .preench { position: absolute; left: 0; top: 0; bottom: 0; background: var(--cont); border-radius: 0 4px 4px 0; transition: background .2s, opacity .2s; }
-  .linha .valor { font-size: 14px; font-weight: 600; color: var(--ink); }
-  .linha.apagada .preench { background: var(--neutral-mark); }
-  .linha.apagada .nome, .linha.apagada .valor { color: var(--ink-3); font-weight: 400; }
-  .linha.realce .preench { background: var(--accent); }
-  .linha:hover { background: var(--surface-2); }
-  .ref { position: absolute; top: -6px; bottom: -6px; border-left: 2px dashed var(--accent); pointer-events: none; }
-  .ref-rotulo { position: absolute; top: -22px; transform: translateX(-50%); font-size: 12px; font-weight: 600; color: var(--accent-ink); white-space: nowrap; }
+  .linha { display: grid; grid-template-columns: var(--nome) minmax(0, 1fr) var(--val); align-items: center; gap: var(--gap); min-height: 28px; padding: 3px 0; border-radius: 8px; transition: transform var(--t-longo) var(--ease), opacity var(--t-medio) var(--ease), background var(--t-rapido) var(--ease); }
+  .linha .nome { font-size: 14px; color: var(--ink-2); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color var(--t-medio) var(--ease); }
+  .linha .trilho { display: flex; gap: 2px; height: 16px; }
+  .linha .seg { height: 100%; width: 0; flex: none; transition: width var(--t-longo) var(--ease), background-color var(--t-medio) var(--ease); }
+  .linha .seg:first-child { border-radius: 2px 0 0 2px; }
+  .linha .seg:last-child { border-radius: 0 5px 5px 0; }
+  .seg.c { background: var(--cont); } .seg.r { background: var(--renov); } .seg.a { background: var(--accent); }
+  .linha .valor { font-size: 14px; font-weight: 600; color: var(--ink); transition: color var(--t-medio) var(--ease); }
+  .linha.clicavel { cursor: pointer; }
+  .linha.clicavel:hover { background: var(--surface-2); }
+  .linha.dim .seg { background: var(--neutral-mark); }
+  .linha.dim .nome, .linha.dim .valor { color: var(--ink-3); font-weight: 400; }
+  .linha.foco .nome { color: var(--ink); font-weight: 600; }
+  .barras:hover .linha.clicavel:not(:hover) { opacity: .55; }
+  .grossa .linha { min-height: 46px; }
+  .grossa .linha .trilho { height: 34px; }
+  .grossa .linha .seg:first-child { border-radius: 6px 0 0 6px; }
+  .grossa .linha .seg:last-child { border-radius: 0 6px 6px 0; }
+  .ref { position: absolute; top: 20px; bottom: 26px; border-left: 2px dashed var(--accent); pointer-events: none; transition: left var(--t-longo) var(--ease), opacity var(--t-medio) var(--ease); }
+  .ref-rotulo { position: absolute; top: 0; transform: translateX(-50%); font-size: 12px; font-weight: 600; color: var(--accent-ink); white-space: nowrap; transition: left var(--t-longo) var(--ease), opacity var(--t-medio) var(--ease); }
   .eixo { display: grid; grid-template-columns: var(--nome) minmax(0, 1fr) var(--val); gap: var(--gap); margin-top: 6px; }
   .eixo .ticks { position: relative; height: 18px; border-top: 1px solid var(--rule); }
-  .eixo .ticks span { position: absolute; top: 2px; transform: translateX(-50%); font-size: 12px; color: var(--ink-3); }
-  .barras-area { position: relative; padding-top: 24px; }
-  #ocup, #porte { --nome: 180px; }
-  @media (max-width: 760px) { .barras-area { --nome: 84px; --val: 50px; --gap: 8px; } #ocup, #porte { --nome: 104px; } #ocup .nome, #porte .nome { white-space: normal; font-size: 13px; line-height: 1.2; } .eixo .ticks span:nth-child(even) { display: none; } }
+  .eixo .ticks span { position: absolute; top: 2px; transform: translateX(-50%); font-size: 11.5px; color: var(--ink-3); }
 
-  /* Histograma agrupado */
-  .hist { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; align-items: end; height: 240px; border-bottom: 1px solid var(--rule); position: relative; }
-  .hist .grupo { display: flex; gap: 2px; align-items: flex-end; height: 100%; justify-content: center; }
-  .hist .b { width: 42%; max-width: 34px; border-radius: 4px 4px 0 0; position: relative; }
+  /* ---------- Histograma ---------- */
+  .hist { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 10px; align-items: end; height: 250px; border-bottom: 1px solid var(--rule); padding-top: 18px; }
+  .hist .grupo { display: flex; gap: 3px; align-items: flex-end; height: 100%; justify-content: center; }
+  .hist .b { width: 44%; max-width: 32px; height: 0; border-radius: 5px 5px 0 0; position: relative; transition: height var(--t-longo) var(--ease), opacity var(--t-rapido) var(--ease); cursor: default; }
   .hist .b.c { background: var(--cont); } .hist .b.r { background: var(--renov); }
-  .hist .b:hover { filter: brightness(1.12); }
-  .hist .b .lab { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--ink-2); padding-bottom: 2px; white-space: nowrap; }
-  .hist-eixo { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; margin-top: 6px; font-size: 12px; color: var(--ink-3); text-align: center; }
-  .legenda { display: flex; flex-wrap: wrap; gap: 16px; font-size: 14px; color: var(--ink-2); margin: 0 0 14px; }
+  .hist:hover .b:not(:hover) { opacity: .55; }
+  .hist .b .lab { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--ink-2); padding-bottom: 3px; white-space: nowrap; }
+  .hist-eixo { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 10px; margin-top: 8px; font-size: 12px; color: var(--ink-3); text-align: center; line-height: 1.3; }
+  .hist-eixo .x-a { color: var(--accent-ink); font-weight: 600; }
 
-  .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 24px; }
-  .tile { background: var(--surface-2); border-radius: 10px; padding: 14px 16px; }
+  .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 26px; }
+  .tile { background: var(--surface-2); border-radius: 12px; padding: 16px 18px; transition: transform var(--t-rapido) var(--ease), box-shadow var(--t-rapido) var(--ease); }
+  .tile:hover { transform: translateY(-2px); box-shadow: var(--sombra-hover); }
   .tile .t { font-size: 13px; color: var(--ink-2); }
-  .tile .par { display: flex; gap: 18px; align-items: baseline; margin-top: 4px; flex-wrap: wrap; }
-  .tile .par div { font-size: 13px; color: var(--ink-3); }
-  .tile .par b { display: block; font-size: 26px; color: var(--ink); line-height: 1.2; }
-  .tile.destaque { background: var(--accent-soft); border: 1px solid var(--accent); }
-  .tile.destaque .grande-a { font-size: 34px; font-weight: 750; color: var(--accent-ink); line-height: 1.1; }
+  .tile .par { display: flex; gap: 22px; align-items: baseline; margin-top: 6px; flex-wrap: wrap; }
+  .tile .par div { font-size: 12.5px; color: var(--ink-3); }
+  .tile .par b { display: block; font-size: 28px; color: var(--ink); line-height: 1.15; letter-spacing: -.01em; }
+  .tile.destaque { background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+  .tile.destaque .par b { color: var(--accent-ink); }
 
-  /* Hipóteses */
-  .hipoteses { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-  .hip { border: 1px solid var(--rule); border-radius: 12px; padding: 16px 18px; background: var(--surface); }
-  .hip h3 { margin: 0 0 8px; font-size: 17px; }
+  /* ---------- Hipóteses e perguntas ---------- */
+  .hipoteses { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .hip { border: 1px solid var(--rule); border-radius: 14px; padding: 18px 20px; background: var(--surface); transition: transform var(--t-rapido) var(--ease), box-shadow var(--t-rapido) var(--ease), border-color var(--t-rapido) var(--ease); }
+  .hip:hover { transform: translateY(-2px); box-shadow: var(--sombra-hover); border-color: var(--apoio); }
+  .hip h3 { margin: 0 0 8px; font-family: var(--serif); font-size: 19px; }
   .hip p { margin: 0 0 8px; font-size: 15px; color: var(--ink-2); }
-  .hip .mostra, .hip .nao { font-size: 14px; padding-left: 10px; border-left: 3px solid var(--cont); margin-top: 8px; color: var(--ink-2); }
+  .hip .mostra, .hip .nao { font-size: 14px; padding-left: 12px; border-left: 3px solid var(--cont); margin-top: 8px; color: var(--ink-2); }
   .hip .nao { border-left-color: var(--neutral-mark); color: var(--ink-3); }
-
   .perguntas { counter-reset: q; list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
-  .perguntas li { counter-increment: q; position: relative; padding: 14px 16px 14px 56px; background: var(--surface-2); border-radius: 10px; font-size: 17px; }
-  .perguntas li::before { content: counter(q); position: absolute; left: 16px; top: 13px; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; display: grid; place-items: center; font-size: 15px; }
-
-  details { margin-top: 16px; border-top: 1px solid var(--rule); padding-top: 12px; }
-  summary { cursor: pointer; font-weight: 600; color: var(--ink-2); font-size: 15px; }
-  table { border-collapse: collapse; width: 100%; font-size: 14px; margin-top: 10px; }
-  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--rule); }
-  th { color: var(--ink-3); font-weight: 600; }
-  td.r, th.r { text-align: right; font-variant-numeric: tabular-nums; }
-  .tabela-wrap { overflow-x: auto; }
+  .perguntas li { counter-increment: q; position: relative; padding: 16px 18px 16px 62px; background: var(--surface-2); border-radius: 12px; font-size: 17px; transition: transform var(--t-rapido) var(--ease); }
+  .perguntas li:hover { transform: translateX(4px); }
+  .perguntas li::before { content: counter(q); position: absolute; left: 18px; top: 15px; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; display: grid; place-items: center; font-size: 15px; }
 
   .metodo { font-size: 14px; color: var(--ink-2); }
-  .metodo ul { padding-left: 20px; margin: 8px 0; }
-  .metodo li { margin: 4px 0; }
-  footer { text-align: center; font-size: 13px; color: var(--ink-3); margin-top: 32px; }
+  .metodo ul { padding-left: 20px; margin: 8px 0; } .metodo li { margin: 5px 0; }
+  details { margin-top: 18px; border-top: 1px solid var(--rule); padding-top: 14px; }
+  summary { cursor: pointer; font-weight: 600; color: var(--ink-2); font-size: 15px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; margin-top: 10px; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--rule); }
+  th { color: var(--ink-3); font-weight: 600; } td.r, th.r { text-align: right; font-variant-numeric: tabular-nums; }
+  .tabela-wrap { overflow-x: auto; }
+  footer { text-align: center; font-size: 13px; color: var(--ink-3); padding: 0 16px 40px; }
 
-  /* Tooltip */
-  #tip {
-    position: fixed; z-index: 10; pointer-events: none; opacity: 0; transition: opacity .12s;
-    background: var(--ink); color: var(--surface); font-size: 13px; line-height: 1.4;
-    padding: 8px 10px; border-radius: 8px; max-width: 260px; box-shadow: 0 6px 20px rgba(0,0,0,.18);
-  }
-  #tip b { display: block; font-size: 14px; }
+  /* ---------- Tooltip ---------- */
+  #tip { position: fixed; z-index: 50; pointer-events: none; opacity: 0; transform: translateY(4px); transition: opacity var(--t-rapido) var(--ease), transform var(--t-rapido) var(--ease);
+    background: var(--noite); color: #eef2f7; font-size: 13px; line-height: 1.45; padding: 9px 12px; border-radius: 10px; max-width: 270px; box-shadow: 0 10px 30px rgba(0,0,0,.25); border: 1px solid rgba(255,255,255,.08); }
+  #tip.on { opacity: 1; transform: none; }
+  #tip b { display: block; font-size: 14px; color: #fff; margin-bottom: 2px; }
+  #tip .acao { display: block; margin-top: 4px; color: #f6a56b; font-size: 12px; }
 
-  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-
-  @media (max-width: 760px) {
-    .heroi { grid-template-columns: 1fr; gap: 18px; }
-    .regioes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 820px) {
+    .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .tiles, .hipoteses { grid-template-columns: 1fr; }
-    .hist { gap: 4px; height: 200px; }
-    .hist-eixo { gap: 4px; font-size: 11px; }
+    .barras-area { --nome: 86px; --val: 52px; --gap: 8px; }
+    #b-ocup, #b-porte { --nome: 108px; }
+    #b-ocup .nome, #b-porte .nome { white-space: normal; font-size: 13px; line-height: 1.2; }
+    .eixo .ticks span:nth-child(even) { display: none; }
+    .hist { gap: 4px; height: 210px; }
+    .hist-eixo { gap: 4px; font-size: 10.5px; }
     .hist .b .lab { display: none; }
-    .tema-toggle { float: none; display: inline-block; margin-bottom: 12px; }
+    .filtros-bar .wrap { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 18px; }
+    .fgrupo { flex: none; }
+    .rolagem { overflow: visible; max-width: none; }
+    .limpar.on { flex: none; }
+    .limpar:not(.on) { display: none; }
+    .resumo { flex: none; padding-right: 16px; }
+    .filtros-bar .wrap::-webkit-scrollbar { display: none; }
+    .resumo { margin-left: 0; }
   }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+    .reveal { opacity: 1; transform: none; }
+    html { scroll-behavior: auto; }
+  }
 </style>
 </head>
 <body>
-<main>
-  <header class="capa">
-    <button class="tema-toggle" id="tema" type="button" aria-label="Alternar tema claro e escuro">◐ Tema</button>
-    <div class="kicker">Aula inaugural · Curso de lideranças municipais</div>
-    <h1>Quase metade fica, pouco mais da metade chega: o equilíbrio que governa as prefeituras desde 2025</h1>
-    <p class="lead">Cada um aqui conhece bem o próprio município. Este painel mostra o que acontece nos outros 5.500: quem permaneceu no comando das prefeituras nas eleições de 2024, quem chegou, e o que pode explicar esse equilíbrio, que muda bastante de um lugar para outro.</p>
-  </header>
 
-  <!-- 1. O retrato nacional -->
-  <section class="bloco" aria-labelledby="s1">
-    <div class="passo">1 · O retrato do país</div>
-    <h2 id="s1">44,5% dos prefeitos eleitos em 2024 foram reeleitos. Os outros 55,5% chegaram ao cargo agora</h2>
-    <div class="heroi">
-      <div>
-        <div class="grande num" id="heroi-pct">44,5%</div>
-        <div class="rotulo">dos <b class="num">5.553</b> prefeitos eleitos em 2024 estavam no cargo e foram <b>reconduzidos</b></div>
-      </div>
-      <div>
-        <div class="barra-total" id="barra-total" role="img" aria-label="2.469 prefeitos reeleitos (44,5%) e 3.084 prefeitos novos (55,5%)"></div>
-        <div class="legenda-total">
-          <div><span class="sw c"></span><span>Continuidade: reeleitos</span><b class="num" id="lt-c"></b></div>
-          <div style="text-align:right"><span class="sw r"></span><span>Renovação: novos no cargo</span><b class="num" id="lt-r"></b></div>
-        </div>
-      </div>
+<header class="hero">
+  <div class="wrap">
+    <div class="topo">
+      <div class="kicker">Aula inaugural · Curso de lideranças municipais</div>
+      <button class="tema-toggle" id="tema" type="button" aria-label="Alternar tema claro e escuro">◐ Tema</button>
     </div>
+    <h1>Quase metade fica, pouco mais da metade chega: <em>o equilíbrio</em> que governa as prefeituras desde 2025</h1>
+    <p class="lead">Cada um aqui conhece bem o próprio município. Este painel mostra o que acontece nos outros 5.500: quem permaneceu no comando das prefeituras nas eleições de 2024, quem chegou, e o que pode explicar esse equilíbrio. Use os filtros para comparar a sua realidade com a dos outros.</p>
+    <div class="kpis" aria-live="polite">
+      <div class="kpi"><div class="v num" id="k-pct">0</div><div class="l">dos prefeitos foram <b>reeleitos</b></div></div>
+      <div class="kpi"><div class="v num" id="k-n">0</div><div class="l">municípios no recorte</div></div>
+      <div class="kpi"><div class="v num laranja" id="k-unico">0</div><div class="l">reeleitos <b>sem adversário</b> (praticamente 100% dos votos)</div></div>
+      <div class="kpi"><div class="v num" id="k-pol">0</div><div class="l">dos novos prefeitos se declararam <b>políticos</b> de profissão</div></div>
+    </div>
+  </div>
+</header>
+
+<nav class="filtros-bar" aria-label="Filtros do painel">
+  <div class="wrap">
+    <div class="fgrupo"><span>Região</span><div class="rolagem"><div id="f-regiao"></div></div></div>
+    <div class="fgrupo"><span>Porte</span><div class="rolagem"><div id="f-porte"></div></div></div>
+    <div class="fgrupo"><span>Partido</span><select class="part" id="f-partido" aria-label="Filtrar por partido"></select></div>
+    <button class="limpar" id="limpar" type="button">✕ Limpar filtros</button>
+    <div class="resumo" id="resumo" aria-live="polite"></div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <section class="bloco reveal" aria-labelledby="s1">
+    <div class="passo"><b>01</b> O retrato do país</div>
+    <h2 id="s1">44,5% dos prefeitos eleitos em 2024 foram reeleitos; os outros 55,5% chegaram ao cargo agora</h2>
+    <div class="controles"><span class="rot">Ver</span><div id="c-equil"></div><span class="dica">Clique em uma região para filtrar o painel</span></div>
+    <div class="legenda"><span><span class="sw c"></span>Continuidade: reeleitos</span><span><span class="sw r"></span>Renovação: novos no cargo</span></div>
+    <div id="b-equil" class="grossa" role="img" aria-label="Proporção de prefeitos reeleitos e novos"></div>
+    <div class="recorte" id="r-equil"></div>
     <div class="alerta" role="note">
       <div class="ic" aria-hidden="true">!</div>
       <p><strong>"Novo" não quer dizer que o eleitor rejeitou o prefeito anterior.</strong> Quem já estava no segundo mandato seguido não podia concorrer de novo. Parte da renovação é obrigatória pela regra eleitoral, e a base não permite separar esses casos. Também não há dados sobre quem tentou a reeleição e perdeu.</p>
     </div>
   </section>
 
-  <!-- 2. Território -->
-  <section class="bloco" aria-labelledby="s2">
-    <div class="passo">2 · A sua realidade não é a do país</div>
+  <section class="bloco reveal" aria-labelledby="s2">
+    <div class="passo"><b>02</b> A sua realidade não é a do país</div>
     <h2 id="s2">De 67% em Roraima a 31% em Santa Catarina: o Sul renova mais; o Norte e o Centro-Oeste mantêm mais</h2>
-    <p class="texto">Escolha a sua região e compare-a com as outras. A linha laranja marca a média nacional. Barras acima dela indicam estados onde a continuidade pesou mais que no conjunto do país.</p>
-    <div class="filtros" role="group" aria-label="Filtrar por região" id="filtros"></div>
-    <div class="regioes" id="regioes"></div>
-    <div class="barras-area" id="ufs" role="img" aria-label="Percentual de prefeitos reeleitos por UF, em ordem decrescente"></div>
-    <p class="fonte">Percentual de prefeitos reeleitos entre os eleitos de cada UF. Estados com poucos municípios (RR: 15; AP: 16; AC: 22) variam muito com poucos casos.</p>
+    <p class="texto">A linha laranja marca a média do recorte. Troque entre <strong>região</strong> e <strong>estado</strong>, ou veja o <strong>número de prefeitos</strong> em vez do percentual. Clique em uma barra para filtrar o painel inteiro.</p>
+    <div class="controles"><span class="rot">Agrupar por</span><div id="c-terr"></div><span class="rot">Medida</span><div id="c-terr-m"></div></div>
+    <div id="b-terr" role="img" aria-label="Prefeitos reeleitos por território"></div>
+    <div class="recorte" id="r-terr"></div>
+    <p class="fonte">Estados com poucos municípios (RR: 15; AP: 16; AC: 22) variam muito com poucos casos.</p>
   </section>
 
-  <!-- 3. Porte -->
-  <section class="bloco" aria-labelledby="s3">
-    <div class="passo">3 · Cidade pequena, cidade grande</div>
-    <h2 id="s3">O tamanho do município quase não muda o equilíbrio. Só nas maiores cidades a renovação ganha um pouco mais de espaço</h2>
-    <p class="texto">Os municípios estão agrupados pelo total de votos válidos para prefeito, que serve de indicador aproximado do tamanho do eleitorado. Até 100 mil votos, a taxa fica sempre entre 44% e 47%. A diferença entre regiões (seção 2) é muito maior que a diferença entre portes.</p>
-    <div class="barras-area" id="porte" role="img" aria-label="Percentual de prefeitos reeleitos por porte do município"></div>
+  <section class="bloco reveal" aria-labelledby="s3">
+    <div class="passo"><b>03</b> Cidade pequena, cidade grande</div>
+    <h2 id="s3">O tamanho do município quase não muda o equilíbrio; só nas maiores cidades a renovação ganha um pouco mais de espaço</h2>
+    <p class="texto">Os municípios estão agrupados pelo total de votos válidos para prefeito, um indicador aproximado do tamanho do eleitorado. No país, até 100 mil votos, a taxa fica sempre entre 44% e 47%. A diferença entre regiões é muito maior que a diferença entre portes.</p>
+    <div class="controles"><span class="rot">Medida</span><div id="c-porte-m"></div><span class="dica">Clique em uma faixa para filtrar</span></div>
+    <div id="b-porte" role="img" aria-label="Prefeitos reeleitos por porte do município"></div>
+    <div class="recorte" id="r-porte"></div>
   </section>
 
-  <!-- 4. Força da continuidade -->
-  <section class="bloco" aria-labelledby="s4">
-    <div class="passo">4 · Como se vence</div>
+  <section class="bloco reveal" aria-labelledby="s4">
+    <div class="passo"><b>04</b> Como se vence</div>
     <h2 id="s4">Quem permanece costuma vencer com folga: a vitória típica de um reeleito tem quase 11 pontos a mais que a de quem chega</h2>
-    <p class="texto">Distribuição da votação da chapa vencedora, em % dos votos válidos no turno decisivo. Cada grupo soma 100%. Os <strong>novos</strong> se concentram entre 50% e 60%, em disputas mais apertadas. Os <strong>reeleitos</strong> se espalham para a direita, com vitórias amplas.</p>
-    <div class="legenda"><span><span class="sw c"></span>Reeleitos (2.466 com votação disponível)</span><span><span class="sw r"></span>Novos (3.078 com votação disponível)</span></div>
-    <div class="hist" id="hist" role="img" aria-label="Histograma da votação dos vencedores reeleitos e novos"></div>
+    <p class="texto">Votação da chapa vencedora, em % dos votos válidos no turno decisivo. No país, os <strong>novos</strong> se concentram entre 50% e 60%, em disputas mais apertadas. Os <strong>reeleitos</strong> se espalham para a direita, até as vitórias sem adversário.</p>
+    <div class="controles"><span class="rot">Medida</span><div id="c-votos-m"></div></div>
+    <div class="legenda"><span><span class="sw c"></span>Reeleitos</span><span><span class="sw r"></span>Novos</span></div>
+    <div class="hist" id="hist" role="img" aria-label="Distribuição da votação dos vencedores, reeleitos e novos"></div>
     <div class="hist-eixo" id="hist-eixo"></div>
     <div class="tiles">
-      <div class="tile"><div class="t">Votação mediana do vencedor</div>
-        <div class="par"><div><b class="num">65,0%</b><span class="sw c"></span>reeleitos</div><div><b class="num">54,4%</b><span class="sw r"></span>novos</div></div></div>
       <div class="tile"><div class="t">Venceram com 70% ou mais dos votos</div>
-        <div class="par"><div><b class="num">38%</b><span class="sw c"></span>reeleitos</div><div><b class="num">11%</b><span class="sw r"></span>novos</div></div></div>
-      <div class="tile destaque"><div class="t">Reeleitos com praticamente 100% dos votos válidos</div>
-        <div class="grande-a num">195</div><div class="t">sinal de <b>candidatura única</b>, sem adversário. Entre os novos, foram 93.</div></div>
+        <div class="par"><div><b class="num" id="t70c">–</b><span class="sw c"></span>reeleitos</div><div><b class="num" id="t70r">–</b><span class="sw r"></span>novos</div></div></div>
+      <div class="tile"><div class="t">Venceram com menos de 60% dos votos</div>
+        <div class="par"><div><b class="num" id="t60c">–</b><span class="sw c"></span>reeleitos</div><div><b class="num" id="t60r">–</b><span class="sw r"></span>novos</div></div></div>
+      <div class="tile destaque"><div class="t">Venceram sem adversário (≈100% dos votos válidos)</div>
+        <div class="par"><div><b class="num" id="tuc">–</b><span class="sw c"></span>reeleitos</div><div><b class="num" id="tur">–</b><span class="sw r"></span>novos</div></div></div>
     </div>
+    <div class="recorte" id="r-votos"></div>
   </section>
 
-  <!-- 5. Quem chega -->
-  <section class="bloco" aria-labelledby="s5">
-    <div class="passo">5 · Quem chega</div>
+  <section class="bloco reveal" aria-labelledby="s5">
+    <div class="passo"><b>05</b> Quem chega</div>
     <h2 id="s5">A renovação vem principalmente de fora dos cargos eletivos: só 8% dos novos prefeitos se declararam políticos de profissão</h2>
-    <p class="texto">Ocupação declarada ao TSE pelos <strong>3.084 prefeitos novos</strong>. Em laranja, quem declarou um cargo eletivo: <strong>138 vereadores</strong>, <strong>73 que se declararam "prefeito"</strong> (provavelmente ex-prefeitos voltando depois de um intervalo), <strong>33 deputados</strong> e 1 senador.</p>
-    <div class="barras-area" id="ocup" role="img" aria-label="Ocupação declarada dos prefeitos novos, por grupo"></div>
+    <p class="texto">Ocupação declarada ao TSE. Em laranja, quem declarou um cargo eletivo (vereador, deputado, senador ou "prefeito", provavelmente ex-prefeitos que voltaram depois de um intervalo). Compare com os <strong>reeleitos</strong>, que quase sempre se declaram "prefeito".</p>
+    <div class="controles"><span class="rot">Grupo</span><div id="c-ocup"></div></div>
+    <div id="b-ocup" role="img" aria-label="Ocupação declarada dos prefeitos, por grupo"></div>
+    <div class="recorte" id="r-ocup"></div>
     <p class="fonte">A ocupação é uma declaração e não conta a trajetória completa. Ex-vices, secretários e assessores costumam aparecer com a profissão de origem. Por isso o número real de quem já vinha da política local tende a ser maior.</p>
   </section>
 
-  <!-- 6. Partidos -->
-  <section class="bloco" aria-labelledby="s6">
-    <div class="passo">6 · Partidos</div>
+  <section class="bloco reveal" aria-labelledby="s6">
+    <div class="passo"><b>06</b> Partidos</div>
     <h2 id="s6">Nos maiores partidos, a continuidade vai de 35% (PSDB) a 52% (PSD), uma variação bem maior que a observada entre portes de cidade</h2>
-    <p class="texto">Percentual de reeleitos entre os prefeitos de cada partido (partidos com 150 prefeitos ou mais). O partido é o da candidatura de 2024. Prefeitos que trocaram de legenda antes da eleição entram no partido novo, o que pode inflar a continuidade de quem mais atraiu prefeitos em exercício.</p>
-    <div class="barras-area" id="partidos" role="img" aria-label="Percentual de prefeitos reeleitos por partido"></div>
+    <p class="texto">O partido é o da candidatura de 2024. Prefeitos que trocaram de legenda antes da eleição entram no partido novo, o que pode inflar a continuidade de quem mais atraiu prefeitos em exercício. Clique em um partido para filtrar o painel.</p>
+    <div class="controles"><span class="rot">Medida</span><div id="c-part-m"></div><span class="rot">Ordenar</span><div id="c-part-o"></div></div>
+    <div id="b-part" role="img" aria-label="Prefeitos reeleitos por partido"></div>
+    <div class="recorte" id="r-part"></div>
   </section>
 
-  <!-- 7. Hipóteses -->
-  <section class="bloco" aria-labelledby="s7">
-    <div class="passo">7 · O que pode estar por trás</div>
+  <section class="bloco reveal" aria-labelledby="s7">
+    <div class="passo"><b>07</b> O que pode estar por trás</div>
     <h2 id="s7">Quatro pistas para explicar o equilíbrio, e o que os dados permitem ou não afirmar</h2>
     <div class="hipoteses">
       <div class="hip"><h3>A vantagem de quem governa</h3>
         <p>Visibilidade, obras entregues, máquina administrativa e redes de apoio favorecem quem está no cargo.</p>
-        <div class="mostra"><b>A base mostra:</b> reeleitos vencem com folga (mediana de 65% dos votos).</div>
+        <div class="mostra"><b>A base mostra:</b> reeleitos vencem com folga (mediana de 65% dos votos, contra 54% dos novos).</div>
         <div class="nao"><b>A base não mostra:</b> quantos prefeitos tentaram e perderam.</div></div>
       <div class="hip"><h3>O limite de dois mandatos</h3>
         <p>Boa parte da renovação é imposta pela regra: quem completou o segundo mandato seguido sai obrigatoriamente.</p>
@@ -325,198 +350,396 @@
     </div>
   </section>
 
-  <!-- 8. Reflexão -->
-  <section class="bloco" aria-labelledby="s8">
-    <div class="passo">8 · Para a turma</div>
+  <section class="bloco reveal" aria-labelledby="s8">
+    <div class="passo"><b>08</b> Para a turma</div>
     <h2 id="s8">Três perguntas para começar o curso</h2>
     <ol class="perguntas">
-      <li>No seu município, o último resultado foi de continuidade ou de renovação? A sua região se parece com o seu município?</li>
+      <li>No seu município, o último resultado foi de continuidade ou de renovação? Filtre a sua região e o seu porte: você se parece com eles?</li>
       <li>Quando o prefeito é reeleito com mais de 70% dos votos, ou sem adversário, a continuidade expressa aprovação da gestão ou falta de alternativas?</li>
       <li>Como uma gestão garante a continuidade das políticas públicas quando mais da metade das prefeituras muda de comando a cada eleição?</li>
     </ol>
   </section>
 
-  <!-- Método -->
-  <section class="bloco metodo" aria-labelledby="s9">
+  <section class="bloco metodo reveal" aria-labelledby="s9">
     <div class="passo">Método e limites</div>
-    <h2 id="s9" style="font-size:20px">Como estes números foram calculados</h2>
+    <h2 id="s9" style="font-size:22px">Como estes números foram calculados</h2>
     <ul>
       <li><b>Base:</b> eleitos.csv (Prof. Danny, IDP), com as eleições municipais ordinárias de 2024 e dados do TSE extraídos em 01/10/2026. Foram usadas só as linhas de <b>cargo = Prefeito</b>, uma por município: <b>5.553 municípios</b>. Dezesseis municípios ficaram fora da base por falta de confirmação.</li>
       <li><b>Reeleito</b> é a declaração <i>ST_REELEICAO</i> do registro de candidatura. Não houve auditoria individual do mandato anterior.</li>
-      <li>Estão incluídas 9 chapas cassadas depois da eleição e 14 eleições históricas documentadas, porque a pergunta é sobre o resultado das urnas. Considerando só os eleitos confirmados hoje pelo TSE (5.530), a taxa de reeleição é de 44,5%, o mesmo valor.</li>
-      <li><b>Votação:</b> percentual de votos válidos da chapa no turno decisivo, segundo o reprocessamento atual do TSE (9 chapas sem dado). Anulações posteriores explicam os poucos vencedores com menos de 40%. O "porte" usa os votos válidos para prefeito como indicador aproximado do eleitorado.</li>
-      <li>A base retrata o resultado de 2024, não quem está no cargo hoje. Não inclui vereadores, candidatos derrotados nem eleições anteriores.</li>
+      <li>Estão incluídas 9 chapas cassadas depois da eleição e 14 eleições históricas documentadas, porque a pergunta é sobre o resultado das urnas. Considerando só os eleitos confirmados hoje pelo TSE (5.530), a taxa é de 44,5%, o mesmo valor.</li>
+      <li><b>Votação:</b> percentual de votos válidos da chapa no turno decisivo, segundo o reprocessamento atual do TSE (9 chapas sem dado). "Sem adversário" é uma votação de praticamente 100% dos votos válidos. Anulações posteriores explicam os poucos vencedores com menos de 40%. O "porte" usa os votos válidos para prefeito como indicador aproximado do eleitorado.</li>
+      <li><b>Dados embutidos:</b> três tabelas de contagem com as dimensões região ou UF, porte, partido, situação (reeleito ou novo) e uma dimensão de análise. Não há nomes nem identificadores. Partidos com menos de 150 prefeitos aparecem como "Outros".</li>
+      <li>Os títulos descrevem o país inteiro. A leitura com o ponto laranja, abaixo de cada gráfico, descreve o recorte filtrado.</li>
     </ul>
     <details>
-      <summary>Ver os dados em tabela</summary>
-      <div class="tabela-wrap" id="tabelas"></div>
+      <summary>Ver os dados do recorte atual em tabela</summary>
+      <div class="tabela-wrap" id="tabela"></div>
     </details>
   </section>
-
-  <footer>Storytelling com Dados · Mestrado em Administração Pública · IDP · Mauricio Marinho · 2026</footer>
 </main>
+<footer>Storytelling com Dados · Mestrado em Administração Pública · IDP · Mauricio Marinho · 2026</footer>
 <div id="tip" role="tooltip"></div>
 
 <script>
-const DADOS = {"total": 5553, "reeleitos": 2469, "regioes": [{"nome": "Norte", "n": 449, "reel": 228}, {"nome": "Nordeste", "n": 1791, "reel": 851}, {"nome": "Sudeste", "n": 1656, "reel": 717}, {"nome": "Centro-Oeste", "n": 467, "reel": 232}, {"nome": "Sul", "n": 1190, "reel": 441}], "ufs": [{"uf": "AC", "regiao": "Norte", "n": 22, "reel": 13}, {"uf": "AL", "regiao": "Nordeste", "n": 102, "reel": 54}, {"uf": "AM", "regiao": "Norte", "n": 62, "reel": 23}, {"uf": "AP", "regiao": "Norte", "n": 16, "reel": 8}, {"uf": "BA", "regiao": "Nordeste", "n": 416, "reel": 193}, {"uf": "CE", "regiao": "Nordeste", "n": 184, "reel": 89}, {"uf": "ES", "regiao": "Sudeste", "n": 78, "reel": 32}, {"uf": "GO", "regiao": "Centro-Oeste", "n": 246, "reel": 126}, {"uf": "MA", "regiao": "Nordeste", "n": 217, "reel": 111}, {"uf": "MG", "regiao": "Sudeste", "n": 852, "reel": 381}, {"uf": "MS", "regiao": "Centro-Oeste", "n": 79, "reel": 30}, {"uf": "MT", "regiao": "Centro-Oeste", "n": 142, "reel": 76}, {"uf": "PA", "regiao": "Norte", "n": 143, "reel": 78}, {"uf": "PB", "regiao": "Nordeste", "n": 223, "reel": 101}, {"uf": "PE", "regiao": "Nordeste", "n": 183, "reel": 86}, {"uf": "PI", "regiao": "Nordeste", "n": 224, "reel": 109}, {"uf": "PR", "regiao": "Sul", "n": 398, "reel": 163}, {"uf": "RJ", "regiao": "Sudeste", "n": 90, "reel": 39}, {"uf": "RN", "regiao": "Nordeste", "n": 167, "reel": 78}, {"uf": "RO", "regiao": "Norte", "n": 52, "reel": 25}, {"uf": "RR", "regiao": "Norte", "n": 15, "reel": 10}, {"uf": "RS", "regiao": "Sul", "n": 497, "reel": 186}, {"uf": "SC", "regiao": "Sul", "n": 295, "reel": 92}, {"uf": "SE", "regiao": "Nordeste", "n": 75, "reel": 30}, {"uf": "SP", "regiao": "Sudeste", "n": 636, "reel": 265}, {"uf": "TO", "regiao": "Norte", "n": 139, "reel": 71}], "porte": [{"faixa": "até 5 mil", "n": 1914, "reel": 855}, {"faixa": "5 a 10 mil", "n": 1470, "reel": 647}, {"faixa": "10 a 30 mil", "n": 1568, "reel": 697}, {"faixa": "30 a 100 mil", "n": 449, "reel": 210}, {"faixa": "mais de 100 mil", "n": 152, "reel": 60}], "votos": {"reeleitos": {"n": 2466, "bins": [3, 0, 1, 22, 143, 721, 637, 452, 239, 248], "mediana": 65.0, "acima70": 939, "unicos": 195}, "novos": {"n": 3078, "bins": [11, 0, 12, 158, 489, 1535, 532, 158, 73, 110], "mediana": 54.4, "acima70": 341, "unicos": 93}}, "ocup_novos": [{"cat": "Profissões liberais", "n": 734}, {"cat": "Empresa e comércio", "n": 717}, {"cat": "Outras ou não informadas", "n": 555}, {"cat": "Campo", "n": 398}, {"cat": "Serviço público", "n": 298}, {"cat": "Já na política", "n": 245}, {"cat": "Educação", "n": 137}], "ocup_politica": {"VEREADOR": 138, "DEPUTADO": 33, "PREFEITO": 73, "SENADOR": 1}, "partidos": [{"partido": "PSD", "n": 890, "reel": 464}, {"partido": "MDB", "n": 860, "reel": 375}, {"partido": "PP", "n": 750, "reel": 317}, {"partido": "UNIÃO", "n": 589, "reel": 295}, {"partido": "PL", "n": 517, "reel": 191}, {"partido": "REPUBLICANOS", "n": 437, "reel": 191}, {"partido": "PSB", "n": 311, "reel": 146}, {"partido": "PSDB", "n": 275, "reel": 97}, {"partido": "PT", "n": 252, "reel": 121}, {"partido": "PDT", "n": 151, "reel": 65}]};
-
-const fmt = (v, d = 1) => v.toLocaleString('pt-BR', { minimumFractionDigits: d, maximumFractionDigits: d });
-const int = v => v.toLocaleString('pt-BR');
-const pct = (a, b) => 100 * a / b;
-const NAC = pct(DADOS.reeleitos, DADOS.total);
+const D = {"dims":{"uf":["AC","AL","AM","AP","BA","CE","ES","GO","MA","MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO"],"ufRegiao":[0,1,0,0,1,1,3,2,1,3,2,2,0,1,1,1,4,3,1,0,0,4,4,1,3,0],"regiao":["Norte","Nordeste","Centro-Oeste","Sudeste","Sul"],"porte":["até 5 mil","5 a 10 mil","10 a 30 mil","30 a 100 mil","mais de 100 mil"],"partido":["PSD","MDB","PP","UNIÃO","PL","REPUBLICANOS","PSB","PSDB","PT","PDT","Outros"],"faixa":["< 40%","40–50%","50–60%","60–70%","70–80%","80–90%","90–99%","Sem adversário"],"ocup":["Já na política","Serviço público","Empresa e comércio","Campo","Profissões liberais","Educação","Outras ou não informadas"]},"cuboUF":[[0,0,1,1,1],[0,0,2,1,2],[0,1,2,1,3],[0,1,3,1,1],[0,1,5,1,1],[0,1,9,0,1],[0,2,0,0,1],[0,2,2,0,6],[0,2,2,1,2],[0,2,4,1,1],[0,2,5,0,1],[0,3,2,1,1],[0,4,4,1,1],[1,0,1,0,5],[1,0,1,1,6],[1,0,2,0,2],[1,0,2,1,1],[1,0,5,1,1],[1,1,1,0,12],[1,1,1,1,7],[1,1,2,0,2],[1,1,2,1,6],[1,1,5,0,1],[1,1,6,0,1],[1,1,6,1,1],[1,1,7,0,1],[1,1,8,0,1],[1,2,1,0,11],[1,2,1,1,18],[1,2,2,0,8],[1,2,2,1,6],[1,2,5,1,3],[1,3,1,0,3],[1,3,1,1,2],[1,3,2,0,1],[1,3,2,1,1],[1,4,1,1,1],[1,4,4,1,1],[2,0,1,0,1],[2,0,1,1,1],[2,0,3,1,1],[2,1,0,0,1],[2,1,0,1,1],[2,1,1,0,4],[2,1,3,0,3],[2,1,3,1,5],[2,1,5,1,2],[2,1,7,0,1],[2,2,0,0,1],[2,2,0,1,2],[2,2,1,0,6],[2,2,1,1,1],[2,2,2,0,1],[2,2,3,0,8],[2,2,3,1,5],[2,2,4,0,2],[2,2,5,0,3],[2,2,5,1,1],[2,2,8,0,2],[2,2,10,0,1],[2,3,0,0,1],[2,3,1,0,1],[2,3,3,1,2],[2,3,5,0,2],[2,3,5,1,1],[2,3,9,0,1],[2,4,10,1,1],[3,0,1,1,1],[3,0,3,1,1],[3,1,0,1,1],[3,1,3,0,4],[3,1,3,1,2],[3,1,4,0,1],[3,2,1,0,1],[3,2,2,1,1],[3,2,3,0,2],[3,3,2,1,1],[3,4,1,1,1],[4,0,0,0,2],[4,0,0,1,5],[4,0,2,0,2],[4,0,3,0,1],[4,0,8,1,1],[4,0,9,1,1],[4,0,10,0,6],[4,0,10,1,5],[4,1,0,0,17],[4,1,0,1,20],[4,1,1,0,4],[4,1,1,1,3],[4,1,2,0,10],[4,1,2,1,7],[4,1,3,0,7],[4,1,3,1,2],[4,1,5,0,1],[4,1,5,1,1],[4,1,6,0,6],[4,1,6,1,6],[4,1,7,1,2],[4,1,8,0,6],[4,1,8,1,7],[4,1,9,0,2],[4,1,10,0,22],[4,1,10,1,18],[4,2,0,0,28],[4,2,0,1,36],[4,2,1,0,14],[4,2,1,1,5],[4,2,2,0,11],[4,2,2,1,8],[4,2,3,0,7],[4,2,3,1,8],[4,2,5,0,1],[4,2,5,1,1],[4,2,6,0,5],[4,2,6,1,5],[4,2,7,0,2],[4,2,7,1,1],[4,2,8,0,22],[4,2,8,1,12],[4,2,9,0,1],[4,2,9,1,1],[4,2,10,0,21],[4,2,10,1,17],[4,3,0,0,6],[4,3,1,0,2],[4,3,1,1,2],[4,3,2,0,1],[4,3,2,1,2],[4,3,3,0,5],[4,3,3,1,5],[4,3,4,1,1],[4,3,5,1,1],[4,3,6,0,1],[4,3,6,1,1],[4,3,7,0,2],[4,3,7,1,2],[4,3,8,1,1],[4,3,9,0,1],[4,3,9,1,2],[4,3,10,0,3],[4,3,10,1,1],[4,4,0,1,1],[4,4,1,0,1],[4,4,3,0,2],[4,4,3,1,2],[4,4,8,0,1],[5,0,0,1,1],[5,0,2,1,1],[5,0,5,0,1],[5,0,8,0,2],[5,1,0,0,1],[5,1,0,1,2],[5,1,1,0,1],[5,1,1,1,1],[5,1,2,1,2],[5,1,5,0,1],[5,1,5,1,1],[5,1,6,0,12],[5,1,6,1,4],[5,1,8,0,6],[5,1,8,1,5],[5,1,9,0,2],[5,1,9,1,1],[5,2,0,0,6],[5,2,0,1,3],[5,2,1,0,5],[5,2,1,1,1],[5,2,2,0,4],[5,2,2,1,3],[5,2,3,0,1],[5,2,5,0,2],[5,2,5,1,8],[5,2,6,0,20],[5,2,6,1,18],[5,2,7,0,1],[5,2,8,0,11],[5,2,8,1,15],[5,2,9,1,2],[5,2,10,1,2],[5,3,0,1,2],[5,3,1,0,1],[5,3,2,0,2],[5,3,2,1,1],[5,3,3,0,2],[5,3,5,0,1],[5,3,6,0,3],[5,3,6,1,8],[5,3,7,0,1],[5,3,8,0,3],[5,3,8,1,4],[5,3,10,0,3],[5,3,10,1,2],[5,4,0,0,1],[5,4,3,0,1],[5,4,3,1,1],[5,4,8,0,1],[5,4,10,1,1],[6,0,0,0,1],[6,0,6,0,2],[6,1,0,0,1],[6,1,1,0,2],[6,1,1,1,1],[6,1,2,0,2],[6,1,2,1,2],[6,1,4,0,1],[6,1,5,1,2],[6,1,6,0,6],[6,1,6,1,5],[6,1,7,0,2],[6,1,7,1,1],[6,1,9,0,2],[6,1,10,0,2],[6,1,10,1,1],[6,2,1,1,2],[6,2,2,0,3],[6,2,2,1,3],[6,2,3,1,1],[6,2,4,0,3],[6,2,4,1,1],[6,2,5,0,2],[6,2,5,1,2],[6,2,6,0,6],[6,2,6,1,3],[6,2,7,1,1],[6,2,9,0,1],[6,2,10,0,4],[6,2,10,1,2],[6,3,0,0,1],[6,3,2,1,1],[6,3,5,0,1],[6,3,10,0,2],[6,3,10,1,1],[6,4,1,1,1],[6,4,2,0,1],[6,4,5,1,1],[6,4,9,0,1],[6,4,10,1,1],[7,0,0,0,2],[7,0,1,0,9],[7,0,1,1,13],[7,0,2,0,8],[7,0,2,1,3],[7,0,3,0,14],[7,0,3,1,35],[7,0,4,0,6],[7,0,4,1,5],[7,0,5,0,1],[7,0,6,0,1],[7,0,7,0,2],[7,0,8,1,1],[7,0,9,0,4],[7,0,9,1,6],[7,0,10,0,7],[7,0,10,1,3],[7,1,1,0,8],[7,1,1,1,6],[7,1,2,0,5],[7,1,2,1,3],[7,1,3,0,5],[7,1,3,1,15],[7,1,4,0,3],[7,1,4,1,1],[7,1,6,1,2],[7,1,7,0,3],[7,1,10,0,6],[7,1,10,1,2],[7,2,0,1,1],[7,2,1,0,4],[7,2,1,1,1],[7,2,2,0,3],[7,2,2,1,2],[7,2,3,0,5],[7,2,3,1,12],[7,2,4,0,7],[7,2,5,0,1],[7,2,7,1,2],[7,2,8,1,2],[7,2,9,1,1],[7,2,10,0,4],[7,2,10,1,1],[7,3,1,0,2],[7,3,1,1,2],[7,3,2,0,1],[7,3,2,1,1],[7,3,3,0,3],[7,3,3,1,5],[7,3,4,0,2],[7,3,4,1,1],[7,4,1,0,2],[7,4,3,0,1],[7,4,4,0,1],[8,0,1,0,1],[8,0,1,1,3],[8,0,2,0,2],[8,0,2,1,1],[8,0,3,0,1],[8,0,3,1,2],[8,0,4,1,2],[8,0,5,0,1],[8,0,5,1,2],[8,0,9,1,1],[8,0,10,0,2],[8,1,1,0,7],[8,1,1,1,8],[8,1,2,0,3],[8,1,2,1,3],[8,1,3,0,3],[8,1,3,1,5],[8,1,4,0,7],[8,1,4,1,10],[8,1,5,0,6],[8,1,5,1,2],[8,1,6,0,6],[8,1,6,1,3],[8,1,7,0,1],[8,1,9,0,2],[8,1,9,1,5],[8,1,10,0,1],[8,2,1,0,7],[8,2,1,1,8],[8,2,2,0,10],[8,2,2,1,7],[8,2,3,0,6],[8,2,3,1,8],[8,2,4,0,7],[8,2,4,1,11],[8,2,5,0,2],[8,2,5,1,6],[8,2,6,0,2],[8,2,6,1,5],[8,2,7,0,4],[8,2,7,1,2],[8,2,8,0,1],[8,2,9,0,4],[8,2,9,1,6],[8,2,10,0,5],[8,2,10,1,4],[8,3,1,0,2],[8,3,1,1,1],[8,3,2,0,1],[8,3,2,1,2],[8,3,3,0,1],[8,3,4,0,1],[8,3,4,1,2],[8,3,6,0,3],[8,3,7,0,1],[8,3,8,0,1],[8,3,10,0,4],[8,3,10,1,1],[8,4,0,1,1],[8,4,2,0,1],[9,0,0,0,27],[9,0,0,1,36],[9,0,1,0,26],[9,0,1,1,20],[9,0,2,0,22],[9,0,2,1,16],[9,0,3,0,12],[9,0,3,1,17],[9,0,4,0,7],[9,0,4,1,4],[9,0,5,0,9],[9,0,5,1,19],[9,0,6,0,3],[9,0,6,1,6],[9,0,7,0,24],[9,0,7,1,8],[9,0,8,0,6],[9,0,8,1,6],[9,0,9,0,8],[9,0,9,1,5],[9,0,10,0,57],[9,0,10,1,38],[9,1,0,0,19],[9,1,0,1,22],[9,1,1,0,16],[9,1,1,1,8],[9,1,2,0,12],[9,1,2,1,9],[9,1,3,0,14],[9,1,3,1,8],[9,1,4,0,15],[9,1,4,1,5],[9,1,5,0,20],[9,1,5,1,11],[9,1,6,0,2],[9,1,6,1,2],[9,1,7,0,12],[9,1,7,1,5],[9,1,8,0,7],[9,1,8,1,5],[9,1,9,0,1],[9,1,9,1,4],[9,1,10,0,24],[9,1,10,1,33],[9,2,0,0,14],[9,2,0,1,13],[9,2,1,0,7],[9,2,1,1,4],[9,2,2,0,8],[9,2,2,1,7],[9,2,3,0,10],[9,2,3,1,3],[9,2,4,0,8],[9,2,4,1,5],[9,2,5,0,10],[9,2,5,1,8],[9,2,6,0,5],[9,2,6,1,1],[9,2,7,0,4],[9,2,7,1,4],[9,2,8,0,4],[9,2,8,1,3],[9,2,9,1,3],[9,2,10,0,25],[9,2,10,1,16],[9,3,0,0,3],[9,3,0,1,5],[9,3,1,1,1],[9,3,2,0,1],[9,3,3,0,1],[9,3,3,1,2],[9,3,4,0,7],[9,3,5,0,4],[9,3,5,1,2],[9,3,6,0,1],[9,3,6,1,2],[9,3,7,0,3],[9,3,8,1,2],[9,3,9,0,1],[9,3,10,0,5],[9,3,10,1,7],[9,4,0,0,1],[9,4,0,1,2],[9,4,2,0,2],[9,4,3,0,2],[9,4,4,0,1],[9,4,4,1,1],[9,4,8,1,2],[9,4,10,0,1],[9,4,10,1,1],[10,0,0,0,1],[10,0,1,0,2],[10,0,7,0,7],[10,0,7,1,7],[10,1,0,0,1],[10,1,1,0,5],[10,1,1,1,1],[10,1,2,0,3],[10,1,2,1,2],[10,1,4,0,2],[10,1,7,0,5],[10,1,7,1,6],[10,2,0,0,1],[10,2,1,0,1],[10,2,1,1,1],[10,2,2,0,5],[10,2,2,1,5],[10,2,4,0,3],[10,2,7,0,10],[10,2,7,1,6],[10,3,6,0,1],[10,3,7,0,1],[10,3,7,1,1],[10,4,2,1,1],[10,4,7,0,1],[11,0,0,1,1],[11,0,1,0,5],[11,0,1,1,7],[11,0,2,0,1],[11,0,2,1,2],[11,0,3,0,6],[11,0,3,1,15],[11,0,4,0,6],[11,0,4,1,1],[11,0,5,0,3],[11,0,5,1,1],[11,0,6,0,3],[11,0,6,1,8],[11,0,7,0,1],[11,0,10,1,1],[11,1,0,0,1],[11,1,1,0,1],[11,1,1,1,3],[11,1,2,1,1],[11,1,3,0,6],[11,1,3,1,15],[11,1,4,0,6],[11,1,4,1,1],[11,1,5,0,4],[11,1,7,0,1],[11,1,10,0,1],[11,2,1,0,1],[11,2,1,1,1],[11,2,3,0,5],[11,2,3,1,10],[11,2,4,0,3],[11,2,5,0,2],[11,2,5,1,1],[11,2,6,0,1],[11,2,6,1,2],[11,2,7,1,1],[11,2,10,0,4],[11,3,3,0,1],[11,3,3,1,2],[11,3,4,0,1],[11,3,4,1,1],[11,3,5,1,1],[11,3,6,1,1],[11,4,4,0,3],[12,0,1,1,1],[12,0,3,0,1],[12,1,0,1,3],[12,1,1,0,3],[12,1,1,1,8],[12,1,2,0,2],[12,1,3,0,2],[12,1,3,1,1],[12,1,8,1,1],[12,1,9,0,1],[12,2,0,0,6],[12,2,0,1,3],[12,2,1,0,18],[12,2,1,1,32],[12,2,2,0,5],[12,2,2,1,3],[12,2,3,0,5],[12,2,3,1,4],[12,2,5,0,4],[12,2,10,0,2],[12,3,0,0,1],[12,3,0,1,1],[12,3,1,0,6],[12,3,1,1,13],[12,3,2,0,2],[12,3,2,1,4],[12,3,5,1,1],[12,3,8,1,1],[12,3,10,0,2],[12,4,1,0,2],[12,4,1,1,1],[12,4,3,0,1],[12,4,4,0,1],[12,4,6,1,1],[12,4,10,0,1],[13,0,0,0,3],[13,0,0,1,2],[13,0,1,0,4],[13,0,1,1,7],[13,0,2,0,2],[13,0,2,1,2],[13,0,3,0,7],[13,0,3,1,3],[13,0,4,0,4],[13,0,4,1,3],[13,0,5,0,20],[13,0,5,1,9],[13,0,6,0,11],[13,0,6,1,15],[13,0,9,0,2],[13,0,10,0,1],[13,1,0,0,4],[13,1,1,0,2],[13,1,1,1,4],[13,1,2,0,4],[13,1,2,1,1],[13,1,3,0,5],[13,1,3,1,1],[13,1,4,1,3],[13,1,5,0,7],[13,1,5,1,4],[13,1,6,0,11],[13,1,6,1,17],[13,1,7,0,3],[13,1,7,1,4],[13,1,10,1,1],[13,2,0,0,1],[13,2,0,1,1],[13,2,1,0,1],[13,2,1,1,5],[13,2,2,0,5],[13,2,2,1,3],[13,2,3,0,3],[13,2,3,1,2],[13,2,4,0,1],[13,2,5,0,6],[13,2,5,1,3],[13,2,6,0,7],[13,2,6,1,6],[13,2,7,0,1],[13,2,7,1,1],[13,2,8,0,1],[13,2,10,0,1],[13,2,10,1,1],[13,3,2,0,2],[13,3,3,0,1],[13,3,5,1,1],[13,3,6,0,2],[13,4,2,1,1],[13,4,3,1,1],[14,0,2,1,1],[14,0,6,0,2],[14,0,6,1,1],[14,1,0,0,2],[14,1,0,1,2],[14,1,1,0,3],[14,1,2,0,5],[14,1,2,1,3],[14,1,3,1,1],[14,1,5,0,4],[14,1,5,1,2],[14,1,6,0,4],[14,1,6,1,3],[14,1,7,0,8],[14,1,7,1,7],[14,1,8,0,2],[14,1,8,1,1],[14,1,10,0,2],[14,1,10,1,4],[14,2,0,0,8],[14,2,0,1,6],[14,2,1,0,4],[14,2,1,1,4],[14,2,2,0,4],[14,2,2,1,8],[14,2,3,0,1],[14,2,3,1,3],[14,2,5,0,5],[14,2,5,1,7],[14,2,6,0,11],[14,2,6,1,6],[14,2,7,0,8],[14,2,7,1,6],[14,2,8,0,2],[14,2,10,0,8],[14,2,10,1,3],[14,3,0,0,1],[14,3,1,1,1],[14,3,2,1,3],[14,3,3,0,1],[14,3,3,1,2],[14,3,4,1,1],[14,3,5,0,4],[14,3,6,1,3],[14,3,7,1,1],[14,3,8,1,1],[14,3,9,0,1],[14,3,10,0,4],[14,3,10,1,2],[14,4,0,0,1],[14,4,3,1,1],[14,4,4,1,1],[14,4,6,1,1],[14,4,7,0,1],[14,4,7,1,1],[14,4,10,0,1],[15,0,0,0,14],[15,0,0,1,15],[15,0,1,0,16],[15,0,1,1,14],[15,0,2,0,9],[15,0,2,1,11],[15,0,6,0,1],[15,0,8,0,11],[15,0,8,1,16],[15,0,9,1,3],[15,0,10,0,3],[15,1,0,0,15],[15,1,0,1,10],[15,1,1,0,9],[15,1,1,1,8],[15,1,2,0,2],[15,1,2,1,3],[15,1,5,0,1],[15,1,6,0,1],[15,1,8,0,11],[15,1,8,1,5],[15,1,9,0,3],[15,1,9,1,1],[15,2,0,0,4],[15,2,0,1,6],[15,2,1,0,2],[15,2,1,1,7],[15,2,2,0,4],[15,2,2,1,3],[15,2,5,0,2],[15,2,8,0,3],[15,2,8,1,3],[15,2,10,0,1],[15,2,10,1,1],[15,3,0,1,1],[15,3,1,0,1],[15,3,2,0,1],[15,3,2,1,1],[15,3,8,1,1],[15,4,3,0,1],[16,0,0,0,29],[16,0,0,1,46],[16,0,1,0,9],[16,0,1,1,4],[16,0,2,0,18],[16,0,2,1,11],[16,0,3,0,8],[16,0,3,1,2],[16,0,4,0,10],[16,0,4,1,7],[16,0,5,0,6],[16,0,6,0,4],[16,0,6,1,2],[16,0,7,0,4],[16,0,8,1,1],[16,0,9,0,3],[16,0,10,0,7],[16,0,10,1,2],[16,1,0,0,19],[16,1,0,1,28],[16,1,1,0,5],[16,1,2,0,9],[16,1,2,1,3],[16,1,3,0,9],[16,1,3,1,5],[16,1,4,0,10],[16,1,4,1,6],[16,1,5,0,3],[16,1,5,1,2],[16,1,6,0,2],[16,1,6,1,1],[16,1,7,0,3],[16,1,8,0,1],[16,1,8,1,1],[16,1,9,1,2],[16,1,10,0,2],[16,2,0,0,15],[16,2,0,1,13],[16,2,1,0,6],[16,2,1,1,2],[16,2,2,0,10],[16,2,2,1,9],[16,2,3,0,4],[16,2,4,0,8],[16,2,4,1,5],[16,2,5,0,2],[16,2,6,0,3],[16,2,6,1,1],[16,2,7,0,1],[16,2,7,1,1],[16,2,10,0,2],[16,2,10,1,1],[16,3,0,0,6],[16,3,0,1,4],[16,3,1,0,3],[16,3,3,0,1],[16,3,4,0,3],[16,3,4,1,1],[16,3,5,0,3],[16,3,6,0,1],[16,3,10,0,1],[16,4,0,0,2],[16,4,0,1,2],[16,4,2,0,1],[16,4,3,1,1],[16,4,4,0,2],[17,0,1,0,1],[17,1,0,0,1],[17,1,1,0,2],[17,1,2,1,2],[17,1,3,0,2],[17,1,3,1,3],[17,1,4,0,1],[17,1,4,1,1],[17,1,10,0,2],[17,1,10,1,3],[17,2,0,0,1],[17,2,1,0,2],[17,2,1,1,2],[17,2,2,0,7],[17,2,3,0,2],[17,2,3,1,2],[17,2,4,0,3],[17,2,4,1,6],[17,2,5,0,2],[17,2,5,1,1],[17,2,8,0,1],[17,2,10,0,2],[17,2,10,1,4],[17,3,1,0,3],[17,3,2,0,1],[17,3,2,1,2],[17,3,3,0,1],[17,3,3,1,2],[17,3,4,0,5],[17,3,4,1,3],[17,3,5,0,1],[17,3,8,1,1],[17,3,10,0,2],[17,3,10,1,1],[17,4,0,1,1],[17,4,1,0,1],[17,4,2,0,3],[17,4,2,1,2],[17,4,3,0,1],[17,4,4,0,1],[17,4,4,1,2],[17,4,5,0,1],[17,4,8,0,1],[17,4,9,0,1],[17,4,10,1,1],[18,0,0,0,4],[18,0,1,0,8],[18,0,1,1,11],[18,0,2,0,5],[18,0,2,1,6],[18,0,3,0,7],[18,0,3,1,4],[18,0,4,0,4],[18,0,4,1,5],[18,0,5,1,1],[18,0,7,0,2],[18,0,7,1,2],[18,0,8,0,2],[18,0,8,1,3],[18,0,10,0,1],[18,0,10,1,1],[18,1,0,0,6],[18,1,0,1,5],[18,1,1,0,11],[18,1,1,1,8],[18,1,2,0,3],[18,1,2,1,2],[18,1,3,0,5],[18,1,3,1,7],[18,1,4,0,4],[18,1,4,1,1],[18,1,5,0,1],[18,1,6,0,1],[18,1,7,0,2],[18,1,7,1,3],[18,1,8,0,1],[18,1,10,0,2],[18,1,10,1,2],[18,2,0,1,4],[18,2,1,0,4],[18,2,1,1,3],[18,2,2,0,1],[18,2,2,1,2],[18,2,3,0,2],[18,2,3,1,1],[18,2,4,0,2],[18,2,4,1,2],[18,2,5,0,1],[18,2,7,0,3],[18,2,7,1,2],[18,2,8,0,1],[18,2,9,0,1],[18,3,0,0,2],[18,3,2,1,1],[18,3,5,0,1],[18,3,7,1,1],[18,4,3,0,1],[18,4,3,1,1],[18,4,10,0,1],[19,0,0,0,1],[19,0,0,1,3],[19,0,1,0,2],[19,0,2,1,1],[19,0,3,0,1],[19,0,3,1,3],[19,0,4,0,2],[19,0,4,1,1],[19,1,0,1,2],[19,1,1,0,1],[19,1,2,0,1],[19,1,2,1,1],[19,1,3,0,5],[19,1,3,1,3],[19,1,4,0,4],[19,1,5,0,1],[19,1,5,1,1],[19,1,10,0,1],[19,2,1,0,1],[19,2,2,0,1],[19,2,3,1,3],[19,2,4,0,1],[19,2,4,1,3],[19,2,5,1,1],[19,2,10,0,3],[19,3,0,1,1],[19,3,3,1,1],[19,3,4,0,1],[19,3,10,1,1],[19,4,10,0,1],[20,0,2,1,1],[20,1,2,0,2],[20,1,2,1,2],[20,1,5,0,1],[20,1,5,1,1],[20,1,10,1,1],[20,2,2,1,2],[20,2,5,0,2],[20,2,5,1,2],[20,4,1,1,1],[21,0,0,0,4],[21,0,0,1,3],[21,0,1,0,59],[21,0,1,1,26],[21,0,2,0,69],[21,0,2,1,32],[21,0,3,0,6],[21,0,3,1,9],[21,0,4,0,7],[21,0,4,1,9],[21,0,5,0,2],[21,0,5,1,5],[21,0,6,0,3],[21,0,6,1,1],[21,0,7,0,11],[21,0,7,1,2],[21,0,8,0,7],[21,0,8,1,7],[21,0,9,0,23],[21,0,9,1,13],[21,0,10,0,2],[21,0,10,1,3],[21,1,0,1,2],[21,1,1,0,13],[21,1,1,1,6],[21,1,2,0,19],[21,1,2,1,11],[21,1,3,0,2],[21,1,4,0,5],[21,1,4,1,2],[21,1,5,1,1],[21,1,6,0,3],[21,1,7,0,1],[21,1,7,1,3],[21,1,9,0,3],[21,1,9,1,1],[21,1,10,0,1],[21,2,0,0,2],[21,2,1,0,10],[21,2,1,1,5],[21,2,2,0,13],[21,2,2,1,11],[21,2,3,0,3],[21,2,4,0,2],[21,2,4,1,4],[21,2,5,0,3],[21,2,5,1,3],[21,2,6,1,1],[21,2,7,0,6],[21,2,7,1,4],[21,2,8,0,1],[21,2,8,1,2],[21,2,9,0,5],[21,2,9,1,3],[21,2,10,0,2],[21,3,1,0,3],[21,3,1,1,3],[21,3,2,0,4],[21,3,2,1,4],[21,3,3,1,1],[21,3,4,0,5],[21,3,4,1,1],[21,3,5,0,1],[21,3,5,1,1],[21,3,7,0,3],[21,3,7,1,1],[21,3,8,0,2],[21,3,9,1,2],[21,4,0,1,1],[21,4,1,1,1],[21,4,2,0,1],[21,4,4,0,2],[21,4,7,0,2],[21,4,7,1,2],[21,4,8,0,1],[22,0,0,0,11],[22,0,0,1,3],[22,0,1,0,32],[22,0,1,1,5],[22,0,2,0,17],[22,0,2,1,7],[22,0,3,0,2],[22,0,3,1,3],[22,0,4,0,26],[22,0,4,1,10],[22,0,5,0,1],[22,0,5,1,2],[22,0,7,0,4],[22,0,7,1,2],[22,0,8,0,5],[22,0,8,1,1],[22,0,10,0,1],[22,1,0,0,9],[22,1,0,1,4],[22,1,1,0,14],[22,1,1,1,2],[22,1,2,0,9],[22,1,2,1,7],[22,1,3,0,2],[22,1,4,0,12],[22,1,4,1,8],[22,1,5,1,1],[22,1,7,0,2],[22,1,7,1,2],[22,1,8,1,1],[22,1,10,0,3],[22,1,10,1,1],[22,2,0,0,5],[22,2,0,1,2],[22,2,1,0,5],[22,2,1,1,7],[22,2,2,0,10],[22,2,2,1,3],[22,2,3,0,2],[22,2,4,0,16],[22,2,4,1,4],[22,2,7,0,3],[22,2,10,1,1],[22,3,0,0,2],[22,3,0,1,1],[22,3,1,1,5],[22,3,4,0,6],[22,3,4,1,6],[22,3,10,0,1],[22,4,0,0,1],[22,4,0,1,3],[22,4,4,0,2],[22,4,10,1,1],[23,0,0,0,3],[23,0,0,1,1],[23,0,2,0,2],[23,0,3,0,6],[23,0,3,1,1],[23,0,4,1,1],[23,0,5,0,1],[23,0,10,0,1],[23,1,0,0,3],[23,1,0,1,7],[23,1,1,1,1],[23,1,2,1,1],[23,1,3,0,1],[23,1,3,1,6],[23,1,4,1,1],[23,1,8,0,1],[23,1,8,1,1],[23,1,9,1,1],[23,1,10,0,1],[23,2,0,0,7],[23,2,0,1,2],[23,2,1,0,1],[23,2,1,1,1],[23,2,2,0,2],[23,2,3,0,8],[23,2,4,0,2],[23,2,5,0,1],[23,2,6,1,1],[23,2,8,1,3],[23,3,0,0,2],[23,3,0,1,1],[23,3,3,0,1],[23,3,4,0,1],[23,3,8,1,1],[23,4,4,0,1],[24,0,0,0,40],[24,0,0,1,64],[24,0,1,0,10],[24,0,1,1,12],[24,0,2,0,9],[24,0,2,1,9],[24,0,3,0,13],[24,0,3,1,5],[24,0,4,0,21],[24,0,4,1,7],[24,0,5,0,17],[24,0,5,1,10],[24,0,6,1,1],[24,0,7,0,7],[24,0,7,1,2],[24,0,8,0,2],[24,0,9,0,1],[24,0,10,0,9],[24,0,10,1,8],[24,1,0,0,19],[24,1,0,1,12],[24,1,1,0,9],[24,1,1,1,6],[24,1,2,0,4],[24,1,2,1,2],[24,1,3,0,4],[24,1,4,0,12],[24,1,4,1,8],[24,1,5,0,14],[24,1,5,1,7],[24,1,6,0,3],[24,1,6,1,1],[24,1,7,0,3],[24,1,7,1,1],[24,1,9,0,1],[24,1,10,0,7],[24,1,10,1,2],[24,2,0,0,18],[24,2,0,1,19],[24,2,1,0,10],[24,2,1,1,9],[24,2,2,0,10],[24,2,2,1,7],[24,2,3,0,8],[24,2,3,1,1],[24,2,4,0,17],[24,2,4,1,15],[24,2,5,0,12],[24,2,5,1,8],[24,2,6,0,4],[24,2,6,1,1],[24,2,7,0,5],[24,2,10,0,10],[24,3,0,0,9],[24,3,0,1,21],[24,3,1,0,4],[24,3,1,1,3],[24,3,2,0,5],[24,3,3,0,3],[24,3,4,0,9],[24,3,4,1,6],[24,3,5,0,7],[24,3,5,1,2],[24,3,7,0,1],[24,3,8,1,1],[24,3,9,1,1],[24,3,10,0,4],[24,3,10,1,2],[24,4,0,0,4],[24,4,0,1,1],[24,4,1,0,3],[24,4,1,1,2],[24,4,2,0,1],[24,4,3,0,2],[24,4,4,0,8],[24,4,4,1,2],[24,4,5,0,3],[24,4,5,1,5],[24,4,7,0,2],[24,4,8,1,1],[24,4,9,0,1],[24,4,10,0,6],[24,4,10,1,1],[25,0,0,0,3],[25,0,0,1,3],[25,0,1,0,2],[25,0,2,0,4],[25,0,2,1,6],[25,0,3,0,11],[25,0,3,1,14],[25,0,5,0,22],[25,0,5,1,23],[25,0,7,0,2],[25,0,8,0,1],[25,0,8,1,1],[25,0,9,0,7],[25,0,10,0,2],[25,1,1,1,1],[25,1,2,0,1],[25,1,2,1,3],[25,1,3,0,4],[25,1,3,1,3],[25,1,4,0,1],[25,1,4,1,1],[25,1,5,0,4],[25,1,5,1,6],[25,1,9,0,1],[25,2,1,1,1],[25,2,2,1,1],[25,2,3,1,2],[25,2,4,0,1],[25,2,5,1,2],[25,2,6,0,1],[25,2,8,1,1],[25,3,3,1,3],[25,4,10,0,1]],"cuboVotos":[[0,0,0,0,1,1],[0,0,0,0,2,2],[0,0,0,0,5,1],[0,0,0,1,1,1],[0,0,0,1,2,1],[0,0,0,1,3,2],[0,0,0,1,4,2],[0,0,1,0,0,1],[0,0,1,0,1,1],[0,0,1,0,2,1],[0,0,1,0,3,1],[0,0,1,0,6,1],[0,0,1,1,2,1],[0,0,1,1,3,1],[0,0,1,1,7,2],[0,0,2,0,1,1],[0,0,2,0,2,1],[0,0,2,0,3,2],[0,0,2,1,1,2],[0,0,2,1,2,2],[0,0,2,1,3,2],[0,0,2,1,4,2],[0,0,2,1,5,1],[0,0,2,1,6,1],[0,0,3,0,1,1],[0,0,3,0,2,7],[0,0,3,0,3,4],[0,0,3,0,5,1],[0,0,3,1,2,4],[0,0,3,1,3,5],[0,0,3,1,4,4],[0,0,3,1,5,2],[0,0,3,1,7,4],[0,0,4,0,1,1],[0,0,4,0,2,1],[0,0,4,1,2,1],[0,0,5,0,0,1],[0,0,5,0,1,1],[0,0,5,0,2,12],[0,0,5,0,3,7],[0,0,5,0,7,1],[0,0,5,1,2,8],[0,0,5,1,3,6],[0,0,5,1,4,4],[0,0,5,1,5,1],[0,0,5,1,7,4],[0,0,7,0,2,2],[0,0,8,0,7,1],[0,0,8,1,3,1],[0,0,9,0,1,1],[0,0,9,0,2,3],[0,0,9,0,3,1],[0,0,9,0,4,1],[0,0,9,0,7,1],[0,0,10,0,3,1],[0,0,10,0,4,1],[0,1,0,0,2,1],[0,1,0,1,0,1],[0,1,0,1,1,1],[0,1,0,1,2,1],[0,1,0,1,3,1],[0,1,0,1,4,1],[0,1,0,1,5,1],[0,1,0,1,7,1],[0,1,1,0,0,1],[0,1,1,0,1,3],[0,1,1,0,2,4],[0,1,1,1,1,1],[0,1,1,1,2,3],[0,1,1,1,3,2],[0,1,1,1,5,1],[0,1,1,1,6,1],[0,1,1,1,7,1],[0,1,2,0,1,2],[0,1,2,0,2,4],[0,1,2,1,1,2],[0,1,2,1,2,1],[0,1,2,1,3,4],[0,1,2,1,4,2],[0,1,3,0,1,1],[0,1,3,0,2,10],[0,1,3,0,3,4],[0,1,3,0,4,3],[0,1,3,1,0,1],[0,1,3,1,2,4],[0,1,3,1,3,4],[0,1,3,1,4,4],[0,1,3,1,6,1],[0,1,3,1,7,1],[0,1,4,0,0,2],[0,1,4,0,2,3],[0,1,4,0,3,1],[0,1,4,1,3,1],[0,1,5,0,1,1],[0,1,5,0,2,4],[0,1,5,0,3,1],[0,1,5,1,2,3],[0,1,5,1,3,2],[0,1,5,1,4,4],[0,1,5,1,5,1],[0,1,5,1,7,1],[0,1,7,0,3,1],[0,1,8,1,2,1],[0,1,9,0,0,1],[0,1,9,0,1,2],[0,1,10,0,2,1],[0,1,10,1,2,1],[0,2,0,0,1,2],[0,2,0,0,2,5],[0,2,0,0,3,1],[0,2,0,1,1,2],[0,2,0,1,2,1],[0,2,0,1,3,1],[0,2,0,1,4,1],[0,2,1,0,0,2],[0,2,1,0,1,7],[0,2,1,0,2,11],[0,2,1,0,3,4],[0,2,1,0,4,1],[0,2,1,0,5,1],[0,2,1,1,0,1],[0,2,1,1,1,2],[0,2,1,1,2,12],[0,2,1,1,3,8],[0,2,1,1,4,6],[0,2,1,1,5,3],[0,2,1,1,6,1],[0,2,1,1,7,1],[0,2,2,0,0,1],[0,2,2,0,1,3],[0,2,2,0,2,8],[0,2,2,0,6,1],[0,2,2,1,0,1],[0,2,2,1,1,2],[0,2,2,1,2,3],[0,2,2,1,3,2],[0,2,2,1,4,1],[0,2,3,0,1,2],[0,2,3,0,2,9],[0,2,3,0,3,3],[0,2,3,0,4,1],[0,2,3,1,0,1],[0,2,3,1,1,2],[0,2,3,1,2,3],[0,2,3,1,3,3],[0,2,3,1,4,4],[0,2,3,1,5,1],[0,2,4,0,1,2],[0,2,4,0,2,2],[0,2,4,1,2,1],[0,2,4,1,3,2],[0,2,4,1,7,1],[0,2,5,0,1,4],[0,2,5,0,2,6],[0,2,5,1,2,5],[0,2,5,1,3,1],[0,2,6,0,1,1],[0,2,8,0,1,1],[0,2,8,0,4,1],[0,2,8,1,1,1],[0,2,10,0,1,3],[0,2,10,0,2,1],[0,2,10,0,3,2],[0,3,0,0,0,1],[0,3,0,0,1,1],[0,3,0,1,3,1],[0,3,0,1,5,1],[0,3,1,0,1,3],[0,3,1,0,2,2],[0,3,1,0,5,1],[0,3,1,0,6,1],[0,3,1,1,1,1],[0,3,1,1,2,3],[0,3,1,1,3,3],[0,3,1,1,4,3],[0,3,1,1,5,2],[0,3,1,1,7,1],[0,3,2,0,1,1],[0,3,2,0,2,1],[0,3,2,1,2,3],[0,3,2,1,3,2],[0,3,2,1,4,1],[0,3,3,1,1,1],[0,3,3,1,2,2],[0,3,3,1,3,1],[0,3,3,1,4,1],[0,3,3,1,5,1],[0,3,4,0,3,1],[0,3,5,0,1,1],[0,3,5,0,2,1],[0,3,5,1,2,2],[0,3,8,1,1,1],[0,3,9,0,2,1],[0,3,10,0,1,1],[0,3,10,0,2,1],[0,3,10,1,4,1],[0,4,1,0,2,2],[0,4,1,1,1,1],[0,4,1,1,4,1],[0,4,1,1,5,1],[0,4,3,0,1,1],[0,4,4,0,2,1],[0,4,4,1,2,1],[0,4,6,1,5,1],[0,4,10,0,2,3],[0,4,10,1,2,1],[1,0,0,0,-1,1],[1,0,0,0,0,1],[1,0,0,0,2,15],[1,0,0,0,3,2],[1,0,0,0,4,2],[1,0,0,0,5,3],[1,0,0,0,7,2],[1,0,0,1,1,2],[1,0,0,1,2,7],[1,0,0,1,3,4],[1,0,0,1,4,6],[1,0,0,1,7,5],[1,0,1,0,0,1],[1,0,1,0,1,2],[1,0,1,0,2,15],[1,0,1,0,3,3],[1,0,1,0,4,3],[1,0,1,0,5,2],[1,0,1,0,6,1],[1,0,1,0,7,7],[1,0,1,1,-1,1],[1,0,1,1,0,1],[1,0,1,1,2,7],[1,0,1,1,3,10],[1,0,1,1,4,6],[1,0,1,1,5,6],[1,0,1,1,6,2],[1,0,1,1,7,8],[1,0,2,0,2,12],[1,0,2,0,3,9],[1,0,2,0,4,1],[1,0,2,0,5,1],[1,0,2,0,7,1],[1,0,2,1,0,1],[1,0,2,1,2,3],[1,0,2,1,3,10],[1,0,2,1,4,6],[1,0,2,1,5,2],[1,0,2,1,7,1],[1,0,3,0,-1,1],[1,0,3,0,2,10],[1,0,3,0,3,4],[1,0,3,0,4,3],[1,0,3,0,7,4],[1,0,3,1,2,2],[1,0,3,1,3,2],[1,0,3,1,4,2],[1,0,3,1,5,2],[1,0,3,1,7,2],[1,0,4,0,2,4],[1,0,4,0,3,1],[1,0,4,0,4,1],[1,0,4,0,7,2],[1,0,4,1,-1,1],[1,0,4,1,2,1],[1,0,4,1,3,5],[1,0,4,1,4,2],[1,0,4,1,6,2],[1,0,5,0,2,10],[1,0,5,0,3,2],[1,0,5,0,4,4],[1,0,5,0,5,5],[1,0,5,0,7,2],[1,0,5,1,2,2],[1,0,5,1,3,3],[1,0,5,1,4,2],[1,0,5,1,5,2],[1,0,5,1,7,4],[1,0,6,0,2,6],[1,0,6,0,3,4],[1,0,6,0,4,2],[1,0,6,0,5,1],[1,0,6,0,7,1],[1,0,6,1,2,3],[1,0,6,1,3,3],[1,0,6,1,4,3],[1,0,6,1,5,3],[1,0,6,1,6,2],[1,0,6,1,7,2],[1,0,7,0,3,1],[1,0,7,0,4,1],[1,0,7,1,2,1],[1,0,7,1,5,1],[1,0,8,0,2,8],[1,0,8,0,3,6],[1,0,8,0,4,1],[1,0,8,1,2,4],[1,0,8,1,3,7],[1,0,8,1,4,4],[1,0,8,1,5,2],[1,0,8,1,6,1],[1,0,8,1,7,2],[1,0,9,0,1,1],[1,0,9,0,5,1],[1,0,9,1,2,1],[1,0,9,1,3,2],[1,0,9,1,5,2],[1,0,10,0,-1,2],[1,0,10,0,2,6],[1,0,10,0,3,3],[1,0,10,0,4,2],[1,0,10,0,7,1],[1,0,10,1,2,2],[1,0,10,1,3,2],[1,0,10,1,4,1],[1,0,10,1,5,1],[1,1,0,0,1,1],[1,1,0,0,2,28],[1,1,0,0,3,10],[1,1,0,0,4,3],[1,1,0,0,5,4],[1,1,0,0,6,1],[1,1,0,0,7,1],[1,1,0,1,2,16],[1,1,0,1,3,16],[1,1,0,1,4,4],[1,1,0,1,5,8],[1,1,0,1,7,2],[1,1,1,0,1,1],[1,1,1,0,2,28],[1,1,1,0,3,9],[1,1,1,0,4,7],[1,1,1,0,5,2],[1,1,1,0,7,2],[1,1,1,1,1,4],[1,1,1,1,2,13],[1,1,1,1,3,12],[1,1,1,1,4,4],[1,1,1,1,5,5],[1,1,1,1,6,1],[1,1,1,1,7,1],[1,1,2,0,1,2],[1,1,2,0,2,15],[1,1,2,0,3,7],[1,1,2,0,4,1],[1,1,2,0,5,1],[1,1,2,0,6,2],[1,1,2,0,7,1],[1,1,2,1,2,8],[1,1,2,1,3,7],[1,1,2,1,4,8],[1,1,2,1,5,4],[1,1,2,1,7,1],[1,1,3,0,1,3],[1,1,3,0,2,14],[1,1,3,0,3,2],[1,1,3,0,4,1],[1,1,3,0,5,1],[1,1,3,1,1,1],[1,1,3,1,2,10],[1,1,3,1,3,5],[1,1,3,1,4,4],[1,1,3,1,5,1],[1,1,3,1,7,1],[1,1,4,0,2,7],[1,1,4,0,3,3],[1,1,4,0,4,1],[1,1,4,1,1,1],[1,1,4,1,2,3],[1,1,4,1,3,7],[1,1,4,1,4,4],[1,1,5,0,1,1],[1,1,5,0,2,14],[1,1,5,0,3,3],[1,1,5,0,4,2],[1,1,5,0,5,1],[1,1,5,0,7,1],[1,1,5,1,2,3],[1,1,5,1,3,4],[1,1,5,1,4,3],[1,1,6,0,1,2],[1,1,6,0,2,24],[1,1,6,0,3,9],[1,1,6,0,4,2],[1,1,6,0,5,2],[1,1,6,0,7,3],[1,1,6,1,1,2],[1,1,6,1,2,11],[1,1,6,1,3,11],[1,1,6,1,4,6],[1,1,6,1,5,4],[1,1,7,0,0,2],[1,1,7,0,2,7],[1,1,7,0,3,3],[1,1,7,0,4,2],[1,1,7,0,5,1],[1,1,7,1,1,1],[1,1,7,1,2,6],[1,1,7,1,3,5],[1,1,7,1,4,3],[1,1,7,1,5,1],[1,1,8,0,1,2],[1,1,8,0,2,21],[1,1,8,0,3,3],[1,1,8,0,4,1],[1,1,8,0,6,1],[1,1,8,1,1,1],[1,1,8,1,2,9],[1,1,8,1,3,4],[1,1,8,1,4,1],[1,1,8,1,5,3],[1,1,8,1,6,1],[1,1,9,0,2,7],[1,1,9,0,3,1],[1,1,9,0,4,1],[1,1,9,1,3,4],[1,1,9,1,4,2],[1,1,9,1,5,2],[1,1,10,0,1,1],[1,1,10,0,2,21],[1,1,10,0,3,5],[1,1,10,0,5,1],[1,1,10,1,2,14],[1,1,10,1,3,5],[1,1,10,1,4,3],[1,1,10,1,5,2],[1,1,10,1,7,1],[1,2,0,0,0,1],[1,2,0,0,1,5],[1,2,0,0,2,31],[1,2,0,0,3,15],[1,2,0,0,4,1],[1,2,0,0,5,1],[1,2,0,1,1,1],[1,2,0,1,2,18],[1,2,0,1,3,15],[1,2,0,1,4,16],[1,2,0,1,5,8],[1,2,1,0,1,6],[1,2,1,0,2,29],[1,2,1,0,3,13],[1,2,1,0,4,1],[1,2,1,1,1,2],[1,2,1,1,2,18],[1,2,1,1,3,14],[1,2,1,1,4,15],[1,2,1,1,5,3],[1,2,2,0,0,1],[1,2,2,0,1,6],[1,2,2,0,2,25],[1,2,2,0,3,9],[1,2,2,0,4,6],[1,2,2,0,5,2],[1,2,2,1,2,11],[1,2,2,1,3,19],[1,2,2,1,4,6],[1,2,2,1,5,3],[1,2,2,1,7,1],[1,2,3,0,0,1],[1,2,3,0,1,4],[1,2,3,0,2,15],[1,2,3,0,3,7],[1,2,3,0,4,1],[1,2,3,1,0,1],[1,2,3,1,1,1],[1,2,3,1,2,6],[1,2,3,1,3,10],[1,2,3,1,4,2],[1,2,3,1,5,1],[1,2,3,1,6,1],[1,2,4,0,0,1],[1,2,4,0,1,3],[1,2,4,0,2,4],[1,2,4,0,3,3],[1,2,4,0,5,1],[1,2,4,1,1,2],[1,2,4,1,2,2],[1,2,4,1,3,6],[1,2,4,1,4,2],[1,2,4,1,5,1],[1,2,5,0,1,2],[1,2,5,0,2,11],[1,2,5,0,3,7],[1,2,5,1,1,1],[1,2,5,1,2,6],[1,2,5,1,3,11],[1,2,5,1,4,7],[1,2,5,1,5,2],[1,2,5,1,7,1],[1,2,6,0,1,4],[1,2,6,0,2,25],[1,2,6,0,3,10],[1,2,6,0,4,4],[1,2,6,0,5,1],[1,2,6,0,7,1],[1,2,6,1,1,1],[1,2,6,1,2,13],[1,2,6,1,3,11],[1,2,6,1,4,10],[1,2,6,1,5,4],[1,2,6,1,6,1],[1,2,6,1,7,1],[1,2,7,0,1,6],[1,2,7,0,2,8],[1,2,7,0,3,5],[1,2,7,1,1,1],[1,2,7,1,2,3],[1,2,7,1,3,5],[1,2,7,1,4,2],[1,2,7,1,5,1],[1,2,8,0,1,2],[1,2,8,0,2,30],[1,2,8,0,3,6],[1,2,8,0,4,1],[1,2,8,0,5,2],[1,2,8,1,1,4],[1,2,8,1,2,14],[1,2,8,1,3,10],[1,2,8,1,4,3],[1,2,8,1,5,2],[1,2,9,0,0,1],[1,2,9,0,1,1],[1,2,9,0,2,3],[1,2,9,0,3,1],[1,2,9,1,2,3],[1,2,9,1,3,2],[1,2,9,1,4,3],[1,2,9,1,5,1],[1,2,10,0,0,1],[1,2,10,0,1,5],[1,2,10,0,2,24],[1,2,10,0,3,3],[1,2,10,0,4,2],[1,2,10,0,5,1],[1,2,10,1,0,1],[1,2,10,1,1,2],[1,2,10,1,2,11],[1,2,10,1,3,9],[1,2,10,1,4,2],[1,2,10,1,5,3],[1,3,0,0,1,2],[1,3,0,0,2,6],[1,3,0,0,3,2],[1,3,0,0,4,1],[1,3,0,1,2,2],[1,3,0,1,3,1],[1,3,0,1,4,1],[1,3,1,0,1,1],[1,3,1,0,2,5],[1,3,1,0,3,3],[1,3,1,1,3,1],[1,3,1,1,4,5],[1,3,2,0,1,2],[1,3,2,0,2,4],[1,3,2,0,3,1],[1,3,2,0,4,1],[1,3,2,1,1,1],[1,3,2,1,2,2],[1,3,2,1,3,3],[1,3,2,1,4,1],[1,3,2,1,5,2],[1,3,2,1,6,2],[1,3,3,0,0,2],[1,3,3,0,1,3],[1,3,3,0,2,6],[1,3,3,1,2,2],[1,3,3,1,3,2],[1,3,3,1,4,3],[1,3,4,0,2,2],[1,3,4,1,2,3],[1,3,4,1,5,1],[1,3,5,0,1,2],[1,3,5,0,2,4],[1,3,5,1,3,1],[1,3,5,1,4,1],[1,3,6,0,1,1],[1,3,6,0,2,6],[1,3,6,0,3,2],[1,3,6,1,2,1],[1,3,6,1,3,5],[1,3,6,1,4,3],[1,3,6,1,5,1],[1,3,6,1,6,2],[1,3,7,0,1,1],[1,3,7,0,2,3],[1,3,7,1,2,2],[1,3,7,1,3,1],[1,3,7,1,4,1],[1,3,8,0,1,2],[1,3,8,0,2,1],[1,3,8,0,3,1],[1,3,8,1,2,4],[1,3,8,1,3,3],[1,3,8,1,4,1],[1,3,9,0,2,1],[1,3,9,0,3,1],[1,3,9,1,3,2],[1,3,10,0,0,4],[1,3,10,0,1,2],[1,3,10,0,2,5],[1,3,10,0,3,1],[1,3,10,0,4,1],[1,3,10,0,5,1],[1,3,10,1,2,1],[1,3,10,1,3,2],[1,3,10,1,4,1],[1,3,10,1,5,2],[1,4,0,0,2,1],[1,4,0,0,3,1],[1,4,0,1,2,1],[1,4,0,1,4,1],[1,4,1,0,1,1],[1,4,1,1,5,1],[1,4,2,0,2,1],[1,4,2,1,3,1],[1,4,3,0,2,5],[1,4,3,1,2,3],[1,4,3,1,3,1],[1,4,3,1,4,2],[1,4,4,0,2,1],[1,4,4,1,2,1],[1,4,4,1,5,1],[1,4,6,1,4,1],[1,4,7,0,4,1],[1,4,7,1,2,1],[1,4,8,0,2,2],[1,4,10,0,1,2],[1,4,10,1,2,1],[2,0,0,0,2,2],[2,0,0,0,3,1],[2,0,0,1,2,1],[2,0,1,0,0,1],[2,0,1,0,1,1],[2,0,1,0,2,6],[2,0,1,0,3,5],[2,0,1,0,4,2],[2,0,1,0,7,1],[2,0,1,1,2,4],[2,0,1,1,3,2],[2,0,1,1,4,5],[2,0,1,1,5,1],[2,0,1,1,6,2],[2,0,1,1,7,6],[2,0,2,0,2,7],[2,0,2,0,3,1],[2,0,2,0,7,1],[2,0,2,1,3,2],[2,0,2,1,4,1],[2,0,2,1,5,1],[2,0,2,1,7,1],[2,0,3,0,1,3],[2,0,3,0,2,11],[2,0,3,0,3,5],[2,0,3,0,4,1],[2,0,3,1,1,2],[2,0,3,1,2,8],[2,0,3,1,3,8],[2,0,3,1,4,9],[2,0,3,1,5,7],[2,0,3,1,6,3],[2,0,3,1,7,13],[2,0,4,0,0,1],[2,0,4,0,1,1],[2,0,4,0,2,6],[2,0,4,0,3,2],[2,0,4,0,4,1],[2,0,4,0,6,1],[2,0,4,1,1,1],[2,0,4,1,3,2],[2,0,4,1,4,2],[2,0,4,1,7,1],[2,0,5,0,1,1],[2,0,5,0,2,2],[2,0,5,0,3,1],[2,0,5,1,4,1],[2,0,6,0,2,4],[2,0,6,1,2,1],[2,0,6,1,3,2],[2,0,6,1,4,2],[2,0,6,1,5,1],[2,0,6,1,7,2],[2,0,7,0,-1,1],[2,0,7,0,0,2],[2,0,7,0,1,2],[2,0,7,0,2,2],[2,0,7,0,4,1],[2,0,7,0,5,2],[2,0,7,1,1,1],[2,0,7,1,2,2],[2,0,7,1,3,1],[2,0,7,1,7,3],[2,0,8,1,2,1],[2,0,9,0,1,1],[2,0,9,0,2,1],[2,0,9,0,3,1],[2,0,9,0,4,1],[2,0,9,1,2,4],[2,0,9,1,3,1],[2,0,9,1,5,1],[2,0,10,0,-1,1],[2,0,10,0,1,1],[2,0,10,0,2,4],[2,0,10,0,4,1],[2,0,10,1,2,1],[2,0,10,1,5,1],[2,0,10,1,7,2],[2,1,0,0,2,2],[2,1,1,0,0,2],[2,1,1,0,2,11],[2,1,1,0,4,1],[2,1,1,1,1,1],[2,1,1,1,2,2],[2,1,1,1,3,4],[2,1,1,1,4,2],[2,1,1,1,6,1],[2,1,2,0,2,6],[2,1,2,0,3,2],[2,1,2,1,2,3],[2,1,2,1,4,2],[2,1,2,1,5,1],[2,1,3,0,1,1],[2,1,3,0,2,7],[2,1,3,0,3,1],[2,1,3,0,4,1],[2,1,3,0,5,1],[2,1,3,1,1,2],[2,1,3,1,2,10],[2,1,3,1,3,6],[2,1,3,1,4,6],[2,1,3,1,5,5],[2,1,3,1,7,1],[2,1,4,0,1,5],[2,1,4,0,2,5],[2,1,4,0,3,1],[2,1,4,1,2,1],[2,1,4,1,3,1],[2,1,5,0,0,1],[2,1,5,0,1,1],[2,1,5,0,2,1],[2,1,5,0,4,1],[2,1,6,1,2,2],[2,1,7,0,0,1],[2,1,7,0,1,1],[2,1,7,0,2,2],[2,1,7,0,3,3],[2,1,7,0,4,2],[2,1,7,1,2,2],[2,1,7,1,3,3],[2,1,7,1,4,1],[2,1,10,0,2,4],[2,1,10,0,3,1],[2,1,10,0,4,1],[2,1,10,0,5,1],[2,1,10,1,3,1],[2,1,10,1,5,1],[2,2,0,0,1,1],[2,2,0,1,3,1],[2,2,1,0,1,1],[2,2,1,0,2,4],[2,2,1,0,3,1],[2,2,1,1,1,1],[2,2,1,1,3,1],[2,2,1,1,5,1],[2,2,2,0,0,1],[2,2,2,0,1,2],[2,2,2,0,2,2],[2,2,2,0,3,3],[2,2,2,1,2,1],[2,2,2,1,3,2],[2,2,2,1,4,3],[2,2,2,1,7,1],[2,2,3,0,0,1],[2,2,3,0,2,5],[2,2,3,0,3,3],[2,2,3,0,5,1],[2,2,3,1,0,1],[2,2,3,1,1,1],[2,2,3,1,2,3],[2,2,3,1,3,6],[2,2,3,1,4,3],[2,2,3,1,5,6],[2,2,3,1,6,1],[2,2,3,1,7,1],[2,2,4,0,0,1],[2,2,4,0,1,1],[2,2,4,0,2,6],[2,2,4,0,3,3],[2,2,4,0,4,1],[2,2,4,0,7,1],[2,2,5,0,2,1],[2,2,5,0,3,1],[2,2,5,0,4,1],[2,2,5,1,2,1],[2,2,6,0,2,1],[2,2,6,1,4,2],[2,2,7,0,1,2],[2,2,7,0,2,7],[2,2,7,0,4,1],[2,2,7,1,1,1],[2,2,7,1,3,3],[2,2,7,1,4,4],[2,2,7,1,5,1],[2,2,8,1,0,1],[2,2,8,1,1,1],[2,2,9,1,2,1],[2,2,10,0,0,1],[2,2,10,0,1,3],[2,2,10,0,2,3],[2,2,10,0,4,1],[2,2,10,1,3,1],[2,3,1,0,2,1],[2,3,1,0,3,1],[2,3,1,1,3,1],[2,3,1,1,4,1],[2,3,2,0,3,1],[2,3,2,1,3,1],[2,3,3,0,1,1],[2,3,3,0,2,3],[2,3,3,1,1,1],[2,3,3,1,2,2],[2,3,3,1,3,1],[2,3,3,1,4,2],[2,3,3,1,5,1],[2,3,4,0,1,1],[2,3,4,0,2,1],[2,3,4,0,3,1],[2,3,4,1,3,1],[2,3,4,1,4,1],[2,3,5,1,4,1],[2,3,6,0,2,1],[2,3,6,1,2,1],[2,3,7,0,3,1],[2,3,7,1,2,1],[2,4,1,0,3,2],[2,4,2,1,2,1],[2,4,3,0,2,1],[2,4,4,0,1,1],[2,4,4,0,2,3],[2,4,7,0,2,1],[3,0,0,0,1,14],[3,0,0,0,2,32],[3,0,0,0,3,12],[3,0,0,0,4,5],[3,0,0,0,5,2],[3,0,0,0,7,3],[3,0,0,1,-1,1],[3,0,0,1,0,1],[3,0,0,1,1,7],[3,0,0,1,2,17],[3,0,0,1,3,26],[3,0,0,1,4,21],[3,0,0,1,5,6],[3,0,0,1,6,2],[3,0,0,1,7,19],[3,0,1,0,0,5],[3,0,1,0,1,1],[3,0,1,0,2,16],[3,0,1,0,3,7],[3,0,1,0,4,2],[3,0,1,0,5,1],[3,0,1,0,7,5],[3,0,1,1,2,7],[3,0,1,1,3,9],[3,0,1,1,4,8],[3,0,1,1,5,4],[3,0,1,1,7,4],[3,0,2,0,0,5],[3,0,2,0,1,4],[3,0,2,0,2,11],[3,0,2,0,3,5],[3,0,2,0,4,4],[3,0,2,0,6,1],[3,0,2,0,7,1],[3,0,2,1,1,2],[3,0,2,1,2,7],[3,0,2,1,3,8],[3,0,2,1,4,2],[3,0,2,1,7,6],[3,0,3,0,0,1],[3,0,3,0,1,5],[3,0,3,0,2,13],[3,0,3,0,3,3],[3,0,3,0,6,1],[3,0,3,0,7,2],[3,0,3,1,2,6],[3,0,3,1,3,7],[3,0,3,1,4,5],[3,0,3,1,5,2],[3,0,3,1,7,2],[3,0,4,0,0,3],[3,0,4,0,1,5],[3,0,4,0,2,14],[3,0,4,0,3,2],[3,0,4,0,5,2],[3,0,4,0,7,2],[3,0,4,1,1,1],[3,0,4,1,2,4],[3,0,4,1,3,2],[3,0,4,1,4,2],[3,0,4,1,7,2],[3,0,5,0,0,4],[3,0,5,0,1,1],[3,0,5,0,2,13],[3,0,5,0,3,6],[3,0,5,0,4,2],[3,0,5,1,0,1],[3,0,5,1,2,7],[3,0,5,1,3,7],[3,0,5,1,4,6],[3,0,5,1,5,2],[3,0,5,1,7,6],[3,0,6,0,1,1],[3,0,6,0,2,4],[3,0,6,1,2,3],[3,0,6,1,3,2],[3,0,6,1,4,2],[3,0,7,0,0,3],[3,0,7,0,1,2],[3,0,7,0,2,17],[3,0,7,0,3,7],[3,0,7,0,4,1],[3,0,7,0,7,1],[3,0,7,1,3,5],[3,0,7,1,4,1],[3,0,7,1,6,1],[3,0,7,1,7,3],[3,0,8,0,2,5],[3,0,8,0,3,1],[3,0,8,0,7,2],[3,0,8,1,2,4],[3,0,8,1,3,1],[3,0,8,1,4,1],[3,0,9,0,1,6],[3,0,9,0,2,2],[3,0,9,0,4,1],[3,0,9,1,2,3],[3,0,9,1,5,1],[3,0,9,1,7,1],[3,0,10,0,0,3],[3,0,10,0,1,13],[3,0,10,0,2,24],[3,0,10,0,3,19],[3,0,10,0,4,3],[3,0,10,0,5,2],[3,0,10,0,7,2],[3,0,10,1,1,1],[3,0,10,1,2,13],[3,0,10,1,3,8],[3,0,10,1,4,9],[3,0,10,1,5,6],[3,0,10,1,6,1],[3,0,10,1,7,8],[3,1,0,0,0,3],[3,1,0,0,1,6],[3,1,0,0,2,19],[3,1,0,0,3,7],[3,1,0,0,4,1],[3,1,0,0,5,1],[3,1,0,0,6,2],[3,1,0,0,7,1],[3,1,0,1,1,3],[3,1,0,1,2,7],[3,1,0,1,3,11],[3,1,0,1,4,3],[3,1,0,1,5,7],[3,1,0,1,6,1],[3,1,0,1,7,2],[3,1,1,0,1,4],[3,1,1,0,2,14],[3,1,1,0,3,9],[3,1,1,0,4,1],[3,1,1,0,7,1],[3,1,1,1,2,6],[3,1,1,1,3,2],[3,1,1,1,4,3],[3,1,1,1,5,2],[3,1,1,1,7,2],[3,1,2,0,0,3],[3,1,2,0,1,2],[3,1,2,0,2,6],[3,1,2,0,3,5],[3,1,2,0,4,2],[3,1,2,1,1,1],[3,1,2,1,2,6],[3,1,2,1,3,3],[3,1,2,1,4,2],[3,1,2,1,5,2],[3,1,2,1,7,1],[3,1,3,0,0,1],[3,1,3,0,1,6],[3,1,3,0,2,10],[3,1,3,0,3,1],[3,1,3,0,4,1],[3,1,3,0,5,1],[3,1,3,1,2,4],[3,1,3,1,3,4],[3,1,3,1,4,2],[3,1,3,1,5,1],[3,1,4,0,1,7],[3,1,4,0,2,16],[3,1,4,0,3,5],[3,1,4,0,4,1],[3,1,4,1,1,3],[3,1,4,1,2,2],[3,1,4,1,3,4],[3,1,4,1,4,3],[3,1,4,1,5,2],[3,1,5,0,0,4],[3,1,5,0,1,7],[3,1,5,0,2,17],[3,1,5,0,3,4],[3,1,5,0,5,2],[3,1,5,1,0,1],[3,1,5,1,1,2],[3,1,5,1,2,7],[3,1,5,1,3,3],[3,1,5,1,4,4],[3,1,5,1,7,3],[3,1,6,0,0,2],[3,1,6,0,1,3],[3,1,6,0,2,6],[3,1,6,1,1,1],[3,1,6,1,2,1],[3,1,6,1,3,3],[3,1,6,1,4,1],[3,1,6,1,5,2],[3,1,7,0,1,4],[3,1,7,0,2,8],[3,1,7,0,3,4],[3,1,7,0,4,1],[3,1,7,1,2,1],[3,1,7,1,3,3],[3,1,7,1,4,2],[3,1,7,1,5,1],[3,1,8,0,0,1],[3,1,8,0,1,1],[3,1,8,0,2,4],[3,1,8,0,3,1],[3,1,8,1,2,2],[3,1,8,1,3,2],[3,1,8,1,4,1],[3,1,9,0,0,1],[3,1,9,0,1,1],[3,1,9,0,2,2],[3,1,9,1,2,2],[3,1,9,1,3,1],[3,1,9,1,4,1],[3,1,10,0,0,4],[3,1,10,0,1,4],[3,1,10,0,2,18],[3,1,10,0,3,5],[3,1,10,0,4,4],[3,1,10,1,1,4],[3,1,10,1,2,10],[3,1,10,1,3,8],[3,1,10,1,4,7],[3,1,10,1,5,4],[3,1,10,1,7,6],[3,2,0,0,0,3],[3,2,0,0,1,7],[3,2,0,0,2,10],[3,2,0,0,3,8],[3,2,0,0,4,3],[3,2,0,0,5,2],[3,2,0,1,0,1],[3,2,0,1,1,2],[3,2,0,1,2,10],[3,2,0,1,3,2],[3,2,0,1,4,9],[3,2,0,1,5,4],[3,2,0,1,6,1],[3,2,0,1,7,3],[3,2,1,0,0,2],[3,2,1,0,1,8],[3,2,1,0,2,8],[3,2,1,0,3,1],[3,2,1,1,0,1],[3,2,1,1,1,3],[3,2,1,1,2,2],[3,2,1,1,3,5],[3,2,1,1,4,3],[3,2,1,1,5,2],[3,2,1,1,7,1],[3,2,2,0,0,7],[3,2,2,0,1,8],[3,2,2,0,2,9],[3,2,2,0,3,1],[3,2,2,0,4,2],[3,2,2,0,7,1],[3,2,2,1,0,1],[3,2,2,1,1,4],[3,2,2,1,2,1],[3,2,2,1,3,2],[3,2,2,1,4,6],[3,2,2,1,5,1],[3,2,2,1,6,1],[3,2,2,1,7,1],[3,2,3,0,0,5],[3,2,3,0,1,3],[3,2,3,0,2,8],[3,2,3,0,3,3],[3,2,3,0,4,1],[3,2,3,1,1,2],[3,2,3,1,3,2],[3,2,3,1,4,3],[3,2,4,0,0,5],[3,2,4,0,1,10],[3,2,4,0,2,14],[3,2,4,0,3,1],[3,2,4,0,4,1],[3,2,4,1,1,2],[3,2,4,1,2,4],[3,2,4,1,3,10],[3,2,4,1,4,5],[3,2,4,1,5,4],[3,2,4,1,6,2],[3,2,5,0,0,3],[3,2,5,0,1,8],[3,2,5,0,2,9],[3,2,5,0,3,2],[3,2,5,0,4,2],[3,2,5,0,5,2],[3,2,5,1,1,1],[3,2,5,1,2,5],[3,2,5,1,3,4],[3,2,5,1,4,4],[3,2,5,1,5,5],[3,2,6,0,0,4],[3,2,6,0,1,4],[3,2,6,0,2,2],[3,2,6,0,3,2],[3,2,6,0,4,1],[3,2,6,0,5,1],[3,2,6,0,6,1],[3,2,6,1,2,2],[3,2,6,1,3,2],[3,2,6,1,5,1],[3,2,7,0,0,1],[3,2,7,0,1,3],[3,2,7,0,2,2],[3,2,7,0,3,3],[3,2,7,1,2,2],[3,2,7,1,4,1],[3,2,7,1,5,2],[3,2,8,0,1,2],[3,2,8,0,2,2],[3,2,8,0,3,1],[3,2,8,1,2,3],[3,2,9,0,1,1],[3,2,9,1,2,1],[3,2,9,1,4,2],[3,2,10,0,0,3],[3,2,10,0,1,14],[3,2,10,0,2,13],[3,2,10,0,3,9],[3,2,10,0,4,1],[3,2,10,0,6,1],[3,2,10,1,0,1],[3,2,10,1,1,2],[3,2,10,1,2,5],[3,2,10,1,3,9],[3,2,10,1,4,2],[3,2,10,1,5,2],[3,2,10,1,6,1],[3,3,0,0,0,4],[3,3,0,0,1,6],[3,3,0,0,4,2],[3,3,0,0,6,1],[3,3,0,1,1,2],[3,3,0,1,2,6],[3,3,0,1,3,4],[3,3,0,1,4,8],[3,3,0,1,5,1],[3,3,0,1,6,5],[3,3,1,0,0,1],[3,3,1,0,1,3],[3,3,1,0,2,2],[3,3,1,0,5,1],[3,3,1,1,1,1],[3,3,1,1,2,2],[3,3,1,1,3,1],[3,3,2,0,0,1],[3,3,2,0,1,2],[3,3,2,0,2,1],[3,3,2,0,3,3],[3,3,2,1,4,1],[3,3,2,1,5,2],[3,3,3,0,0,2],[3,3,3,0,1,1],[3,3,3,0,2,1],[3,3,3,0,3,1],[3,3,3,1,1,1],[3,3,3,1,2,1],[3,3,3,1,4,1],[3,3,3,1,5,1],[3,3,4,0,0,4],[3,3,4,0,1,7],[3,3,4,0,2,5],[3,3,4,0,3,2],[3,3,4,0,4,2],[3,3,4,0,5,1],[3,3,4,1,0,1],[3,3,4,1,1,1],[3,3,4,1,2,4],[3,3,4,1,3,2],[3,3,4,1,4,1],[3,3,5,0,0,3],[3,3,5,0,1,3],[3,3,5,0,2,2],[3,3,5,0,3,2],[3,3,5,0,4,3],[3,3,5,1,1,1],[3,3,5,1,3,2],[3,3,5,1,4,1],[3,3,6,0,0,1],[3,3,6,1,2,1],[3,3,6,1,4,1],[3,3,7,0,0,1],[3,3,7,0,1,2],[3,3,7,0,2,1],[3,3,8,1,0,1],[3,3,8,1,2,1],[3,3,8,1,3,2],[3,3,9,0,2,1],[3,3,9,1,0,1],[3,3,10,0,0,2],[3,3,10,0,1,3],[3,3,10,0,2,6],[3,3,10,0,3,2],[3,3,10,1,2,3],[3,3,10,1,3,2],[3,3,10,1,4,1],[3,3,10,1,5,3],[3,3,10,1,6,2],[3,4,0,0,1,1],[3,4,0,0,2,3],[3,4,0,0,6,1],[3,4,0,1,2,3],[3,4,0,1,3,1],[3,4,1,0,2,2],[3,4,1,0,3,2],[3,4,1,1,2,2],[3,4,1,1,5,1],[3,4,2,0,1,1],[3,4,2,0,2,2],[3,4,2,0,4,1],[3,4,2,0,5,3],[3,4,2,1,3,1],[3,4,2,1,4,1],[3,4,3,0,2,2],[3,4,3,0,3,2],[3,4,3,0,5,1],[3,4,4,0,0,1],[3,4,4,0,1,1],[3,4,4,0,2,6],[3,4,4,0,3,1],[3,4,4,0,5,1],[3,4,4,1,1,1],[3,4,4,1,4,1],[3,4,4,1,6,3],[3,4,5,0,2,4],[3,4,5,1,2,3],[3,4,5,1,3,2],[3,4,5,1,4,1],[3,4,7,0,2,1],[3,4,7,0,3,1],[3,4,8,0,4,1],[3,4,8,1,2,1],[3,4,8,1,3,1],[3,4,8,1,7,1],[3,4,9,0,2,2],[3,4,9,0,3,1],[3,4,10,0,1,1],[3,4,10,0,2,3],[3,4,10,0,3,1],[3,4,10,0,4,2],[3,4,10,1,4,2],[3,4,10,1,5,2],[4,0,0,0,0,3],[4,0,0,0,1,2],[4,0,0,0,2,25],[4,0,0,0,3,10],[4,0,0,0,4,2],[4,0,0,0,5,1],[4,0,0,0,7,1],[4,0,0,1,1,4],[4,0,0,1,2,13],[4,0,0,1,3,17],[4,0,0,1,4,5],[4,0,0,1,5,6],[4,0,0,1,6,1],[4,0,0,1,7,6],[4,0,1,0,0,1],[4,0,1,0,1,10],[4,0,1,0,2,64],[4,0,1,0,3,15],[4,0,1,0,4,1],[4,0,1,0,5,1],[4,0,1,0,7,8],[4,0,1,1,1,2],[4,0,1,1,2,14],[4,0,1,1,3,5],[4,0,1,1,4,6],[4,0,1,1,5,1],[4,0,1,1,7,7],[4,0,2,0,0,1],[4,0,2,0,1,10],[4,0,2,0,2,58],[4,0,2,0,3,17],[4,0,2,0,4,4],[4,0,2,0,5,2],[4,0,2,0,7,12],[4,0,2,1,0,1],[4,0,2,1,1,2],[4,0,2,1,2,18],[4,0,2,1,3,8],[4,0,2,1,4,7],[4,0,2,1,5,1],[4,0,2,1,7,13],[4,0,3,0,1,3],[4,0,3,0,2,9],[4,0,3,0,3,4],[4,0,3,1,1,3],[4,0,3,1,2,7],[4,0,3,1,3,2],[4,0,3,1,4,1],[4,0,3,1,7,1],[4,0,4,0,0,1],[4,0,4,0,1,3],[4,0,4,0,2,26],[4,0,4,0,3,5],[4,0,4,0,4,2],[4,0,4,0,7,6],[4,0,4,1,1,1],[4,0,4,1,2,10],[4,0,4,1,3,8],[4,0,4,1,4,1],[4,0,4,1,5,2],[4,0,4,1,7,4],[4,0,5,0,0,2],[4,0,5,0,1,1],[4,0,5,0,2,4],[4,0,5,0,3,2],[4,0,5,1,2,4],[4,0,5,1,3,3],[4,0,6,0,1,1],[4,0,6,0,2,4],[4,0,6,0,3,1],[4,0,6,0,4,1],[4,0,6,1,6,1],[4,0,6,1,7,2],[4,0,7,0,0,1],[4,0,7,0,1,1],[4,0,7,0,2,11],[4,0,7,0,3,6],[4,0,7,1,2,1],[4,0,7,1,3,1],[4,0,7,1,4,1],[4,0,7,1,5,1],[4,0,8,0,0,1],[4,0,8,0,1,5],[4,0,8,0,2,4],[4,0,8,0,3,1],[4,0,8,0,7,1],[4,0,8,1,1,1],[4,0,8,1,2,3],[4,0,8,1,3,1],[4,0,8,1,5,1],[4,0,8,1,7,3],[4,0,9,0,1,1],[4,0,9,0,2,16],[4,0,9,0,3,5],[4,0,9,0,7,4],[4,0,9,1,2,5],[4,0,9,1,3,5],[4,0,9,1,4,3],[4,0,10,0,1,2],[4,0,10,0,2,6],[4,0,10,0,3,1],[4,0,10,0,7,1],[4,0,10,1,3,2],[4,0,10,1,4,2],[4,0,10,1,7,1],[4,1,0,0,0,1],[4,1,0,0,1,8],[4,1,0,0,2,12],[4,1,0,0,3,5],[4,1,0,0,4,2],[4,1,0,1,0,1],[4,1,0,1,1,3],[4,1,0,1,2,19],[4,1,0,1,3,8],[4,1,0,1,6,2],[4,1,0,1,7,1],[4,1,1,0,0,4],[4,1,1,0,1,6],[4,1,1,0,2,15],[4,1,1,0,3,7],[4,1,1,1,2,3],[4,1,1,1,3,2],[4,1,1,1,4,2],[4,1,1,1,5,1],[4,1,2,0,0,2],[4,1,2,0,1,11],[4,1,2,0,2,20],[4,1,2,0,3,3],[4,1,2,0,7,1],[4,1,2,1,1,2],[4,1,2,1,2,13],[4,1,2,1,3,3],[4,1,2,1,4,2],[4,1,2,1,5,1],[4,1,3,0,0,1],[4,1,3,0,1,3],[4,1,3,0,2,8],[4,1,3,0,3,1],[4,1,3,1,1,2],[4,1,3,1,2,1],[4,1,3,1,3,1],[4,1,3,1,5,1],[4,1,4,0,0,2],[4,1,4,0,1,8],[4,1,4,0,2,12],[4,1,4,0,3,4],[4,1,4,0,4,1],[4,1,4,1,2,3],[4,1,4,1,3,7],[4,1,4,1,4,3],[4,1,4,1,5,1],[4,1,4,1,7,2],[4,1,5,0,2,1],[4,1,5,0,7,2],[4,1,5,1,2,3],[4,1,5,1,5,1],[4,1,6,0,1,1],[4,1,6,0,2,2],[4,1,6,0,3,2],[4,1,6,1,5,1],[4,1,7,0,0,1],[4,1,7,0,2,2],[4,1,7,0,3,1],[4,1,7,0,5,1],[4,1,7,0,7,1],[4,1,7,1,2,2],[4,1,7,1,3,2],[4,1,7,1,4,1],[4,1,8,0,3,1],[4,1,8,1,2,2],[4,1,9,0,2,3],[4,1,9,1,2,2],[4,1,9,1,3,1],[4,1,10,0,1,4],[4,1,10,0,2,2],[4,1,10,1,2,1],[4,2,0,0,0,4],[4,2,0,0,1,4],[4,2,0,0,2,9],[4,2,0,0,3,4],[4,2,0,0,5,1],[4,2,0,1,0,1],[4,2,0,1,1,2],[4,2,0,1,2,3],[4,2,0,1,3,2],[4,2,0,1,4,5],[4,2,0,1,5,2],[4,2,1,0,0,4],[4,2,1,0,1,5],[4,2,1,0,2,8],[4,2,1,0,3,4],[4,2,1,1,0,1],[4,2,1,1,1,1],[4,2,1,1,2,5],[4,2,1,1,3,2],[4,2,1,1,4,3],[4,2,1,1,5,2],[4,2,2,0,0,3],[4,2,2,0,1,5],[4,2,2,0,2,16],[4,2,2,0,3,7],[4,2,2,0,4,2],[4,2,2,1,0,1],[4,2,2,1,1,3],[4,2,2,1,2,10],[4,2,2,1,3,3],[4,2,2,1,4,4],[4,2,2,1,5,1],[4,2,2,1,7,1],[4,2,3,0,0,2],[4,2,3,0,1,1],[4,2,3,0,2,3],[4,2,3,0,3,3],[4,2,4,0,0,5],[4,2,4,0,1,8],[4,2,4,0,2,9],[4,2,4,0,3,4],[4,2,4,1,1,3],[4,2,4,1,2,3],[4,2,4,1,3,1],[4,2,4,1,4,1],[4,2,4,1,5,3],[4,2,4,1,6,2],[4,2,5,0,0,1],[4,2,5,0,1,2],[4,2,5,0,3,2],[4,2,5,1,1,1],[4,2,5,1,2,1],[4,2,5,1,7,1],[4,2,6,0,1,2],[4,2,6,0,3,1],[4,2,6,1,2,1],[4,2,6,1,7,1],[4,2,7,0,0,1],[4,2,7,0,1,3],[4,2,7,0,2,5],[4,2,7,0,4,1],[4,2,7,1,2,3],[4,2,7,1,3,1],[4,2,7,1,4,1],[4,2,8,0,0,1],[4,2,8,1,1,1],[4,2,8,1,5,1],[4,2,9,0,2,4],[4,2,9,0,4,1],[4,2,9,1,2,1],[4,2,9,1,5,1],[4,2,9,1,6,1],[4,2,10,0,0,1],[4,2,10,0,1,1],[4,2,10,0,2,2],[4,2,10,1,2,1],[4,2,10,1,3,1],[4,3,0,0,1,4],[4,3,0,0,2,1],[4,3,0,0,3,2],[4,3,0,0,4,1],[4,3,0,1,1,1],[4,3,0,1,3,2],[4,3,0,1,4,1],[4,3,0,1,5,1],[4,3,1,0,1,2],[4,3,1,0,2,1],[4,3,1,0,3,3],[4,3,1,1,2,3],[4,3,1,1,3,1],[4,3,1,1,4,2],[4,3,1,1,5,2],[4,3,2,0,1,2],[4,3,2,0,2,2],[4,3,2,1,3,2],[4,3,2,1,4,2],[4,3,3,0,3,1],[4,3,3,1,2,1],[4,3,4,0,0,3],[4,3,4,0,1,8],[4,3,4,0,2,2],[4,3,4,0,4,1],[4,3,4,1,2,3],[4,3,4,1,3,1],[4,3,4,1,4,3],[4,3,4,1,5,1],[4,3,5,0,1,2],[4,3,5,0,2,1],[4,3,5,0,4,1],[4,3,5,1,3,1],[4,3,6,0,0,1],[4,3,7,0,1,2],[4,3,7,0,3,1],[4,3,7,1,3,1],[4,3,8,0,1,1],[4,3,8,0,2,1],[4,3,9,1,1,1],[4,3,9,1,4,1],[4,3,10,0,2,1],[4,3,10,0,4,1],[4,4,0,0,1,1],[4,4,0,0,2,2],[4,4,0,1,1,2],[4,4,0,1,2,2],[4,4,0,1,4,1],[4,4,0,1,5,1],[4,4,1,1,3,1],[4,4,2,0,2,1],[4,4,2,0,3,1],[4,4,3,1,2,1],[4,4,4,0,2,6],[4,4,7,0,1,1],[4,4,7,0,2,1],[4,4,7,1,2,2],[4,4,8,0,2,1],[4,4,10,1,4,1]],"cuboOcup":[[0,0,0,0,1,1],[0,0,0,0,4,2],[0,0,0,0,6,1],[0,0,0,1,0,4],[0,0,0,1,3,1],[0,0,0,1,4,1],[0,0,1,0,2,1],[0,0,1,0,3,1],[0,0,1,0,4,1],[0,0,1,0,5,1],[0,0,1,0,6,1],[0,0,1,1,0,2],[0,0,1,1,3,1],[0,0,1,1,6,1],[0,0,2,0,1,1],[0,0,2,0,2,2],[0,0,2,0,3,1],[0,0,2,1,0,8],[0,0,2,1,3,1],[0,0,2,1,6,1],[0,0,3,0,0,2],[0,0,3,0,1,1],[0,0,3,0,2,4],[0,0,3,0,3,2],[0,0,3,0,4,1],[0,0,3,0,6,3],[0,0,3,1,0,18],[0,0,3,1,5,1],[0,0,4,0,0,1],[0,0,4,0,3,1],[0,0,4,1,3,1],[0,0,5,0,0,2],[0,0,5,0,1,2],[0,0,5,0,2,4],[0,0,5,0,3,6],[0,0,5,0,4,1],[0,0,5,0,5,1],[0,0,5,0,6,6],[0,0,5,1,0,17],[0,0,5,1,2,3],[0,0,5,1,3,1],[0,0,5,1,4,1],[0,0,5,1,5,1],[0,0,7,0,4,2],[0,0,8,0,0,1],[0,0,8,1,0,1],[0,0,9,0,2,3],[0,0,9,0,3,1],[0,0,9,0,4,2],[0,0,9,0,6,1],[0,0,10,0,2,1],[0,0,10,0,3,1],[0,1,0,0,6,1],[0,1,0,1,0,5],[0,1,0,1,6,2],[0,1,1,0,1,2],[0,1,1,0,3,2],[0,1,1,0,4,3],[0,1,1,0,6,1],[0,1,1,1,0,4],[0,1,1,1,1,1],[0,1,1,1,2,1],[0,1,1,1,3,1],[0,1,1,1,6,2],[0,1,2,0,0,1],[0,1,2,0,2,1],[0,1,2,0,3,3],[0,1,2,0,6,1],[0,1,2,1,0,5],[0,1,2,1,1,1],[0,1,2,1,4,3],[0,1,3,0,0,2],[0,1,3,0,1,1],[0,1,3,0,2,2],[0,1,3,0,3,3],[0,1,3,0,4,3],[0,1,3,0,6,7],[0,1,3,1,0,11],[0,1,3,1,1,1],[0,1,3,1,3,2],[0,1,3,1,6,1],[0,1,4,0,1,1],[0,1,4,0,2,1],[0,1,4,0,4,1],[0,1,4,0,6,3],[0,1,4,1,0,1],[0,1,5,0,2,2],[0,1,5,0,3,1],[0,1,5,0,4,2],[0,1,5,0,5,1],[0,1,5,1,0,7],[0,1,5,1,2,2],[0,1,5,1,3,1],[0,1,5,1,5,1],[0,1,7,0,1,1],[0,1,8,1,0,1],[0,1,9,0,2,2],[0,1,9,0,6,1],[0,1,10,0,3,1],[0,1,10,1,0,1],[0,2,0,0,1,1],[0,2,0,0,2,4],[0,2,0,0,3,1],[0,2,0,0,4,1],[0,2,0,0,6,1],[0,2,0,1,0,4],[0,2,0,1,6,1],[0,2,1,0,0,4],[0,2,1,0,1,1],[0,2,1,0,2,4],[0,2,1,0,3,3],[0,2,1,0,4,6],[0,2,1,0,5,3],[0,2,1,0,6,5],[0,2,1,1,0,28],[0,2,1,1,4,5],[0,2,1,1,6,1],[0,2,2,0,0,3],[0,2,2,0,2,2],[0,2,2,0,3,1],[0,2,2,0,4,5],[0,2,2,0,5,1],[0,2,2,0,6,1],[0,2,2,1,0,7],[0,2,2,1,2,1],[0,2,2,1,5,1],[0,2,3,0,0,2],[0,2,3,0,1,1],[0,2,3,0,3,1],[0,2,3,0,4,6],[0,2,3,0,5,1],[0,2,3,0,6,4],[0,2,3,1,0,11],[0,2,3,1,2,1],[0,2,3,1,4,2],[0,2,4,0,0,1],[0,2,4,0,3,1],[0,2,4,0,4,2],[0,2,4,1,0,2],[0,2,4,1,1,2],[0,2,5,0,0,1],[0,2,5,0,1,3],[0,2,5,0,2,2],[0,2,5,0,3,1],[0,2,5,0,4,1],[0,2,5,0,5,1],[0,2,5,0,6,1],[0,2,5,1,0,4],[0,2,5,1,2,1],[0,2,5,1,3,1],[0,2,6,0,3,1],[0,2,8,0,1,1],[0,2,8,0,6,1],[0,2,8,1,0,1],[0,2,10,0,2,2],[0,2,10,0,4,1],[0,2,10,0,5,1],[0,2,10,0,6,2],[0,3,0,0,0,1],[0,3,0,0,4,1],[0,3,0,1,0,1],[0,3,0,1,3,1],[0,3,1,0,0,1],[0,3,1,0,1,2],[0,3,1,0,2,1],[0,3,1,0,4,2],[0,3,1,0,6,1],[0,3,1,1,0,12],[0,3,1,1,6,1],[0,3,2,0,2,1],[0,3,2,0,4,1],[0,3,2,1,0,6],[0,3,3,1,0,5],[0,3,3,1,6,1],[0,3,4,0,0,1],[0,3,5,0,2,1],[0,3,5,0,4,1],[0,3,5,1,0,2],[0,3,8,1,6,1],[0,3,9,0,4,1],[0,3,10,0,3,1],[0,3,10,0,4,1],[0,3,10,1,0,1],[0,4,1,0,0,1],[0,4,1,0,2,1],[0,4,1,1,0,1],[0,4,1,1,4,2],[0,4,3,0,0,1],[0,4,4,0,0,1],[0,4,4,1,0,1],[0,4,6,1,4,1],[0,4,10,0,2,1],[0,4,10,0,3,1],[0,4,10,0,6,1],[0,4,10,1,6,1],[1,0,0,0,0,4],[1,0,0,0,1,5],[1,0,0,0,2,5],[1,0,0,0,4,5],[1,0,0,0,5,1],[1,0,0,0,6,6],[1,0,0,1,0,19],[1,0,0,1,2,1],[1,0,0,1,3,1],[1,0,0,1,4,3],[1,0,1,0,0,3],[1,0,1,0,1,1],[1,0,1,0,2,5],[1,0,1,0,3,5],[1,0,1,0,4,8],[1,0,1,0,6,12],[1,0,1,1,0,24],[1,0,1,1,2,6],[1,0,1,1,4,4],[1,0,1,1,5,2],[1,0,1,1,6,5],[1,0,2,0,1,4],[1,0,2,0,2,2],[1,0,2,0,3,2],[1,0,2,0,4,5],[1,0,2,0,5,1],[1,0,2,0,6,10],[1,0,2,1,0,12],[1,0,2,1,1,1],[1,0,2,1,2,1],[1,0,2,1,4,7],[1,0,2,1,5,1],[1,0,2,1,6,1],[1,0,3,0,0,3],[1,0,3,0,1,2],[1,0,3,0,2,3],[1,0,3,0,3,2],[1,0,3,0,4,5],[1,0,3,0,5,1],[1,0,3,0,6,6],[1,0,3,1,0,6],[1,0,3,1,1,1],[1,0,3,1,4,2],[1,0,3,1,6,1],[1,0,4,0,0,1],[1,0,4,0,1,1],[1,0,4,0,2,3],[1,0,4,0,4,2],[1,0,4,0,6,1],[1,0,4,1,0,9],[1,0,4,1,2,1],[1,0,4,1,4,1],[1,0,5,0,1,4],[1,0,5,0,2,6],[1,0,5,0,3,1],[1,0,5,0,4,5],[1,0,5,0,5,2],[1,0,5,0,6,5],[1,0,5,1,0,6],[1,0,5,1,2,2],[1,0,5,1,3,3],[1,0,5,1,4,1],[1,0,5,1,5,1],[1,0,6,0,0,1],[1,0,6,0,1,3],[1,0,6,0,2,5],[1,0,6,0,3,1],[1,0,6,0,5,2],[1,0,6,0,6,2],[1,0,6,1,0,12],[1,0,6,1,3,1],[1,0,6,1,4,3],[1,0,7,0,2,1],[1,0,7,0,3,1],[1,0,7,1,0,1],[1,0,7,1,2,1],[1,0,8,0,0,2],[1,0,8,0,1,1],[1,0,8,0,2,1],[1,0,8,0,3,2],[1,0,8,0,4,4],[1,0,8,0,5,1],[1,0,8,0,6,4],[1,0,8,1,0,12],[1,0,8,1,1,1],[1,0,8,1,2,2],[1,0,8,1,4,4],[1,0,8,1,5,1],[1,0,9,0,0,1],[1,0,9,0,2,1],[1,0,9,1,0,2],[1,0,9,1,2,1],[1,0,9,1,4,2],[1,0,10,0,0,2],[1,0,10,0,1,2],[1,0,10,0,2,2],[1,0,10,0,3,2],[1,0,10,0,4,2],[1,0,10,0,5,1],[1,0,10,0,6,3],[1,0,10,1,0,4],[1,0,10,1,3,1],[1,0,10,1,4,1],[1,1,0,0,0,1],[1,1,0,0,1,4],[1,1,0,0,2,7],[1,1,0,0,3,10],[1,1,0,0,4,12],[1,1,0,0,5,4],[1,1,0,0,6,10],[1,1,0,1,0,28],[1,1,0,1,1,1],[1,1,0,1,2,8],[1,1,0,1,3,1],[1,1,0,1,4,8],[1,1,1,0,0,4],[1,1,1,0,1,6],[1,1,1,0,2,14],[1,1,1,0,3,6],[1,1,1,0,4,14],[1,1,1,0,5,2],[1,1,1,0,6,3],[1,1,1,1,0,22],[1,1,1,1,2,6],[1,1,1,1,3,1],[1,1,1,1,4,5],[1,1,1,1,6,6],[1,1,2,0,0,3],[1,1,2,0,1,2],[1,1,2,0,2,5],[1,1,2,0,3,4],[1,1,2,0,4,4],[1,1,2,0,5,2],[1,1,2,0,6,9],[1,1,2,1,0,15],[1,1,2,1,2,4],[1,1,2,1,3,1],[1,1,2,1,4,4],[1,1,2,1,5,1],[1,1,2,1,6,3],[1,1,3,0,0,3],[1,1,3,0,2,7],[1,1,3,0,3,1],[1,1,3,0,4,5],[1,1,3,0,5,1],[1,1,3,0,6,4],[1,1,3,1,0,13],[1,1,3,1,2,5],[1,1,3,1,3,3],[1,1,3,1,4,1],[1,1,4,0,2,3],[1,1,4,0,3,2],[1,1,4,0,4,2],[1,1,4,0,5,2],[1,1,4,0,6,2],[1,1,4,1,0,11],[1,1,4,1,1,1],[1,1,4,1,2,2],[1,1,4,1,3,1],[1,1,5,0,0,1],[1,1,5,0,1,5],[1,1,5,0,2,6],[1,1,5,0,3,1],[1,1,5,0,4,6],[1,1,5,0,5,2],[1,1,5,0,6,1],[1,1,5,1,0,8],[1,1,5,1,2,1],[1,1,5,1,4,1],[1,1,6,0,0,1],[1,1,6,0,1,3],[1,1,6,0,2,11],[1,1,6,0,3,2],[1,1,6,0,4,9],[1,1,6,0,5,2],[1,1,6,0,6,14],[1,1,6,1,0,17],[1,1,6,1,1,1],[1,1,6,1,2,2],[1,1,6,1,3,4],[1,1,6,1,4,7],[1,1,6,1,5,2],[1,1,6,1,6,1],[1,1,7,0,2,3],[1,1,7,0,3,4],[1,1,7,0,4,6],[1,1,7,0,6,2],[1,1,7,1,0,4],[1,1,7,1,1,1],[1,1,7,1,2,1],[1,1,7,1,3,3],[1,1,7,1,4,5],[1,1,7,1,6,2],[1,1,8,0,0,1],[1,1,8,0,1,5],[1,1,8,0,2,5],[1,1,8,0,3,2],[1,1,8,0,4,10],[1,1,8,0,5,2],[1,1,8,0,6,3],[1,1,8,1,0,16],[1,1,8,1,2,1],[1,1,8,1,4,1],[1,1,8,1,6,1],[1,1,9,0,0,1],[1,1,9,0,2,2],[1,1,9,0,3,1],[1,1,9,0,4,2],[1,1,9,0,5,1],[1,1,9,0,6,2],[1,1,9,1,0,5],[1,1,9,1,2,2],[1,1,9,1,6,1],[1,1,10,0,0,1],[1,1,10,0,1,4],[1,1,10,0,2,5],[1,1,10,0,3,2],[1,1,10,0,4,7],[1,1,10,0,5,1],[1,1,10,0,6,8],[1,1,10,1,0,20],[1,1,10,1,1,1],[1,1,10,1,2,2],[1,1,10,1,4,2],[1,2,0,0,0,5],[1,2,0,0,1,8],[1,2,0,0,2,12],[1,2,0,0,3,3],[1,2,0,0,4,17],[1,2,0,0,5,1],[1,2,0,0,6,8],[1,2,0,1,0,34],[1,2,0,1,2,7],[1,2,0,1,3,3],[1,2,0,1,4,11],[1,2,0,1,6,3],[1,2,1,0,0,1],[1,2,1,0,1,6],[1,2,1,0,2,8],[1,2,1,0,3,4],[1,2,1,0,4,24],[1,2,1,0,5,2],[1,2,1,0,6,4],[1,2,1,1,0,34],[1,2,1,1,2,5],[1,2,1,1,3,3],[1,2,1,1,4,7],[1,2,1,1,6,3],[1,2,2,0,0,1],[1,2,2,0,1,1],[1,2,2,0,2,17],[1,2,2,0,3,2],[1,2,2,0,4,14],[1,2,2,0,5,5],[1,2,2,0,6,9],[1,2,2,1,0,31],[1,2,2,1,2,6],[1,2,2,1,4,2],[1,2,2,1,6,1],[1,2,3,0,0,4],[1,2,3,0,1,2],[1,2,3,0,2,7],[1,2,3,0,3,5],[1,2,3,0,4,2],[1,2,3,0,5,2],[1,2,3,0,6,6],[1,2,3,1,0,14],[1,2,3,1,2,2],[1,2,3,1,3,1],[1,2,3,1,4,3],[1,2,3,1,5,2],[1,2,4,0,0,1],[1,2,4,0,2,5],[1,2,4,0,4,4],[1,2,4,0,5,1],[1,2,4,0,6,1],[1,2,4,1,0,9],[1,2,4,1,2,1],[1,2,4,1,4,2],[1,2,4,1,6,1],[1,2,5,0,0,1],[1,2,5,0,2,9],[1,2,5,0,4,6],[1,2,5,0,5,2],[1,2,5,0,6,2],[1,2,5,1,0,20],[1,2,5,1,2,4],[1,2,5,1,5,1],[1,2,5,1,6,3],[1,2,6,0,0,3],[1,2,6,0,1,6],[1,2,6,0,2,9],[1,2,6,0,3,1],[1,2,6,0,4,16],[1,2,6,0,5,2],[1,2,6,0,6,8],[1,2,6,1,0,26],[1,2,6,1,1,1],[1,2,6,1,2,10],[1,2,6,1,4,4],[1,2,7,0,0,3],[1,2,7,0,1,4],[1,2,7,0,2,7],[1,2,7,0,4,3],[1,2,7,0,6,2],[1,2,7,1,0,7],[1,2,7,1,2,2],[1,2,7,1,4,3],[1,2,8,0,0,5],[1,2,8,0,1,2],[1,2,8,0,2,9],[1,2,8,0,3,4],[1,2,8,0,4,11],[1,2,8,0,5,7],[1,2,8,0,6,3],[1,2,8,1,0,21],[1,2,8,1,2,3],[1,2,8,1,3,1],[1,2,8,1,4,6],[1,2,8,1,6,2],[1,2,9,0,0,1],[1,2,9,0,2,3],[1,2,9,0,3,1],[1,2,9,0,4,1],[1,2,9,1,0,4],[1,2,9,1,2,2],[1,2,9,1,3,1],[1,2,9,1,4,2],[1,2,10,0,0,1],[1,2,10,0,1,2],[1,2,10,0,2,10],[1,2,10,0,3,3],[1,2,10,0,4,14],[1,2,10,0,5,2],[1,2,10,0,6,4],[1,2,10,1,0,17],[1,2,10,1,1,1],[1,2,10,1,2,3],[1,2,10,1,3,1],[1,2,10,1,4,4],[1,2,10,1,5,1],[1,2,10,1,6,1],[1,3,0,0,0,2],[1,3,0,0,2,3],[1,3,0,0,4,4],[1,3,0,0,6,2],[1,3,0,1,0,2],[1,3,0,1,4,1],[1,3,0,1,6,1],[1,3,1,0,0,2],[1,3,1,0,1,1],[1,3,1,0,2,3],[1,3,1,0,4,3],[1,3,1,1,0,3],[1,3,1,1,2,1],[1,3,1,1,4,2],[1,3,2,0,2,2],[1,3,2,0,4,4],[1,3,2,0,5,1],[1,3,2,0,6,1],[1,3,2,1,0,8],[1,3,2,1,1,1],[1,3,2,1,2,1],[1,3,2,1,4,1],[1,3,3,0,0,3],[1,3,3,0,2,3],[1,3,3,0,4,4],[1,3,3,0,6,1],[1,3,3,1,0,6],[1,3,3,1,4,1],[1,3,4,0,2,1],[1,3,4,0,6,1],[1,3,4,1,0,2],[1,3,4,1,2,1],[1,3,4,1,5,1],[1,3,5,0,1,1],[1,3,5,0,2,1],[1,3,5,0,3,1],[1,3,5,0,4,2],[1,3,5,0,6,1],[1,3,5,1,0,1],[1,3,5,1,2,1],[1,3,6,0,0,3],[1,3,6,0,2,1],[1,3,6,0,4,4],[1,3,6,0,6,1],[1,3,6,1,0,9],[1,3,6,1,2,2],[1,3,6,1,4,1],[1,3,7,0,2,1],[1,3,7,0,4,3],[1,3,7,1,0,2],[1,3,7,1,2,1],[1,3,7,1,4,1],[1,3,8,0,0,1],[1,3,8,0,2,1],[1,3,8,0,4,1],[1,3,8,0,5,1],[1,3,8,1,0,5],[1,3,8,1,4,1],[1,3,8,1,5,1],[1,3,8,1,6,1],[1,3,9,0,2,1],[1,3,9,0,4,1],[1,3,9,1,0,2],[1,3,10,0,0,2],[1,3,10,0,2,5],[1,3,10,0,4,5],[1,3,10,0,5,1],[1,3,10,0,6,1],[1,3,10,1,0,4],[1,3,10,1,2,1],[1,3,10,1,4,1],[1,4,0,0,2,1],[1,4,0,0,4,1],[1,4,0,1,0,2],[1,4,1,0,1,1],[1,4,1,1,0,1],[1,4,2,0,0,1],[1,4,2,1,0,1],[1,4,3,0,0,1],[1,4,3,0,2,2],[1,4,3,0,4,2],[1,4,3,1,0,4],[1,4,3,1,1,1],[1,4,3,1,4,1],[1,4,4,0,4,1],[1,4,4,1,0,2],[1,4,6,1,4,1],[1,4,7,0,6,1],[1,4,7,1,0,1],[1,4,8,0,0,1],[1,4,8,0,4,1],[1,4,10,0,1,1],[1,4,10,0,2,1],[1,4,10,1,6,1],[2,0,0,0,2,1],[2,0,0,0,3,1],[2,0,0,0,6,1],[2,0,0,1,0,1],[2,0,1,0,0,1],[2,0,1,0,1,2],[2,0,1,0,2,3],[2,0,1,0,3,3],[2,0,1,0,4,5],[2,0,1,0,6,2],[2,0,1,1,0,15],[2,0,1,1,2,2],[2,0,1,1,3,2],[2,0,1,1,6,1],[2,0,2,0,0,1],[2,0,2,0,1,1],[2,0,2,0,2,2],[2,0,2,0,4,2],[2,0,2,0,6,3],[2,0,2,1,0,4],[2,0,2,1,4,1],[2,0,3,0,0,1],[2,0,3,0,1,3],[2,0,3,0,2,5],[2,0,3,0,3,4],[2,0,3,0,4,3],[2,0,3,0,6,4],[2,0,3,1,0,35],[2,0,3,1,2,7],[2,0,3,1,3,3],[2,0,3,1,4,2],[2,0,3,1,6,3],[2,0,4,0,2,2],[2,0,4,0,3,4],[2,0,4,0,4,3],[2,0,4,0,5,3],[2,0,4,1,0,4],[2,0,4,1,2,1],[2,0,4,1,3,1],[2,0,5,0,2,2],[2,0,5,0,3,1],[2,0,5,0,4,1],[2,0,5,1,0,1],[2,0,6,0,1,2],[2,0,6,0,4,2],[2,0,6,1,0,5],[2,0,6,1,2,1],[2,0,6,1,3,1],[2,0,6,1,4,1],[2,0,7,0,0,1],[2,0,7,0,1,2],[2,0,7,0,3,4],[2,0,7,0,4,2],[2,0,7,0,6,1],[2,0,7,1,0,3],[2,0,7,1,3,1],[2,0,7,1,4,3],[2,0,8,1,0,1],[2,0,9,0,0,1],[2,0,9,0,2,1],[2,0,9,0,3,1],[2,0,9,0,6,1],[2,0,9,1,0,2],[2,0,9,1,2,2],[2,0,9,1,3,1],[2,0,9,1,4,1],[2,0,10,0,1,1],[2,0,10,0,2,3],[2,0,10,0,3,1],[2,0,10,0,6,2],[2,0,10,1,0,2],[2,0,10,1,2,1],[2,0,10,1,6,1],[2,1,0,0,0,1],[2,1,0,0,4,1],[2,1,1,0,0,1],[2,1,1,0,1,1],[2,1,1,0,2,5],[2,1,1,0,3,2],[2,1,1,0,4,4],[2,1,1,0,6,1],[2,1,1,1,0,5],[2,1,1,1,2,1],[2,1,1,1,3,3],[2,1,1,1,4,1],[2,1,2,0,1,2],[2,1,2,0,4,4],[2,1,2,0,5,2],[2,1,2,1,0,4],[2,1,2,1,4,1],[2,1,2,1,6,1],[2,1,3,0,2,2],[2,1,3,0,3,4],[2,1,3,0,4,5],[2,1,3,1,0,19],[2,1,3,1,2,3],[2,1,3,1,3,4],[2,1,3,1,4,3],[2,1,3,1,6,1],[2,1,4,0,1,1],[2,1,4,0,2,3],[2,1,4,0,3,4],[2,1,4,0,4,2],[2,1,4,0,6,1],[2,1,4,1,0,1],[2,1,4,1,3,1],[2,1,5,0,2,1],[2,1,5,0,3,1],[2,1,5,0,4,1],[2,1,5,0,6,1],[2,1,6,1,0,2],[2,1,7,0,1,2],[2,1,7,0,2,2],[2,1,7,0,3,2],[2,1,7,0,4,1],[2,1,7,0,6,2],[2,1,7,1,0,5],[2,1,7,1,3,1],[2,1,10,0,0,1],[2,1,10,0,2,1],[2,1,10,0,3,2],[2,1,10,0,4,2],[2,1,10,0,5,1],[2,1,10,1,0,2],[2,2,0,0,4,1],[2,2,0,1,0,1],[2,2,1,0,2,2],[2,2,1,0,4,4],[2,2,1,1,3,1],[2,2,1,1,4,1],[2,2,1,1,6,1],[2,2,2,0,0,1],[2,2,2,0,2,1],[2,2,2,0,3,2],[2,2,2,0,4,3],[2,2,2,0,6,1],[2,2,2,1,0,4],[2,2,2,1,4,2],[2,2,2,1,6,1],[2,2,3,0,0,1],[2,2,3,0,2,3],[2,2,3,0,3,1],[2,2,3,0,4,2],[2,2,3,0,6,3],[2,2,3,1,0,14],[2,2,3,1,2,3],[2,2,3,1,3,2],[2,2,3,1,4,2],[2,2,3,1,6,1],[2,2,4,0,2,4],[2,2,4,0,3,4],[2,2,4,0,4,5],[2,2,5,0,2,1],[2,2,5,0,3,1],[2,2,5,0,4,1],[2,2,5,1,0,1],[2,2,6,0,2,1],[2,2,6,1,0,2],[2,2,7,0,0,1],[2,2,7,0,1,3],[2,2,7,0,2,2],[2,2,7,0,4,3],[2,2,7,0,6,1],[2,2,7,1,0,5],[2,2,7,1,2,3],[2,2,7,1,3,1],[2,2,8,1,0,2],[2,2,9,1,2,1],[2,2,10,0,2,5],[2,2,10,0,3,1],[2,2,10,0,4,2],[2,2,10,1,4,1],[2,3,1,0,4,2],[2,3,1,1,0,2],[2,3,2,0,6,1],[2,3,2,1,0,1],[2,3,3,0,2,3],[2,3,3,0,4,1],[2,3,3,1,0,5],[2,3,3,1,2,1],[2,3,3,1,6,1],[2,3,4,0,2,1],[2,3,4,0,3,1],[2,3,4,0,4,1],[2,3,4,1,0,2],[2,3,5,1,2,1],[2,3,6,0,4,1],[2,3,6,1,0,1],[2,3,7,0,4,1],[2,3,7,1,4,1],[2,4,1,0,3,1],[2,4,1,0,4,1],[2,4,2,1,0,1],[2,4,3,0,2,1],[2,4,4,0,0,1],[2,4,4,0,2,2],[2,4,4,0,4,1],[2,4,7,0,6,1],[3,0,0,0,0,6],[3,0,0,0,1,9],[3,0,0,0,2,12],[3,0,0,0,3,10],[3,0,0,0,4,9],[3,0,0,0,5,2],[3,0,0,0,6,20],[3,0,0,1,0,69],[3,0,0,1,1,1],[3,0,0,1,2,9],[3,0,0,1,3,8],[3,0,0,1,4,7],[3,0,0,1,5,1],[3,0,0,1,6,5],[3,0,1,0,0,4],[3,0,1,0,1,4],[3,0,1,0,2,6],[3,0,1,0,3,7],[3,0,1,0,4,6],[3,0,1,0,5,3],[3,0,1,0,6,7],[3,0,1,1,0,16],[3,0,1,1,1,1],[3,0,1,1,2,1],[3,0,1,1,3,5],[3,0,1,1,4,2],[3,0,1,1,5,2],[3,0,1,1,6,5],[3,0,2,0,0,4],[3,0,2,0,2,11],[3,0,2,0,3,5],[3,0,2,0,4,5],[3,0,2,0,6,6],[3,0,2,1,0,17],[3,0,2,1,1,1],[3,0,2,1,2,3],[3,0,2,1,3,3],[3,0,2,1,4,1],[3,0,3,0,0,1],[3,0,3,0,1,5],[3,0,3,0,2,8],[3,0,3,0,3,6],[3,0,3,0,4,1],[3,0,3,0,5,1],[3,0,3,0,6,3],[3,0,3,1,0,14],[3,0,3,1,2,4],[3,0,3,1,3,1],[3,0,3,1,4,2],[3,0,3,1,6,1],[3,0,4,0,0,2],[3,0,4,0,1,3],[3,0,4,0,2,7],[3,0,4,0,3,4],[3,0,4,0,4,8],[3,0,4,0,6,4],[3,0,4,1,0,9],[3,0,4,1,4,1],[3,0,4,1,6,1],[3,0,5,0,0,3],[3,0,5,0,1,4],[3,0,5,0,2,7],[3,0,5,0,3,3],[3,0,5,0,4,6],[3,0,5,0,6,3],[3,0,5,1,0,19],[3,0,5,1,2,2],[3,0,5,1,3,1],[3,0,5,1,4,4],[3,0,5,1,6,3],[3,0,6,0,2,1],[3,0,6,0,4,2],[3,0,6,0,6,2],[3,0,6,1,0,3],[3,0,6,1,2,3],[3,0,6,1,3,1],[3,0,7,0,0,1],[3,0,7,0,1,3],[3,0,7,0,2,9],[3,0,7,0,3,5],[3,0,7,0,4,4],[3,0,7,0,6,9],[3,0,7,1,0,7],[3,0,7,1,1,1],[3,0,7,1,3,1],[3,0,7,1,6,1],[3,0,8,0,2,2],[3,0,8,0,3,3],[3,0,8,0,4,2],[3,0,8,0,5,1],[3,0,8,1,0,3],[3,0,8,1,1,1],[3,0,8,1,2,1],[3,0,8,1,6,1],[3,0,9,0,0,1],[3,0,9,0,1,1],[3,0,9,0,2,1],[3,0,9,0,3,3],[3,0,9,0,5,1],[3,0,9,0,6,2],[3,0,9,1,0,3],[3,0,9,1,4,2],[3,0,10,0,0,10],[3,0,10,0,1,7],[3,0,10,0,2,11],[3,0,10,0,3,10],[3,0,10,0,4,10],[3,0,10,0,5,1],[3,0,10,0,6,17],[3,0,10,1,0,29],[3,0,10,1,1,1],[3,0,10,1,2,3],[3,0,10,1,3,4],[3,0,10,1,4,6],[3,0,10,1,6,3],[3,1,0,0,0,3],[3,1,0,0,1,2],[3,1,0,0,2,13],[3,1,0,0,3,3],[3,1,0,0,4,7],[3,1,0,0,5,3],[3,1,0,0,6,9],[3,1,0,1,0,22],[3,1,0,1,2,7],[3,1,0,1,3,2],[3,1,0,1,4,2],[3,1,0,1,6,1],[3,1,1,0,0,3],[3,1,1,0,1,2],[3,1,1,0,2,4],[3,1,1,0,3,6],[3,1,1,0,4,8],[3,1,1,0,5,2],[3,1,1,0,6,4],[3,1,1,1,0,11],[3,1,1,1,2,2],[3,1,1,1,4,2],[3,1,2,0,0,1],[3,1,2,0,1,1],[3,1,2,0,2,7],[3,1,2,0,3,3],[3,1,2,0,4,3],[3,1,2,0,6,3],[3,1,2,1,0,11],[3,1,2,1,2,1],[3,1,2,1,3,1],[3,1,2,1,4,2],[3,1,3,0,1,1],[3,1,3,0,2,8],[3,1,3,0,3,1],[3,1,3,0,4,5],[3,1,3,0,6,5],[3,1,3,1,0,8],[3,1,3,1,1,1],[3,1,3,1,2,1],[3,1,3,1,6,1],[3,1,4,0,1,4],[3,1,4,0,2,8],[3,1,4,0,3,5],[3,1,4,0,4,5],[3,1,4,0,5,1],[3,1,4,0,6,6],[3,1,4,1,0,12],[3,1,4,1,1,1],[3,1,4,1,4,1],[3,1,5,0,0,8],[3,1,5,0,1,4],[3,1,5,0,2,5],[3,1,5,0,3,4],[3,1,5,0,4,7],[3,1,5,0,5,2],[3,1,5,0,6,4],[3,1,5,1,0,14],[3,1,5,1,2,1],[3,1,5,1,3,1],[3,1,5,1,4,3],[3,1,5,1,5,1],[3,1,6,0,0,1],[3,1,6,0,1,1],[3,1,6,0,2,1],[3,1,6,0,3,2],[3,1,6,0,4,2],[3,1,6,0,5,2],[3,1,6,0,6,2],[3,1,6,1,0,7],[3,1,6,1,4,1],[3,1,7,0,2,3],[3,1,7,0,3,5],[3,1,7,0,4,6],[3,1,7,0,6,3],[3,1,7,1,0,4],[3,1,7,1,2,1],[3,1,7,1,4,2],[3,1,8,0,0,1],[3,1,8,0,1,2],[3,1,8,0,3,1],[3,1,8,0,6,3],[3,1,8,1,0,4],[3,1,8,1,4,1],[3,1,9,0,1,1],[3,1,9,0,3,1],[3,1,9,0,4,1],[3,1,9,0,6,1],[3,1,9,1,0,2],[3,1,9,1,2,2],[3,1,10,0,0,2],[3,1,10,0,1,2],[3,1,10,0,2,6],[3,1,10,0,3,4],[3,1,10,0,4,14],[3,1,10,0,6,7],[3,1,10,1,0,20],[3,1,10,1,2,8],[3,1,10,1,3,3],[3,1,10,1,4,6],[3,1,10,1,6,2],[3,2,0,0,0,2],[3,2,0,0,2,8],[3,2,0,0,3,2],[3,2,0,0,4,16],[3,2,0,0,5,2],[3,2,0,0,6,3],[3,2,0,1,0,23],[3,2,0,1,2,3],[3,2,0,1,3,1],[3,2,0,1,4,5],[3,2,1,0,2,9],[3,2,1,0,4,8],[3,2,1,0,6,2],[3,2,1,1,0,12],[3,2,1,1,2,4],[3,2,1,1,4,1],[3,2,2,0,0,4],[3,2,2,0,1,5],[3,2,2,0,2,2],[3,2,2,0,3,1],[3,2,2,0,4,8],[3,2,2,0,5,4],[3,2,2,0,6,4],[3,2,2,1,0,9],[3,2,2,1,2,1],[3,2,2,1,3,2],[3,2,2,1,4,3],[3,2,2,1,6,2],[3,2,3,0,0,2],[3,2,3,0,1,1],[3,2,3,0,2,8],[3,2,3,0,4,3],[3,2,3,0,5,2],[3,2,3,0,6,4],[3,2,3,1,0,4],[3,2,3,1,2,3],[3,2,4,0,0,2],[3,2,4,0,1,3],[3,2,4,0,2,8],[3,2,4,0,3,5],[3,2,4,0,4,7],[3,2,4,0,5,1],[3,2,4,0,6,5],[3,2,4,1,0,18],[3,2,4,1,2,5],[3,2,4,1,4,2],[3,2,4,1,6,2],[3,2,5,0,0,3],[3,2,5,0,1,2],[3,2,5,0,2,3],[3,2,5,0,3,3],[3,2,5,0,4,11],[3,2,5,0,6,4],[3,2,5,1,0,15],[3,2,5,1,1,1],[3,2,5,1,4,2],[3,2,5,1,6,1],[3,2,6,0,0,1],[3,2,6,0,1,1],[3,2,6,0,2,4],[3,2,6,0,3,2],[3,2,6,0,4,2],[3,2,6,0,6,5],[3,2,6,1,0,2],[3,2,6,1,3,1],[3,2,6,1,4,2],[3,2,7,0,1,1],[3,2,7,0,2,3],[3,2,7,0,4,3],[3,2,7,0,6,2],[3,2,7,1,0,2],[3,2,7,1,2,2],[3,2,7,1,3,1],[3,2,8,0,0,1],[3,2,8,0,2,2],[3,2,8,0,4,2],[3,2,8,1,0,2],[3,2,8,1,3,1],[3,2,9,0,4,1],[3,2,9,1,0,1],[3,2,9,1,2,1],[3,2,9,1,4,1],[3,2,10,0,0,3],[3,2,10,0,1,3],[3,2,10,0,2,5],[3,2,10,0,3,2],[3,2,10,0,4,18],[3,2,10,0,5,2],[3,2,10,0,6,8],[3,2,10,1,0,18],[3,2,10,1,1,1],[3,2,10,1,2,2],[3,2,10,1,3,1],[3,3,0,0,0,1],[3,3,0,0,1,1],[3,3,0,0,2,3],[3,3,0,0,4,5],[3,3,0,0,5,1],[3,3,0,0,6,2],[3,3,0,1,0,14],[3,3,0,1,1,1],[3,3,0,1,3,1],[3,3,0,1,4,10],[3,3,1,0,1,2],[3,3,1,0,2,2],[3,3,1,0,4,2],[3,3,1,0,6,1],[3,3,1,1,0,3],[3,3,1,1,4,1],[3,3,2,0,0,1],[3,3,2,0,2,2],[3,3,2,0,4,4],[3,3,2,1,0,1],[3,3,2,1,4,2],[3,3,3,0,0,1],[3,3,3,0,2,3],[3,3,3,0,4,1],[3,3,3,1,0,3],[3,3,3,1,6,1],[3,3,4,0,0,2],[3,3,4,0,1,3],[3,3,4,0,2,5],[3,3,4,0,4,7],[3,3,4,0,5,1],[3,3,4,0,6,3],[3,3,4,1,0,4],[3,3,4,1,2,1],[3,3,4,1,4,1],[3,3,4,1,5,1],[3,3,4,1,6,2],[3,3,5,0,0,1],[3,3,5,0,1,1],[3,3,5,0,2,3],[3,3,5,0,4,4],[3,3,5,0,6,4],[3,3,5,1,0,4],[3,3,6,0,4,1],[3,3,6,1,0,1],[3,3,6,1,2,1],[3,3,7,0,2,2],[3,3,7,0,6,2],[3,3,8,1,0,3],[3,3,8,1,2,1],[3,3,9,0,4,1],[3,3,9,1,0,1],[3,3,10,0,0,5],[3,3,10,0,1,1],[3,3,10,0,2,3],[3,3,10,0,4,3],[3,3,10,0,6,1],[3,3,10,1,0,8],[3,3,10,1,4,3],[3,4,0,0,0,3],[3,4,0,0,2,1],[3,4,0,0,5,1],[3,4,0,1,0,2],[3,4,0,1,2,1],[3,4,0,1,6,1],[3,4,1,0,2,3],[3,4,1,0,4,1],[3,4,1,1,0,2],[3,4,1,1,4,1],[3,4,2,0,0,4],[3,4,2,0,4,3],[3,4,2,1,0,2],[3,4,3,0,0,1],[3,4,3,0,4,1],[3,4,3,0,5,1],[3,4,3,0,6,2],[3,4,4,0,0,3],[3,4,4,0,1,2],[3,4,4,0,2,1],[3,4,4,0,4,3],[3,4,4,0,5,1],[3,4,4,1,0,4],[3,4,4,1,2,1],[3,4,5,0,0,1],[3,4,5,0,2,1],[3,4,5,0,4,1],[3,4,5,0,5,1],[3,4,5,1,0,5],[3,4,5,1,4,1],[3,4,7,0,0,1],[3,4,7,0,4,1],[3,4,8,0,6,1],[3,4,8,1,0,3],[3,4,9,0,2,1],[3,4,9,0,4,1],[3,4,9,0,6,1],[3,4,10,0,0,1],[3,4,10,0,2,4],[3,4,10,0,4,1],[3,4,10,0,6,1],[3,4,10,1,0,4],[4,0,0,0,0,1],[4,0,0,0,1,8],[4,0,0,0,2,6],[4,0,0,0,3,10],[4,0,0,0,4,3],[4,0,0,0,5,3],[4,0,0,0,6,13],[4,0,0,1,0,30],[4,0,0,1,1,1],[4,0,0,1,2,7],[4,0,0,1,3,7],[4,0,0,1,4,5],[4,0,0,1,6,2],[4,0,1,0,0,3],[4,0,1,0,1,14],[4,0,1,0,2,21],[4,0,1,0,3,34],[4,0,1,0,4,12],[4,0,1,0,5,1],[4,0,1,0,6,15],[4,0,1,1,0,20],[4,0,1,1,2,2],[4,0,1,1,3,6],[4,0,1,1,4,5],[4,0,1,1,5,1],[4,0,1,1,6,1],[4,0,2,0,0,2],[4,0,2,0,1,21],[4,0,2,0,2,18],[4,0,2,0,3,25],[4,0,2,0,4,15],[4,0,2,0,5,2],[4,0,2,0,6,21],[4,0,2,1,0,34],[4,0,2,1,1,1],[4,0,2,1,2,3],[4,0,2,1,3,4],[4,0,2,1,4,6],[4,0,2,1,6,2],[4,0,3,0,1,1],[4,0,3,0,2,3],[4,0,3,0,3,4],[4,0,3,0,4,3],[4,0,3,0,5,1],[4,0,3,0,6,4],[4,0,3,1,0,12],[4,0,3,1,2,1],[4,0,3,1,3,1],[4,0,4,0,1,3],[4,0,4,0,2,13],[4,0,4,0,3,6],[4,0,4,0,4,6],[4,0,4,0,5,2],[4,0,4,0,6,13],[4,0,4,1,0,13],[4,0,4,1,2,2],[4,0,4,1,3,6],[4,0,4,1,4,3],[4,0,4,1,6,2],[4,0,5,0,1,2],[4,0,5,0,3,2],[4,0,5,0,4,1],[4,0,5,0,5,1],[4,0,5,0,6,3],[4,0,5,1,0,3],[4,0,5,1,1,1],[4,0,5,1,3,1],[4,0,5,1,6,2],[4,0,6,0,0,1],[4,0,6,0,1,1],[4,0,6,0,2,1],[4,0,6,0,3,1],[4,0,6,0,4,2],[4,0,6,0,6,1],[4,0,6,1,0,2],[4,0,6,1,6,1],[4,0,7,0,0,1],[4,0,7,0,1,2],[4,0,7,0,2,3],[4,0,7,0,3,7],[4,0,7,0,4,4],[4,0,7,0,6,2],[4,0,7,1,0,2],[4,0,7,1,6,2],[4,0,8,0,1,1],[4,0,8,0,3,7],[4,0,8,0,4,2],[4,0,8,0,5,1],[4,0,8,0,6,1],[4,0,8,1,0,5],[4,0,8,1,3,3],[4,0,8,1,4,1],[4,0,9,0,0,2],[4,0,9,0,1,7],[4,0,9,0,2,7],[4,0,9,0,3,4],[4,0,9,0,4,2],[4,0,9,0,5,2],[4,0,9,0,6,2],[4,0,9,1,0,8],[4,0,9,1,2,1],[4,0,9,1,3,1],[4,0,9,1,4,3],[4,0,10,0,0,1],[4,0,10,0,1,1],[4,0,10,0,2,2],[4,0,10,0,3,2],[4,0,10,0,4,1],[4,0,10,0,5,2],[4,0,10,0,6,1],[4,0,10,1,0,1],[4,0,10,1,3,2],[4,0,10,1,4,1],[4,0,10,1,6,1],[4,1,0,0,1,3],[4,1,0,0,2,9],[4,1,0,0,3,4],[4,1,0,0,4,9],[4,1,0,0,5,1],[4,1,0,0,6,2],[4,1,0,1,0,22],[4,1,0,1,2,2],[4,1,0,1,3,2],[4,1,0,1,4,6],[4,1,0,1,6,2],[4,1,1,0,0,1],[4,1,1,0,1,1],[4,1,1,0,2,11],[4,1,1,0,3,7],[4,1,1,0,4,7],[4,1,1,0,6,5],[4,1,1,1,0,3],[4,1,1,1,1,1],[4,1,1,1,2,1],[4,1,1,1,3,1],[4,1,1,1,6,2],[4,1,2,0,0,4],[4,1,2,0,1,4],[4,1,2,0,2,11],[4,1,2,0,3,7],[4,1,2,0,4,3],[4,1,2,0,5,2],[4,1,2,0,6,6],[4,1,2,1,0,13],[4,1,2,1,1,1],[4,1,2,1,2,4],[4,1,2,1,3,1],[4,1,2,1,4,1],[4,1,2,1,6,1],[4,1,3,0,1,3],[4,1,3,0,2,1],[4,1,3,0,3,2],[4,1,3,0,4,4],[4,1,3,0,5,1],[4,1,3,0,6,2],[4,1,3,1,0,4],[4,1,3,1,6,1],[4,1,4,0,0,3],[4,1,4,0,1,2],[4,1,4,0,2,11],[4,1,4,0,3,4],[4,1,4,0,4,2],[4,1,4,0,6,5],[4,1,4,1,0,11],[4,1,4,1,3,1],[4,1,4,1,4,3],[4,1,4,1,6,1],[4,1,5,0,0,1],[4,1,5,0,2,1],[4,1,5,0,5,1],[4,1,5,1,0,4],[4,1,6,0,1,1],[4,1,6,0,3,1],[4,1,6,0,4,1],[4,1,6,0,6,2],[4,1,6,1,0,1],[4,1,7,0,2,4],[4,1,7,0,6,2],[4,1,7,1,0,2],[4,1,7,1,4,1],[4,1,7,1,5,1],[4,1,7,1,6,1],[4,1,8,0,6,1],[4,1,8,1,0,1],[4,1,8,1,2,1],[4,1,9,0,2,1],[4,1,9,0,4,1],[4,1,9,0,6,1],[4,1,9,1,0,1],[4,1,9,1,3,1],[4,1,9,1,6,1],[4,1,10,0,2,3],[4,1,10,0,3,1],[4,1,10,0,4,1],[4,1,10,0,6,1],[4,1,10,1,6,1],[4,2,0,0,0,1],[4,2,0,0,1,2],[4,2,0,0,2,3],[4,2,0,0,3,3],[4,2,0,0,4,4],[4,2,0,0,5,1],[4,2,0,0,6,8],[4,2,0,1,0,11],[4,2,0,1,2,1],[4,2,0,1,4,2],[4,2,0,1,6,1],[4,2,1,0,0,1],[4,2,1,0,1,2],[4,2,1,0,2,3],[4,2,1,0,3,1],[4,2,1,0,4,4],[4,2,1,0,5,2],[4,2,1,0,6,8],[4,2,1,1,0,10],[4,2,1,1,2,1],[4,2,1,1,4,3],[4,2,2,0,0,2],[4,2,2,0,1,2],[4,2,2,0,2,8],[4,2,2,0,3,3],[4,2,2,0,4,8],[4,2,2,0,5,2],[4,2,2,0,6,8],[4,2,2,1,0,20],[4,2,2,1,2,1],[4,2,2,1,4,2],[4,2,3,0,1,1],[4,2,3,0,2,4],[4,2,3,0,3,1],[4,2,3,0,5,1],[4,2,3,0,6,2],[4,2,4,0,0,2],[4,2,4,0,1,2],[4,2,4,0,2,9],[4,2,4,0,3,2],[4,2,4,0,4,10],[4,2,4,0,5,1],[4,2,4,1,0,8],[4,2,4,1,2,1],[4,2,4,1,4,3],[4,2,4,1,6,1],[4,2,5,0,1,1],[4,2,5,0,2,2],[4,2,5,0,4,1],[4,2,5,0,6,1],[4,2,5,1,0,1],[4,2,5,1,2,1],[4,2,5,1,6,1],[4,2,6,0,0,1],[4,2,6,0,6,2],[4,2,6,1,0,2],[4,2,7,0,2,3],[4,2,7,0,4,4],[4,2,7,0,5,1],[4,2,7,0,6,2],[4,2,7,1,0,3],[4,2,7,1,3,1],[4,2,7,1,4,1],[4,2,8,0,6,1],[4,2,8,1,0,1],[4,2,8,1,4,1],[4,2,9,0,0,1],[4,2,9,0,1,1],[4,2,9,0,2,1],[4,2,9,0,4,1],[4,2,9,0,6,1],[4,2,9,1,0,3],[4,2,10,0,2,3],[4,2,10,0,4,1],[4,2,10,1,0,2],[4,3,0,0,0,1],[4,3,0,0,1,1],[4,3,0,0,2,2],[4,3,0,0,4,2],[4,3,0,0,6,2],[4,3,0,1,0,4],[4,3,0,1,4,1],[4,3,1,0,2,2],[4,3,1,0,4,3],[4,3,1,0,6,1],[4,3,1,1,0,3],[4,3,1,1,2,2],[4,3,1,1,4,3],[4,3,2,0,0,1],[4,3,2,0,2,1],[4,3,2,0,4,2],[4,3,2,1,0,4],[4,3,3,0,5,1],[4,3,3,1,0,1],[4,3,4,0,0,2],[4,3,4,0,1,1],[4,3,4,0,2,3],[4,3,4,0,4,3],[4,3,4,0,5,1],[4,3,4,0,6,4],[4,3,4,1,0,6],[4,3,4,1,5,1],[4,3,4,1,6,1],[4,3,5,0,4,2],[4,3,5,0,6,2],[4,3,5,1,0,1],[4,3,6,0,2,1],[4,3,7,0,2,2],[4,3,7,0,4,1],[4,3,7,1,0,1],[4,3,8,0,0,1],[4,3,8,0,6,1],[4,3,9,1,0,2],[4,3,10,0,0,2],[4,4,0,0,2,1],[4,4,0,0,4,1],[4,4,0,0,6,1],[4,4,0,1,0,3],[4,4,0,1,2,1],[4,4,0,1,4,1],[4,4,0,1,6,1],[4,4,1,1,0,1],[4,4,2,0,0,1],[4,4,2,0,4,1],[4,4,3,1,0,1],[4,4,4,0,0,2],[4,4,4,0,1,1],[4,4,4,0,2,2],[4,4,4,0,4,1],[4,4,7,0,4,1],[4,4,7,0,6,1],[4,4,7,1,0,1],[4,4,7,1,6,1],[4,4,8,0,1,1],[4,4,10,1,2,1]],"ocupPolitica":{"VEREADOR":138,"DEPUTADO":33,"PREFEITO":73,"SENADOR":1}};
+const { uf: UFS, ufRegiao, regiao: REG, porte: PORTES, partido: PART, faixa: FAIXAS, ocup: OCUP } = D.dims;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const NOMES_UF = {AC:'Acre',AL:'Alagoas',AM:'Amazonas',AP:'Amapá',BA:'Bahia',CE:'Ceará',ES:'Espírito Santo',GO:'Goiás',MA:'Maranhão',MG:'Minas Gerais',MS:'Mato Grosso do Sul',MT:'Mato Grosso',PA:'Pará',PB:'Paraíba',PE:'Pernambuco',PI:'Piauí',PR:'Paraná',RJ:'Rio de Janeiro',RN:'Rio Grande do Norte',RO:'Rondônia',RR:'Roraima',RS:'Rio Grande do Sul',SC:'Santa Catarina',SE:'Sergipe',SP:'São Paulo',TO:'Tocantins'};
+const nomePart = p => ({ 'UNIÃO': 'União', 'REPUBLICANOS': 'Republicanos', 'Outros': 'Outros partidos' }[p] || p);
 
-/* Tooltip compartilhado */
-const tip = document.getElementById('tip');
-function bindTip(el, html) {
-  el.tabIndex = 0;
-  const show = e => {
-    tip.innerHTML = html; tip.style.opacity = 1;
-    const r = el.getBoundingClientRect();
-    const x = e && e.clientX ? e.clientX : r.left + r.width / 2;
-    const y = e && e.clientY ? e.clientY : r.top;
-    const w = tip.offsetWidth, h = tip.offsetHeight;
-    tip.style.left = Math.min(Math.max(8, x - w / 2), innerWidth - w - 8) + 'px';
-    tip.style.top = (y - h - 12 < 8 ? y + 18 : y - h - 12) + 'px';
+/* ---------- Dados ---------- */
+const UFROWS = D.cuboUF.map(([u, p, pa, r, n]) => ({ uf: u, reg: ufRegiao[u], porte: p, partido: pa, reel: r, n }));
+const VROWS = D.cuboVotos.map(([g, p, pa, r, x, n]) => ({ reg: g, porte: p, partido: pa, reel: r, x, n }));
+const OROWS = D.cuboOcup.map(([g, p, pa, r, x, n]) => ({ reg: g, porte: p, partido: pa, reel: r, x, n }));
+
+const estado = { regiao: null, porte: null, partido: null };
+const vis = { equil: 'brasil', terr: 'regiao', terrM: 'pct', porteM: 'pct', votosM: 'pct', ocup: 'novos', partM: 'pct', partO: 'pct' };
+
+const passa = (r, exceto) =>
+  (exceto === 'regiao' || estado.regiao === null || r.reg === estado.regiao) &&
+  (exceto === 'porte' || estado.porte === null || r.porte === estado.porte) &&
+  (exceto === 'partido' || estado.partido === null || r.partido === estado.partido);
+const filtra = (rows, exceto) => rows.filter(r => passa(r, exceto));
+function agrupa(rows, chave) {
+  const m = new Map();
+  for (const r of rows) { const k = chave(r); const o = m.get(k) || { n: 0, reel: 0 }; o.n += r.n; if (r.reel) o.reel += r.n; m.set(k, o); }
+  return m;
+}
+const total = rows => rows.reduce((o, r) => (o.n += r.n, r.reel && (o.reel += r.n), o), { n: 0, reel: 0 });
+
+/* ---------- Formatação ---------- */
+const fmt = (v, d = 1) => v.toLocaleString('pt-BR', { minimumFractionDigits: d, maximumFractionDigits: d });
+const int = v => Math.round(v).toLocaleString('pt-BR');
+const pct = (a, b) => b ? 100 * a / b : 0;
+const fPct = v => fmt(v) + '%';
+const fPct0 = v => fmt(v, 0) + '%';
+
+/* ---------- Animação de números ---------- */
+function conta(el, para, f) {
+  const de = el._v ?? 0; el._v = para;
+  if (el._raf) cancelAnimationFrame(el._raf);
+  if (RM || de === para) { el.textContent = f(para); return; }
+  const t0 = performance.now(), dur = 800;
+  const passo = t => {
+    const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+    el.textContent = f(de + (para - de) * e);
+    if (k < 1) el._raf = requestAnimationFrame(passo);
   };
-  const hide = () => tip.style.opacity = 0;
-  el.addEventListener('mousemove', show); el.addEventListener('mouseleave', hide);
-  el.addEventListener('focus', () => show()); el.addEventListener('blur', hide);
-  el.addEventListener('touchstart', () => show(), { passive: true });
+  el._raf = requestAnimationFrame(passo);
 }
 
-/* 1. Herói */
-(function () {
-  const novos = DADOS.total - DADOS.reeleitos;
-  const bar = document.getElementById('barra-total');
-  const c = document.createElement('div'); c.className = 'c'; c.style.width = NAC + '%';
-  const r = document.createElement('div'); r.className = 'r'; r.style.width = (100 - NAC) + '%';
-  bar.append(c, r);
-  bindTip(c, `<b>Continuidade</b>${int(DADOS.reeleitos)} prefeitos reeleitos · ${fmt(NAC)}%`);
-  bindTip(r, `<b>Renovação</b>${int(novos)} prefeitos novos · ${fmt(100 - NAC)}%`);
-  document.getElementById('lt-c').textContent = `${int(DADOS.reeleitos)} · ${fmt(NAC)}%`;
-  document.getElementById('lt-r').textContent = `${int(novos)} · ${fmt(100 - NAC)}%`;
-})();
+/* ---------- Tooltip ---------- */
+const tip = document.getElementById('tip');
+function mostraTip(el, e) {
+  if (!el._tip) return;
+  tip.innerHTML = el._tip; tip.classList.add('on');
+  const r = el.getBoundingClientRect();
+  const x = e && e.clientX ? e.clientX : r.left + r.width / 2;
+  const y = e && e.clientY ? e.clientY : r.top;
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  tip.style.left = Math.min(Math.max(8, x - w / 2), innerWidth - w - 8) + 'px';
+  tip.style.top = (y - h - 14 < 8 ? y + 20 : y - h - 14) + 'px';
+}
+function bindTip(el) {
+  el.addEventListener('mousemove', e => mostraTip(el, e));
+  el.addEventListener('mouseleave', () => tip.classList.remove('on'));
+  el.addEventListener('focus', () => mostraTip(el));
+  el.addEventListener('blur', () => tip.classList.remove('on'));
+  el.addEventListener('touchstart', () => mostraTip(el), { passive: true });
+}
+addEventListener('scroll', () => tip.classList.remove('on'), { passive: true });
 
-/* Gráfico de barras horizontais genérico */
-function barras(alvo, linhas, { max = 70, ticks = [0, 10, 20, 30, 40, 50, 60, 70], ref = NAC, refRotulo = 'Brasil ' + fmt(NAC) + '%', sufixo = '%' } = {}) {
-  const box = document.getElementById(alvo); box.innerHTML = '';
-  const wrap = document.createElement('div'); wrap.className = 'barras';
-  linhas.forEach(l => {
-    const row = document.createElement('div'); row.className = 'linha' + (l.classe ? ' ' + l.classe : '');
-    row.innerHTML = `<div class="nome" title="${l.nomeLongo || l.nome}">${l.nome}</div><div class="trilho"><div class="preench" style="width:${Math.min(100, l.v / max * 100)}%"></div></div><div class="valor num">${l.rotulo ?? fmt(l.v) + sufixo}</div>`;
-    if (l.tip) bindTip(row, l.tip);
-    wrap.append(row);
+/* ---------- Controle segmentado ---------- */
+function Segmentado(host, opcoes, valor, aoMudar, rotulo) {
+  host.className = 'seg-ctl'; host.setAttribute('role', 'group'); if (rotulo) host.setAttribute('aria-label', rotulo);
+  const ind = document.createElement('div'); ind.className = 'ind'; host.append(ind);
+  const btns = opcoes.map(([v, l]) => {
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = l;
+    b.onclick = () => { if (v === valor) return; valor = v; marca(); aoMudar(v); };
+    host.append(b); return [v, b];
   });
-  box.append(wrap);
-  // linha de referência posicionada sobre a coluna do trilho
-  if (ref != null) {
-    // posição proporcional à coluna do trilho, em CSS: acompanha qualquer largura de tela
-    const x = `calc(var(--nome) + var(--gap) + (100% - var(--nome) - var(--val) - 2 * var(--gap)) * ${ref / max})`;
-    const line = document.createElement('div'); line.className = 'ref';
-    line.style.left = x; line.style.top = '18px'; line.style.bottom = '24px';
-    const lab = document.createElement('div'); lab.className = 'ref-rotulo'; lab.style.left = x; lab.style.top = '0'; lab.textContent = refRotulo;
-    box.append(line, lab);
+  function marca() {
+    btns.forEach(([v, b]) => b.setAttribute('aria-pressed', v === valor));
+    const b = btns.find(([v]) => v === valor)[1];
+    ind.style.width = b.offsetWidth + 'px'; ind.style.transform = `translateX(${b.offsetLeft - 3}px)`;
+    ind.style.left = '3px';
   }
+  requestAnimationFrame(marca);
+  addEventListener('resize', marca);
+  if (document.fonts) document.fonts.ready.then(marca);
+  return { set(v) { valor = v; marca(); } };
+}
+
+/* ---------- Lista de barras com FLIP ---------- */
+function ListaBarras(host) {
+  host.classList.add('barras-area');
+  const lista = document.createElement('div'); lista.className = 'barras';
+  const ref = document.createElement('div'); ref.className = 'ref';
+  const refLab = document.createElement('div'); refLab.className = 'ref-rotulo';
   const eixo = document.createElement('div'); eixo.className = 'eixo';
-  eixo.innerHTML = `<div></div><div class="ticks">${ticks.map(t => `<span style="left:${t / max * 100}%">${t}${sufixo}</span>`).join('')}</div><div></div>`;
-  box.append(eixo);
+  host.append(lista, ref, refLab, eixo);
+  const linhas = new Map();
+  let primeira = true;
+
+  function cria(item) {
+    const l = document.createElement('div');
+    l.innerHTML = '<div class="nome"></div><div class="trilho"></div><div class="valor num"></div>';
+    bindTip(l);
+    l.addEventListener('click', () => l._click && l._click());
+    l.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && l._click) { e.preventDefault(); l._click(); } });
+    return l;
+  }
+
+  return function atualiza(itens, o) {
+    const antes = new Map();
+    if (!RM && !primeira) linhas.forEach((l, k) => antes.set(k, l.getBoundingClientRect().top));
+    const chaves = new Set(itens.map(i => i.key));
+    linhas.forEach((l, k) => { if (!chaves.has(k)) { l.remove(); linhas.delete(k); } });
+
+    for (const it of itens) {
+      let l = linhas.get(it.key);
+      const nova = !l;
+      if (nova) { l = cria(it); linhas.set(it.key, l); }
+      lista.append(l);
+      l.className = 'linha' + (it.estado ? ' ' + it.estado : '') + (it.click ? ' clicavel' : '');
+      l.tabIndex = it.click ? 0 : -1;
+      if (it.click) l.setAttribute('role', 'button'); else l.removeAttribute('role');
+      const nome = l.querySelector('.nome'); nome.textContent = it.label; nome.title = it.longo || it.label;
+      const tr = l.querySelector('.trilho');
+      while (tr.children.length > it.segs.length) tr.lastChild.remove();
+      while (tr.children.length < it.segs.length) { const s = document.createElement('div'); tr.append(s); }
+      it.segs.forEach((s, i) => { const el = tr.children[i]; el.className = 'seg ' + s.cls; el._w = Math.max(0, Math.min(100, s.v / o.max * 100)); });
+      conta(l.querySelector('.valor'), it.valor, o.fmtValor);
+      l._tip = it.tip; l._click = it.click;
+      if (nova && !primeira && !RM) { l.style.opacity = 0; requestAnimationFrame(() => l.style.opacity = ''); }
+    }
+
+    // larguras: na primeira exibição crescem a partir de zero
+    const aplica = () => linhas.forEach(l => [...l.querySelector('.trilho').children].forEach(s => s.style.width = s._w + '%'));
+    if (primeira && !RM) requestAnimationFrame(() => requestAnimationFrame(aplica)); else aplica();
+
+    // FLIP: as linhas deslizam para a nova posição
+    if (antes.size) linhas.forEach((l, k) => {
+      if (!antes.has(k)) return;
+      const dy = antes.get(k) - l.getBoundingClientRect().top;
+      if (!dy) return;
+      l.style.transition = 'none'; l.style.transform = `translateY(${dy}px)`;
+      l.offsetHeight;
+      l.style.transition = ''; l.style.transform = '';
+    });
+
+    // linha de referência proporcional
+    if (o.ref != null) {
+      const x = `calc(var(--nome) + var(--gap) + (100% - var(--nome) - var(--val) - 2 * var(--gap)) * ${o.ref / o.max})`;
+      ref.style.left = x; refLab.style.left = x; ref.style.opacity = 1; refLab.style.opacity = 1; refLab.textContent = o.refRotulo;
+    } else { ref.style.opacity = 0; refLab.style.opacity = 0; }
+    host.style.paddingTop = o.ref != null ? '26px' : '4px';
+    ref.style.top = o.ref != null ? '20px' : '0';
+    eixo.innerHTML = o.ticks ? `<div></div><div class="ticks">${o.ticks.map(t => `<span style="left:${t / o.max * 100}%">${o.fmtTick(t)}</span>`).join('')}</div><div></div>` : '';
+    primeira = false;
+  };
+}
+function escala(max, pctMode) {
+  if (pctMode) { const m = Math.max(60, Math.ceil(max / 10) * 10); const passo = m > 80 ? 20 : 10; return { max: m, ticks: Array.from({ length: m / passo + 1 }, (_, i) => i * passo) }; }
+  const ordem = Math.pow(10, Math.floor(Math.log10(Math.max(1, max))));
+  const passo = [1, 2, 2.5, 5, 10].map(k => k * ordem).find(p => max / p <= 5) || ordem * 10;
+  const m = Math.ceil(max / passo) * passo || 1;
+  return { max: m, ticks: Array.from({ length: Math.round(m / passo) + 1 }, (_, i) => i * passo) };
 }
 
-/* 2. Regiões e UFs */
-const ORDEM_REG = ['Norte', 'Nordeste', 'Centro-Oeste', 'Sudeste', 'Sul'];
-let regiaoAtiva = 'Todas';
-function desenhaTerritorio() {
-  const regs = ORDEM_REG.map(n => DADOS.regioes.find(r => r.nome === n));
-  const vals = regs.map(r => pct(r.reel, r.n));
-  const maxV = Math.max(...vals), minV = Math.min(...vals);
-  document.getElementById('regioes').innerHTML = regs.map((r, i) => {
-    const v = vals[i];
-    const cls = ['reg', regiaoAtiva === r.nome ? 'ativo' : '', (v === maxV || v === minV) ? 'extremo' : ''].join(' ');
-    return `<div class="${cls}"><div class="nome">${r.nome}</div><div class="v num">${fmt(v)}%</div><div class="n num">${int(r.reel)} de ${int(r.n)}</div></div>`;
-  }).join('');
-  const ufs = DADOS.ufs.map(u => ({ ...u, p: pct(u.reel, u.n) })).sort((a, b) => b.p - a.p);
-  barras('ufs', ufs.map(u => ({
-    nome: u.uf, nomeLongo: NOMES_UF[u.uf], v: u.p,
-    classe: regiaoAtiva !== 'Todas' && u.regiao !== regiaoAtiva ? 'apagada' : '',
-    tip: `<b>${NOMES_UF[u.uf]} (${u.regiao})</b>${int(u.reel)} reeleitos de ${int(u.n)} prefeitos<br>${fmt(u.p)}% de continuidade · ${fmt(100 - u.p)}% de renovação`
-  })));
+/* ---------- Leitura do recorte ---------- */
+function recorte(el, html, n) {
+  el.innerHTML = html + (n < 30 ? ' <span class="cautela">· recorte pequeno, interprete com cautela</span>' : '');
 }
-(function () {
-  const f = document.getElementById('filtros');
-  ['Todas', ...ORDEM_REG].forEach(n => {
-    const b = document.createElement('button'); b.type = 'button'; b.textContent = n === 'Todas' ? 'Todas as regiões' : n;
-    b.setAttribute('aria-pressed', n === regiaoAtiva);
-    b.onclick = () => { regiaoAtiva = n; f.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); desenhaTerritorio(); };
-    f.append(b);
+function descRecorte() {
+  const p = [];
+  if (estado.regiao !== null) p.push(REG[estado.regiao]);
+  if (estado.porte !== null) p.push(PORTES[estado.porte] + ' votos');
+  if (estado.partido !== null) p.push(nomePart(PART[estado.partido]));
+  return p.length ? p.join(' · ') : 'Brasil';
+}
+function alterna(dim, v) { estado[dim] = estado[dim] === v ? null : v; sincronizaFiltros(); atualizar(); }
+
+/* ---------- Filtros globais ---------- */
+const fReg = Segmentado(document.getElementById('f-regiao'), [[-1, 'Todas'], ...REG.map((r, i) => [i, r])], -1, v => { estado.regiao = v < 0 ? null : v; atualizar(); }, 'Filtrar por região');
+const fPor = Segmentado(document.getElementById('f-porte'), [[-1, 'Todos'], ...PORTES.map((p, i) => [i, p.replace(' mil', 'k').replace('até ', '≤').replace('mais de ', '>').replace(' a ', '–')])], -1, v => { estado.porte = v < 0 ? null : v; atualizar(); }, 'Filtrar por porte (votos válidos)');
+const fPart = document.getElementById('f-partido');
+fPart.innerHTML = '<option value="-1">Todos</option>' + PART.map((p, i) => `<option value="${i}">${nomePart(p)}</option>`).join('');
+fPart.onchange = () => { const v = +fPart.value; estado.partido = v < 0 ? null : v; atualizar(); };
+document.getElementById('limpar').onclick = () => { estado.regiao = estado.porte = estado.partido = null; sincronizaFiltros(); atualizar(); };
+function sincronizaFiltros() {
+  fReg.set(estado.regiao ?? -1); fPor.set(estado.porte ?? -1); fPart.value = estado.partido ?? -1;
+}
+
+/* ---------- Blocos ---------- */
+const bEquil = ListaBarras(document.getElementById('b-equil'));
+const bTerr = ListaBarras(document.getElementById('b-terr'));
+const bPorte = ListaBarras(document.getElementById('b-porte'));
+const bOcup = ListaBarras(document.getElementById('b-ocup'));
+const bPart = ListaBarras(document.getElementById('b-part'));
+
+Segmentado(document.getElementById('c-equil'), [['brasil', 'Recorte inteiro'], ['regiao', 'Por região']], vis.equil, v => { vis.equil = v; rEquil(); });
+Segmentado(document.getElementById('c-terr'), [['regiao', 'Região'], ['uf', 'Estado']], vis.terr, v => { vis.terr = v; rTerr(); });
+Segmentado(document.getElementById('c-terr-m'), [['pct', '% reeleitos'], ['n', 'Nº de prefeitos']], vis.terrM, v => { vis.terrM = v; rTerr(); });
+Segmentado(document.getElementById('c-porte-m'), [['pct', '% reeleitos'], ['n', 'Nº de prefeitos']], vis.porteM, v => { vis.porteM = v; rPorte(); });
+Segmentado(document.getElementById('c-votos-m'), [['pct', '% do grupo'], ['n', 'Nº de prefeitos']], vis.votosM, v => { vis.votosM = v; rVotos(); });
+Segmentado(document.getElementById('c-ocup'), [['novos', 'Novos prefeitos'], ['reel', 'Reeleitos']], vis.ocup, v => { vis.ocup = v; rOcup(); });
+Segmentado(document.getElementById('c-part-m'), [['pct', '% reeleitos'], ['n', 'Nº de prefeitos']], vis.partM, v => { vis.partM = v; rPart(); });
+Segmentado(document.getElementById('c-part-o'), [['pct', 'Por % reeleitos'], ['n', 'Por tamanho']], vis.partO, v => { vis.partO = v; rPart(); });
+
+function estadoDe(dim, v) { return estado[dim] === null ? '' : (estado[dim] === v ? 'foco' : 'dim'); }
+function itemTaxa({ key, label, longo, g, dim, v, modo, extraTip }) {
+  const p = pct(g.reel, g.n);
+  const segs = modo === 'pct' ? [{ v: p, cls: 'c' }] : [{ v: g.reel, cls: 'c' }, { v: g.n - g.reel, cls: 'r' }];
+  const acao = dim ? `<span class="acao">${estado[dim] === v ? 'Clique para remover o filtro' : 'Clique para filtrar o painel'}</span>` : '';
+  return {
+    key, label, longo, segs, valor: modo === 'pct' ? p : g.n, estado: dim ? estadoDe(dim, v) : '',
+    click: dim ? () => alterna(dim, v) : null,
+    tip: `<b>${longo || label}</b>${int(g.reel)} reeleitos · ${int(g.n - g.reel)} novos<br>${fPct(p)} de continuidade · ${int(g.n)} municípios${extraTip || ''}${acao}`
+  };
+}
+
+function rHero() {
+  const t = total(filtra(UFROWS));
+  conta(document.getElementById('k-pct'), pct(t.reel, t.n), fPct);
+  conta(document.getElementById('k-n'), t.n, int);
+  const unico = filtra(VROWS).filter(r => r.reel && r.x === 7).reduce((s, r) => s + r.n, 0);
+  conta(document.getElementById('k-unico'), unico, int);
+  const nov = filtra(OROWS).filter(r => !r.reel), pol = nov.filter(r => r.x === 0).reduce((s, r) => s + r.n, 0), tn = nov.reduce((s, r) => s + r.n, 0);
+  conta(document.getElementById('k-pol'), pct(pol, tn), fPct0);
+  document.getElementById('resumo').innerHTML = `Mostrando <b class="num">${int(t.n)}</b> de 5.553 · ${descRecorte()}`;
+  document.getElementById('limpar').classList.toggle('on', estado.regiao !== null || estado.porte !== null || estado.partido !== null);
+}
+
+function rEquil() {
+  let itens;
+  if (vis.equil === 'brasil') {
+    const t = total(filtra(UFROWS));
+    itens = [{ key: 'tot', label: descRecorte() === 'Brasil' ? 'Brasil' : 'Recorte', longo: descRecorte(), segs: [{ v: pct(t.reel, t.n), cls: 'c' }, { v: 100 - pct(t.reel, t.n), cls: 'r' }], valor: pct(t.reel, t.n),
+      tip: `<b>${descRecorte()}</b>${int(t.reel)} reeleitos (${fPct(pct(t.reel, t.n))})<br>${int(t.n - t.reel)} novos (${fPct(100 - pct(t.reel, t.n))})` }];
+  } else {
+    const g = agrupa(filtra(UFROWS, 'regiao'), r => r.reg);
+    itens = REG.map((nome, i) => { const x = g.get(i) || { n: 0, reel: 0 }; const p = pct(x.reel, x.n);
+      return { key: 'r' + i, label: nome, segs: [{ v: p, cls: 'c' }, { v: x.n ? 100 - p : 0, cls: 'r' }], valor: p, estado: estadoDe('regiao', i), click: () => alterna('regiao', i),
+        tip: `<b>${nome}</b>${int(x.reel)} reeleitos (${fPct(p)}) · ${int(x.n - x.reel)} novos<span class="acao">${estado.regiao === i ? 'Clique para remover o filtro' : 'Clique para filtrar o painel'}</span>` }; });
+  }
+  bEquil(itens, { max: 100.5, ref: null, fmtValor: fPct, ticks: null });
+  const t = total(filtra(UFROWS));
+  recorte(document.getElementById('r-equil'), `${descRecorte()}: <b>${fPct(pct(t.reel, t.n))}</b> de reeleitos entre <b>${int(t.n)}</b> municípios`, t.n);
+}
+
+function rTerr() {
+  const rows = filtra(UFROWS, 'regiao');
+  const porUF = vis.terr === 'uf';
+  const g = agrupa(rows, r => porUF ? r.uf : r.reg);
+  let itens = [...g.entries()].map(([k, x]) => porUF
+    ? itemTaxa({ key: 'u' + k, label: UFS[k], longo: `${NOMES_UF[UFS[k]]} (${REG[ufRegiao[k]]})`, g: x, dim: 'regiao', v: ufRegiao[k], modo: vis.terrM })
+    : itemTaxa({ key: 'r' + k, label: REG[k], g: x, dim: 'regiao', v: k, modo: vis.terrM }));
+  itens.sort((a, b) => b.valor - a.valor);
+  const t = total(rows), ref = pct(t.reel, t.n);
+  const pm = vis.terrM === 'pct';
+  const e = escala(Math.max(...itens.map(i => pm ? i.valor : i.valor)), pm);
+  bTerr(itens, { max: e.max, ticks: e.ticks, fmtTick: pm ? (v => v + '%') : int, ref: pm ? ref : null, refRotulo: `${estado.porte !== null || estado.partido !== null ? 'Média do recorte' : 'Brasil'} ${fPct(ref)}`, fmtValor: pm ? fPct : int });
+  const tf = total(filtra(UFROWS));
+  recorte(document.getElementById('r-terr'), `${descRecorte()}: <b>${fPct(pct(tf.reel, tf.n))}</b> de reeleitos (${int(tf.n)} municípios)`, tf.n);
+}
+
+function rPorte() {
+  const g = agrupa(filtra(UFROWS, 'porte'), r => r.porte);
+  const pm = vis.porteM === 'pct';
+  const itens = PORTES.map((p, i) => itemTaxa({ key: 'p' + i, label: p, longo: `Municípios com ${p} votos válidos`, g: g.get(i) || { n: 0, reel: 0 }, dim: 'porte', v: i, modo: vis.porteM }));
+  const t = total(filtra(UFROWS, 'porte')), ref = pct(t.reel, t.n);
+  const e = escala(Math.max(...itens.map(i => i.valor)), pm);
+  bPorte(itens, { max: e.max, ticks: e.ticks, fmtTick: pm ? (v => v + '%') : int, ref: pm ? ref : null, refRotulo: `Média ${fPct(ref)}`, fmtValor: pm ? fPct : int });
+  const tf = total(filtra(UFROWS));
+  recorte(document.getElementById('r-porte'), `${descRecorte()}: <b>${fPct(pct(tf.reel, tf.n))}</b> de reeleitos (${int(tf.n)} municípios)`, tf.n);
+}
+
+/* Histograma */
+const hist = document.getElementById('hist');
+const colunas = FAIXAS.map((f, i) => {
+  const g = document.createElement('div'); g.className = 'grupo';
+  const c = document.createElement('div'); c.className = 'b c'; c.innerHTML = '<span class="lab num"></span>'; c.tabIndex = 0;
+  const r = document.createElement('div'); r.className = 'b r'; r.innerHTML = '<span class="lab num"></span>'; r.tabIndex = 0;
+  bindTip(c); bindTip(r); g.append(c, r); hist.append(g); return { c, r };
+});
+document.getElementById('hist-eixo').innerHTML = FAIXAS.map((f, i) => `<div class="${i === 7 ? 'x-a' : ''}">${f}</div>`).join('');
+
+function rVotos() {
+  const rows = filtra(VROWS).filter(r => r.x >= 0);
+  const C = Array(8).fill(0), R = Array(8).fill(0);
+  rows.forEach(r => (r.reel ? C : R)[r.x] += r.n);
+  const nC = C.reduce((a, b) => a + b, 0), nR = R.reduce((a, b) => a + b, 0);
+  const pm = vis.votosM === 'pct';
+  const vc = C.map(v => pm ? pct(v, nC) : v), vr = R.map(v => pm ? pct(v, nR) : v);
+  const max = Math.max(1, ...vc, ...vr) * 1.12;
+  FAIXAS.forEach((f, i) => {
+    const { c, r } = colunas[i];
+    c.style.height = vc[i] / max * 100 + '%'; r.style.height = vr[i] / max * 100 + '%';
+    c.firstChild.textContent = pm ? fmt(vc[i], 0) + '%' : int(vc[i]);
+    r.firstChild.textContent = pm ? fmt(vr[i], 0) + '%' : int(vr[i]);
+    c._tip = `<b>Reeleitos · ${f}</b>${int(C[i])} prefeitos · ${fPct(pct(C[i], nC))} dos reeleitos do recorte`;
+    r._tip = `<b>Novos · ${f}</b>${int(R[i])} prefeitos · ${fPct(pct(R[i], nR))} dos novos do recorte`;
   });
-  desenhaTerritorio();
-})();
+  const s = (A, de, ate) => A.slice(de, ate).reduce((a, b) => a + b, 0);
+  conta(document.getElementById('t70c'), pct(s(C, 4, 8), nC), fPct0); conta(document.getElementById('t70r'), pct(s(R, 4, 8), nR), fPct0);
+  conta(document.getElementById('t60c'), pct(s(C, 0, 3), nC), fPct0); conta(document.getElementById('t60r'), pct(s(R, 0, 3), nR), fPct0);
+  conta(document.getElementById('tuc'), C[7], int); conta(document.getElementById('tur'), R[7], int);
+  recorte(document.getElementById('r-votos'), `${descRecorte()}: <b>${int(nC)}</b> reeleitos e <b>${int(nR)}</b> novos com votação disponível`, Math.min(nC, nR));
+}
 
-/* 3. Porte */
-barras('porte', DADOS.porte.map(p => ({
-  nome: p.faixa, v: pct(p.reel, p.n),
-  tip: `<b>Municípios com ${p.faixa} votos válidos</b>${int(p.n)} municípios · ${int(p.reel)} prefeitos reeleitos<br>${fmt(pct(p.reel, p.n))}% de continuidade`
-})), { max: 60, ticks: [0, 10, 20, 30, 40, 50, 60] });
+function rOcup() {
+  const alvo = vis.ocup === 'reel' ? 1 : 0;
+  const rows = filtra(OROWS).filter(r => r.reel === alvo);
+  const tot = rows.reduce((s, r) => s + r.n, 0);
+  const g = new Map(); rows.forEach(r => g.set(r.x, (g.get(r.x) || 0) + r.n));
+  const op = D.ocupPolitica;
+  const itens = OCUP.map((o, i) => { const n = g.get(i) || 0; const p = pct(n, tot);
+    return { key: 'o' + i, label: o, segs: [{ v: p, cls: i === 0 ? 'a' : 'c' }], valor: p,
+      tip: `<b>${o}</b>${int(n)} de ${int(tot)} ${alvo ? 'reeleitos' : 'novos prefeitos'} (${fPct(p)})` + (i === 0 && !alvo && estado.regiao === null && estado.porte === null && estado.partido === null ? `<br>No país: ${op.VEREADOR} vereadores · ${op.PREFEITO} "prefeito" · ${op.DEPUTADO} deputados · ${op.SENADOR || 0} senador` : '') }; })
+    .sort((a, b) => b.valor - a.valor);
+  const e = escala(Math.max(...itens.map(i => i.valor)), true);
+  e.max = Math.max(30, Math.ceil(Math.max(...itens.map(i => i.valor)) / 10) * 10); e.ticks = Array.from({ length: e.max / (e.max > 60 ? 20 : 10) + 1 }, (_, i) => i * (e.max > 60 ? 20 : 10));
+  bOcup(itens, { max: e.max, ticks: e.ticks, fmtTick: v => v + '%', ref: null, fmtValor: fPct0 });
+  const pol = pct(g.get(0) || 0, tot);
+  recorte(document.getElementById('r-ocup'), `${descRecorte()}: <b>${fPct(pol)}</b> dos ${alvo ? 'reeleitos' : 'novos prefeitos'} declararam cargo eletivo (${int(tot)} prefeitos)`, tot);
+}
 
-/* 4. Histograma */
-(function () {
-  const faixas = ['< 40%', '40–50%', '50–60%', '60–70%', '70–80%', '80–90%', '90–100%'];
-  const junta = b => [b[0] + b[1] + b[2] + b[3], ...b.slice(4)];
-  const C = junta(DADOS.votos.reeleitos.bins), R = junta(DADOS.votos.novos.bins);
-  const nC = DADOS.votos.reeleitos.n, nR = DADOS.votos.novos.n;
-  const pc = C.map(v => pct(v, nC)), pr = R.map(v => pct(v, nR));
-  const max = 55;
-  const h = document.getElementById('hist');
-  faixas.forEach((f, i) => {
-    const g = document.createElement('div'); g.className = 'grupo';
-    const bc = document.createElement('div'); bc.className = 'b c'; bc.style.height = pc[i] / max * 100 + '%';
-    bc.innerHTML = `<span class="lab num">${fmt(pc[i], 0)}%</span>`;
-    const br = document.createElement('div'); br.className = 'b r'; br.style.height = pr[i] / max * 100 + '%';
-    br.innerHTML = `<span class="lab num">${fmt(pr[i], 0)}%</span>`;
-    bindTip(bc, `<b>Reeleitos · votação ${f}</b>${int(C[i])} prefeitos · ${fmt(pc[i])}% dos reeleitos`);
-    bindTip(br, `<b>Novos · votação ${f}</b>${int(R[i])} prefeitos · ${fmt(pr[i])}% dos novos`);
-    g.append(bc, br); h.append(g);
-  });
-  document.getElementById('hist-eixo').innerHTML = faixas.map(f => `<div>${f}</div>`).join('');
-})();
+function rPart() {
+  const rows = filtra(UFROWS, 'partido');
+  const g = agrupa(rows, r => r.partido);
+  const pm = vis.partM === 'pct';
+  const itens = PART.map((p, i) => { const x = g.get(i) || { n: 0, reel: 0 };
+    const it = itemTaxa({ key: 'pa' + i, label: nomePart(p), g: x, dim: 'partido', v: i, modo: vis.partM }); it._p = pct(x.reel, x.n); it._n = x.n; return it; })
+    .filter(it => it._n > 0)
+    .sort((a, b) => vis.partO === 'pct' ? b._p - a._p : b._n - a._n);
+  const t = total(rows), ref = pct(t.reel, t.n);
+  const e = escala(Math.max(...itens.map(i => i.valor)), pm);
+  bPart(itens, { max: e.max, ticks: e.ticks, fmtTick: pm ? (v => v + '%') : int, ref: pm ? ref : null, refRotulo: `Média ${fPct(ref)}`, fmtValor: pm ? fPct : int });
+  const tf = total(filtra(UFROWS));
+  recorte(document.getElementById('r-part'), `${descRecorte()}: <b>${fPct(pct(tf.reel, tf.n))}</b> de reeleitos (${int(tf.n)} municípios)`, tf.n);
+}
 
-/* 5. Ocupações dos novos */
-(function () {
-  const tot = DADOS.ocup_novos.reduce((s, o) => s + o.n, 0);
-  const op = DADOS.ocup_politica;
-  barras('ocup', DADOS.ocup_novos.map(o => ({
-    nome: o.cat, v: pct(o.n, tot), rotulo: fmt(pct(o.n, tot), 0) + '%',
-    classe: o.cat === 'Já na política' ? 'realce' : '',
-    tip: o.cat === 'Já na política'
-      ? `<b>Já na política: ${int(o.n)} prefeitos</b>${op.VEREADOR} vereadores · ${op.PREFEITO} "prefeito" · ${op.DEPUTADO} deputados · ${op.SENADOR || 0} senador`
-      : `<b>${o.cat}</b>${int(o.n)} dos ${int(tot)} prefeitos novos (${fmt(pct(o.n, tot))}%)`
-  })), { max: 30, ticks: [0, 10, 20, 30], ref: null });
-})();
+function rTabela() {
+  const g = agrupa(filtra(UFROWS), r => r.uf);
+  const linhas = [...g.entries()].sort((a, b) => UFS[a[0]].localeCompare(UFS[b[0]]));
+  const t = total(filtra(UFROWS));
+  document.getElementById('tabela').innerHTML = `<p style="margin:10px 0 0">Recorte: <b>${descRecorte()}</b></p><table><thead><tr><th>UF</th><th>Região</th><th class="r">Prefeitos</th><th class="r">Reeleitos</th><th class="r">Novos</th><th class="r">% reeleitos</th></tr></thead><tbody>` +
+    linhas.map(([k, x]) => `<tr><td>${NOMES_UF[UFS[k]]} (${UFS[k]})</td><td>${REG[ufRegiao[k]]}</td><td class="r">${int(x.n)}</td><td class="r">${int(x.reel)}</td><td class="r">${int(x.n - x.reel)}</td><td class="r">${fPct(pct(x.reel, x.n))}</td></tr>`).join('') +
+    `<tr><td><b>Total</b></td><td></td><td class="r"><b>${int(t.n)}</b></td><td class="r"><b>${int(t.reel)}</b></td><td class="r"><b>${int(t.n - t.reel)}</b></td><td class="r"><b>${fPct(pct(t.reel, t.n))}</b></td></tr></tbody></table>`;
+}
 
-/* 6. Partidos */
-(function () {
-  const ps = DADOS.partidos.map(p => ({ ...p, p: pct(p.reel, p.n) })).sort((a, b) => b.p - a.p);
-  barras('partidos', ps.map(p => ({
-    nome: p.partido === 'UNIÃO' ? 'União' : p.partido === 'REPUBLICANOS' ? 'Republicanos' : p.partido, v: p.p,
-    tip: `<b>${p.partido}</b>${int(p.n)} prefeitos eleitos · ${int(p.reel)} reeleitos<br>${fmt(p.p)}% de continuidade`
-  })), { max: 60, ticks: [0, 10, 20, 30, 40, 50, 60] });
-})();
+function atualizar() { rHero(); rEquil(); rTerr(); rPorte(); rVotos(); rOcup(); rPart(); rTabela(); }
+atualizar();
 
-/* Tabelas (visão acessível dos dados) */
-(function () {
-  const t = (titulo, cab, linhas) => `<h3 style="font-size:15px;margin:16px 0 0">${titulo}</h3><table><thead><tr>${cab.map((c, i) => `<th class="${i ? 'r' : ''}">${c}</th>`).join('')}</tr></thead><tbody>${linhas.map(l => `<tr>${l.map((c, i) => `<td class="${i ? 'r' : ''}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
-  const lin = (nome, n, r) => [nome, int(n), int(r), fmt(pct(r, n)) + '%'];
-  const cab = ['Grupo', 'Prefeitos', 'Reeleitos', '% reeleitos'];
-  document.getElementById('tabelas').innerHTML =
-    t('Por região', cab, ORDEM_REG.map(n => { const r = DADOS.regioes.find(x => x.nome === n); return lin(n, r.n, r.reel); })) +
-    t('Por UF', cab, DADOS.ufs.map(u => lin(`${NOMES_UF[u.uf]} (${u.uf})`, u.n, u.reel))) +
-    t('Por porte (votos válidos)', cab, DADOS.porte.map(p => lin(p.faixa, p.n, p.reel))) +
-    t('Por partido (150+ prefeitos)', cab, DADOS.partidos.map(p => lin(p.partido, p.n, p.reel))) +
-    t('Ocupação declarada dos prefeitos novos', ['Grupo', 'Prefeitos', '% dos novos'], DADOS.ocup_novos.map(o => [o.cat, int(o.n), fmt(pct(o.n, DADOS.total - DADOS.reeleitos)) + '%']));
-})();
+/* ---------- Entrada suave dos blocos ---------- */
+const blocos = document.querySelectorAll('.reveal');
+if ('IntersectionObserver' in window && !RM) {
+  const io = new IntersectionObserver(es => es.filter(e => e.isIntersecting).forEach((e, i) => { e.target.style.transitionDelay = i * 60 + 'ms'; e.target.classList.add('visivel'); io.unobserve(e.target); }), { threshold: 0.08 });
+  blocos.forEach(b => io.observe(b));
+} else blocos.forEach(b => b.classList.add('visivel'));
 
-/* Tema */
+/* ---------- Tema ---------- */
 (function () {
   const btn = document.getElementById('tema');
   try { const s = localStorage.getItem('tema'); if (s) document.documentElement.dataset.theme = s; } catch (e) {}
@@ -527,7 +750,6 @@ barras('porte', DADOS.porte.map(p => ({
     try { localStorage.setItem('tema', novo); } catch (e) {}
   };
 })();
-
 </script>
 </body>
 </html>
