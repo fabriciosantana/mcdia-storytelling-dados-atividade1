@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quem governa os municípios brasileiros — Eleições 2024</title>
+<meta name="description" content="Painel acadêmico sobre o perfil das 5.553 pessoas eleitas prefeitas nas eleições municipais de 2024, a partir dos dados abertos do TSE.">
+<style>
+  :root {
+    color-scheme: light;
+    --fundo: #eef2f6; --cartao: #ffffff; --cartao2: #f7f9fb;
+    --texto: #0d1b26; --suave: #42566a; --mudo: #566b7e;
+    --borda: #d5dee6; --borda2: #b9c7d4; --grade: #e6ecf2; --neutro: #9fb2c2;
+    --azul: #0067b3; --azul-f: #00529b; --azul-e: #00386b; --azul-c: #cfe2f2;
+    --laranja: #f28c00; --laranja-t: #9c5a00; --laranja-c: #ffeacc;
+    --topo-bg: #00386b; --topo-txt: #ffffff; --topo-sv: #a9cdeb; --topo-dest: #ffc266;
+    --chip-on-txt: #ffffff; --tip-bg: #0d1b26;
+    --aviso-bg: #fff9e8; --aviso-bd: #e3cb8e; --aviso-tx: #5f4600;
+    --sombra: 0 1px 2px rgba(13,27,38,.06), 0 2px 8px rgba(13,27,38,.04);
+  }
+  :root[data-tema="escuro"] {
+    color-scheme: dark;
+    --fundo: #08131d; --cartao: #10202e; --cartao2: #15283a;
+    --texto: #eaf1f7; --suave: #aec0d0; --mudo: #92a6b8;
+    --borda: #1f3346; --borda2: #2d4760; --grade: #16293a; --neutro: #4d6678;
+    --azul: #3d94dd; --azul-f: #6fb2e8; --azul-e: #a5cdee; --azul-c: #1b3a57;
+    --laranja: #ff9f2e; --laranja-t: #ffb85c; --laranja-c: #3a2a12;
+    --topo-bg: #051f3a; --topo-txt: #eaf1f7; --topo-sv: #a9cdeb; --topo-dest: #ffc266;
+    --chip-on-txt: #051f3a; --tip-bg: #051f3a;
+    --aviso-bg: #2b2411; --aviso-bd: #574a1e; --aviso-tx: #f0d89c;
+    --sombra: 0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--fundo); color: var(--texto); overflow-x: hidden;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px; line-height: 1.55;
+  }
+  .caixa { max-width: 1240px; margin: 0 auto; padding: 0 28px; }
+  @media (max-width: 600px) { .caixa { padding: 0 16px; } body { font-size: 16px; } }
+  :where(a, button, summary, [tabindex]):focus-visible { outline: 3px solid var(--laranja); outline-offset: 3px; border-radius: 3px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .pular { position: absolute; left: -9999px; top: 0; background: var(--laranja); color: #000; padding: 10px 18px; z-index: 100; font-weight: 700; }
+  .pular:focus { left: 0; }
+
+  /* ===== faixa institucional ===== */
+  .topo { background: var(--topo-bg); color: var(--topo-txt); }
+  .topo-l1 { display: flex; align-items: center; gap: 16px; padding: 14px 0; flex-wrap: wrap; }
+  .marca { display: flex; align-items: center; gap: 12px; margin-right: auto; }
+  .marca .sig {
+    width: 38px; height: 38px; border-radius: 4px; background: var(--laranja); flex: none;
+    display: grid; place-items: center; color: #16212b; font-weight: 800; font-size: 17px; letter-spacing: -.04em;
+  }
+  .marca b { font-size: 15px; font-weight: 700; letter-spacing: .01em; display: block; line-height: 1.2; }
+  .marca span { font-size: 12.5px; color: var(--topo-sv); display: block; }
+  .ferr { display: flex; gap: 8px; }
+  .bt-topo {
+    font: inherit; font-size: 13.5px; font-weight: 600; color: var(--topo-txt);
+    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.28);
+    border-radius: 5px; padding: 8px 13px; min-height: 40px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 7px; transition: background .18s ease;
+  }
+  .bt-topo:hover { background: rgba(255,255,255,.2); }
+  .bt-topo[aria-pressed="true"] { background: var(--laranja); border-color: var(--laranja); color: #16212b; }
+  .bt-topo svg { width: 16px; height: 16px; fill: currentColor; flex: none; }
+
+  .menu { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; border-top: 1px solid rgba(255,255,255,.16); }
+  .menu::-webkit-scrollbar { display: none; }
+  .menu a {
+    color: var(--topo-sv); text-decoration: none; font-size: 15px; font-weight: 600;
+    padding: 13px 18px; border-bottom: 4px solid transparent; white-space: nowrap; transition: color .18s ease;
+  }
+  .menu a:hover { color: #fff; }
+  .menu a[aria-current="true"] { color: #fff; border-bottom-color: var(--laranja); }
+
+  /* ===== filtro ===== */
+  .filtro { position: sticky; top: 0; z-index: 30; background: var(--cartao); border-bottom: 2px solid var(--borda); }
+  .filtro-i { display: flex; align-items: center; gap: 12px 20px; padding: 12px 0; flex-wrap: wrap; }
+  .rot { font-size: 12.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--mudo); }
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .chip {
+    font: inherit; font-size: 15px; font-weight: 600; padding: 8px 17px; min-height: 42px;
+    border: 2px solid var(--borda2); background: var(--cartao); color: var(--texto);
+    border-radius: 4px; cursor: pointer; transition: border-color .18s ease, background .18s ease, color .18s ease;
+  }
+  .chip:hover { border-color: var(--azul); color: var(--azul-f); }
+  .chip[aria-pressed="true"] { background: var(--azul); border-color: var(--azul); color: var(--chip-on-txt); }
+  .ativo { margin-left: auto; display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--suave); }
+  .ativo b { color: var(--texto); }
+  .limpar {
+    font: inherit; font-size: 14px; font-weight: 700; padding: 8px 14px; min-height: 42px;
+    border: 2px solid var(--borda2); background: var(--cartao2); color: var(--azul-f);
+    border-radius: 4px; cursor: pointer;
+  }
+  .limpar:hover:not(:disabled) { border-color: var(--azul); }
+  .limpar:disabled { opacity: .4; cursor: default; color: var(--mudo); }
+
+  /* ===== capa ===== */
+  .capa { padding: 44px 0 10px; }
+  .olho { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--azul-f); margin: 0 0 12px; }
+  h1 { font-size: clamp(32px, 5.6vw, 62px); line-height: 1.04; letter-spacing: -.03em; font-weight: 800; margin: 0 0 18px; max-width: 17ch; }
+  .conclusao {
+    font-size: clamp(18px, 2.4vw, 25px); line-height: 1.42; margin: 0 0 8px; max-width: 46ch;
+    color: var(--texto); font-weight: 500; border-left: 5px solid var(--laranja); padding-left: 18px;
+  }
+  .conclusao b { font-weight: 800; }
+  .capa-g { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+  @media (max-width: 980px) { .capa-g { grid-template-columns: 1fr; gap: 28px; } }
+
+  .kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--borda); border: 1px solid var(--borda); margin: 28px 0 0; }
+  .kpi { background: var(--cartao); padding: 18px 20px; }
+  .kpi b { display: block; font-size: clamp(34px, 5vw, 50px); font-weight: 800; line-height: 1; letter-spacing: -.035em; font-variant-numeric: tabular-nums; color: var(--azul-f); }
+  .kpi.lar b { color: var(--laranja-t); }
+  .kpi .rt { display: block; font-size: 15px; font-weight: 700; margin-top: 7px; }
+  .kpi .un { display: block; font-size: 13px; color: var(--mudo); margin-top: 2px; }
+
+  /* ===== seções ===== */
+  section.sec { padding: 46px 0 0; scroll-margin-top: 76px; }
+  .cab { margin-bottom: 22px; }
+  .perg { font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--laranja-t); margin: 0 0 9px; }
+  h2 { font-size: clamp(23px, 3vw, 34px); line-height: 1.18; letter-spacing: -.022em; font-weight: 800; margin: 0 0 10px; max-width: 26ch; }
+  .sub { font-size: 17px; color: var(--suave); margin: 0; max-width: 72ch; }
+
+  .cartao { background: var(--cartao); border: 1px solid var(--borda); padding: 24px; box-shadow: var(--sombra); }
+  .duas { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 900px) { .duas { grid-template-columns: 1fr; } }
+  /* três valores de bens: colunas explícitas, para não sobrar trilha vazia */
+  .tres3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  @media (max-width: 760px) { .tres3 { grid-template-columns: 1fr; } }
+  .g-tit { font-size: 19px; font-weight: 700; margin: 0 0 6px; line-height: 1.3; letter-spacing: -.01em; }
+  .g-exp { font-size: 15px; color: var(--suave); margin: 0 0 4px; }
+  .escopo { font-size: 13px; color: var(--mudo); margin: 0 0 18px; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+  .selo {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700;
+    background: var(--laranja-c); color: var(--laranja-t); border: 1px solid var(--laranja); padding: 3px 9px; border-radius: 3px;
+  }
+  .selo::before { content: "!"; display: grid; place-items: center; width: 14px; height: 14px; border-radius: 50%; background: var(--laranja); color: #16212b; font-size: 11px; flex: none; }
+  .achado { font-size: 16px; font-weight: 600; margin: 18px 0 0; padding: 13px 16px; background: var(--cartao2); border-left: 4px solid var(--azul); }
+  .nota { font-size: 13.5px; color: var(--mudo); margin: 12px 0 0; }
+
+  /* ===== em cada 100 ===== */
+  .cem { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px 4px; max-width: 310px; }
+  .cem svg { width: 100%; height: auto; display: block; color: var(--neutro); transition: opacity .35s ease, transform .35s ease; }
+  .cem svg.f { color: var(--laranja); }
+  .ent .cem svg { opacity: 0; transform: scale(.4); }
+  .leg { display: flex; flex-wrap: wrap; gap: 10px 22px; font-size: 15px; margin-top: 18px; }
+  .leg span { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+  .leg i { width: 14px; height: 14px; background: var(--neutro); flex: none; border-radius: 2px; }
+  .leg .f i { background: var(--laranja); }
+  .leg .a i { background: var(--azul); }
+
+  /* ===== barras ===== */
+  .linha { display: grid; grid-template-columns: minmax(96px, 172px) 1fr auto; align-items: center; gap: 14px; padding: 5px 0; }
+  .linha:hover, .linha:focus-visible { background: var(--grade); }
+  .nm { font-size: 15px; overflow-wrap: anywhere; }
+  .tr { position: relative; height: 22px; background: var(--grade); }
+  .br { position: absolute; inset: 0 auto 0 0; height: 100%; background: var(--neutro); transform-origin: left center; transition: transform .62s cubic-bezier(.22,.61,.36,1); min-width: 3px; }
+  .br.d { background: var(--azul); }
+  .br.l { background: var(--laranja); }
+  .ent .br { transform: scaleX(0); }
+  .vl { font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; min-width: 62px; text-align: right; }
+  .vl small { display: block; font-size: 12.5px; font-weight: 400; color: var(--mudo); }
+
+  /* ===== lado a lado (eleitos x população) ===== */
+  .ll { display: grid; gap: 20px; }
+  .ll-it { border-top: 1px solid var(--borda); padding-top: 16px; }
+  .ll-it:first-child { border-top: 0; padding-top: 0; }
+  .ll-nm { font-size: 17px; font-weight: 700; margin: 0 0 10px; }
+  .ll-p { display: grid; grid-template-columns: 152px 1fr auto; align-items: center; gap: 14px; margin-bottom: 6px; }
+  .ll-p .q { font-size: 14px; color: var(--suave); }
+  .ll-p .v { font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; min-width: 76px; text-align: right; }
+  .ll-dif { font-size: 15px; color: var(--suave); margin: 8px 0 0; }
+  .ll-dif b { color: var(--texto); }
+  @media (max-width: 620px) { .ll-p { grid-template-columns: 1fr auto; } .ll-p .q { grid-column: 1 / -1; margin-bottom: -6px; } }
+
+  /* ===== seletor de indicador ===== */
+  .ind { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 20px; }
+  .bt-ind {
+    font: inherit; font-size: 14.5px; font-weight: 600; padding: 8px 15px; min-height: 42px;
+    border: 2px solid var(--borda2); background: var(--cartao); color: var(--texto); border-radius: 4px; cursor: pointer;
+  }
+  .bt-ind:hover { border-color: var(--azul); }
+  .bt-ind[aria-pressed="true"] { background: var(--azul-e); border-color: var(--azul-e); color: #fff; }
+  :root[data-tema="escuro"] .bt-ind[aria-pressed="true"] { color: #051f3a; }
+
+  /* ===== empilhada ===== */
+  .emp { display: flex; height: 34px; margin: 16px 0 0; border: 1px solid var(--borda2); }
+  .emp div { height: 100%; transform-origin: left center; transition: transform .62s cubic-bezier(.22,.61,.36,1); display: grid; place-items: center; font-size: 13.5px; font-weight: 700; color: #fff; overflow: hidden; }
+  .ent .emp div { transform: scaleX(0); }
+
+  /* ===== avisos / tabela ===== */
+  .limites { background: var(--aviso-bg); border: 1px solid var(--aviso-bd); color: var(--aviso-tx); padding: 24px 26px; }
+  .limites h2 { color: inherit; }
+  .limites ul { margin: 12px 0 0; padding-left: 22px; max-width: 86ch; }
+  .limites li { margin: 9px 0; font-size: 16px; }
+  dl.glos { margin: 0; }
+  dl.glos dt { font-weight: 700; margin-top: 14px; font-size: 16px; }
+  dl.glos dt:first-child { margin-top: 0; }
+  dl.glos dd { margin: 3px 0 0; color: var(--suave); font-size: 15px; }
+  details { border: 1px solid var(--borda); background: var(--cartao); margin-top: 20px; }
+  summary { cursor: pointer; font-weight: 700; padding: 16px 20px; font-size: 16px; color: var(--azul-f); }
+  .tabw { padding: 0 20px 20px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+  caption { text-align: left; font-size: 13.5px; color: var(--mudo); padding: 0 0 12px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--borda); }
+  thead th { border-bottom: 2px solid var(--borda2); font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--mudo); }
+  th:not(:first-child), td:not(:first-child) { text-align: right; }
+  tbody tr:hover { background: var(--grade); }
+
+  footer { margin-top: 48px; background: var(--topo-bg); color: var(--topo-sv); padding: 32px 0; font-size: 14px; }
+  footer p { margin: 7px 0; max-width: 94ch; }
+  footer b { color: var(--topo-txt); }
+  .vazio { display: none; background: var(--cartao); border: 2px dashed var(--borda2); padding: 34px; text-align: center; margin-top: 30px; }
+  .vazio b { display: block; font-size: 19px; margin-bottom: 8px; }
+  body.sem-dados .vazio { display: block; }
+  body.sem-dados .ocultar { display: none; }
+
+  /* ===== modo apresentação ===== */
+  body.apres { font-size: 21px; }
+  body.apres .caixa { max-width: 1480px; }
+  body.apres .detalhe, body.apres .menu, body.apres details { display: none; }
+  body.apres h1 { font-size: clamp(42px, 6.4vw, 78px); }
+  body.apres h2 { font-size: clamp(30px, 3.8vw, 44px); }
+  body.apres .kpi b { font-size: clamp(44px, 6vw, 68px); }
+  body.apres .g-tit { font-size: 24px; }
+  body.apres .nm, body.apres .g-exp, body.apres .sub { font-size: 19px; }
+  body.apres .vl { font-size: 21px; }
+  body.apres section.sec { padding-top: 70px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .br, .emp div, .cem svg, .chip, .bt-topo { transition: none !important; }
+    .ent .br, .ent .emp div { transform: scaleX(1); }
+    .ent .cem svg { opacity: 1; transform: none; }
+  }
+
+  @media print {
+    :root { --fundo:#fff; --cartao:#fff; --cartao2:#fff; --sombra:none; --topo-bg:#fff; --topo-txt:#000; --topo-sv:#333; }
+    body { background:#fff; color:#000; font-size: 10.5pt; }
+    .filtro, .ferr, .menu, .pular, .vazio { display: none !important; }
+    .imp { display: block !important; font-size: 10pt; padding: 10px 0; border-bottom: 1px solid #999; }
+    .topo { border-bottom: 3px solid #000; }
+    .marca .sig { background:#000; color:#fff; }
+    .cartao, .limites, details { border: 1px solid #bbb !important; box-shadow: none !important; break-inside: avoid; page-break-inside: avoid; }
+    .kpis { border-color:#bbb; } .kpi { border:1px solid #eee; }
+    h1, h2, .g-tit { break-after: avoid; page-break-after: avoid; }
+    .ent .br, .ent .emp div { transform: scaleX(1) !important; }
+    .ent .cem svg { opacity:1 !important; transform:none !important; }
+    footer { background:#fff; color:#333; border-top:1px solid #999; }
+    details { border:none !important; } details[open] summary { font-weight:700; }
+    .tabw { padding:0; overflow:visible; }
+  }
+  .imp { display: none; }
+</style>
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<header class="topo">
+  <div class="caixa">
+    <div class="topo-l1">
+      <div class="marca">
+        <span class="sig" aria-hidden="true">QG</span>
+        <span>
+          <b>Quem governa os municípios</b>
+          <span>Painel acadêmico · Dados abertos do TSE · Eleição de 2024</span>
+        </span>
+      </div>
+      <div class="ferr">
+        <button class="bt-topo" type="button" id="bt-apres" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v2H3V4zm1 3h16v9H13v3l3 2v1H8v-1l3-2v-3H4V7z"/></svg>
+          <span>Modo apresentação</span>
+        </button>
+        <button class="bt-topo" type="button" id="bt-tema" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true" id="ic-tema"><path d="M12 3a9 9 0 109 9 7 7 0 01-9-9z"/></svg>
+          <span id="tx-tema">Tema escuro</span>
+        </button>
+      </div>
+    </div>
+    <nav class="menu" aria-label="Seções do painel">
+      <a href="#visao" aria-current="true">Visão geral</a>
+      <a href="#perfil">Perfil</a>
+      <a href="#regioes">Regiões</a>
+      <a href="#dados">Sobre os dados</a>
+    </nav>
+  </div>
+</header>
+
+<div class="filtro">
+  <div class="caixa filtro-i">
+    <span class="rot" id="rot-f">Região</span>
+    <div class="chips" id="chips" role="group" aria-labelledby="rot-f"></div>
+    <div class="ativo">
+      <span>Mostrando: <b id="at-txt">Brasil</b></span>
+      <button class="limpar" type="button" id="limpar" disabled>Limpar seleção</button>
+    </div>
+  </div>
+</div>
+
+<main id="conteudo">
+<div class="caixa">
+  <p class="imp">Recorte aplicado nesta impressão: <b id="imp-txt">Brasil</b></p>
+
+  <div class="vazio" role="status">
+    <b>Nenhum prefeito encontrado neste recorte.</b>
+    A seleção não retornou registros. Use “Limpar seleção” para voltar ao Brasil.
+  </div>
+
+  <div class="ocultar">
+
+  <!-- ===================== VISÃO GERAL ===================== -->
+  <section class="sec capa" id="visao" aria-labelledby="h1">
+    <p class="olho" id="capa-olho">Eleições municipais de 2024 · Brasil</p>
+    <div class="capa-g">
+      <div>
+        <h1 id="h1">Quem governa os municípios brasileiros</h1>
+        <p class="conclusao" id="conclusao"></p>
+        <div class="kpis" id="kpis"></div>
+      </div>
+      <div class="cartao">
+        <p class="g-tit" id="cem-tit"></p>
+        <p class="g-exp">Cada figura representa 1 de cada 100 pessoas eleitas prefeitas.</p>
+        <p class="escopo" id="cem-esc"></p>
+        <div class="cem" id="cem" role="img" aria-label=""></div>
+        <div class="leg"><span class="f"><i></i>Mulheres</span><span><i></i>Homens</span></div>
+        <p class="achado" id="cem-ach"></p>
+        <p class="nota detalhe" id="cem-nota"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PERFIL ===================== -->
+  <section class="sec" id="perfil" aria-labelledby="h-perfil">
+    <div class="cab">
+      <p class="perg">Quem foi eleito?</p>
+      <h2 id="h-perfil"></h2>
+      <p class="sub" id="sub-perfil"></p>
+    </div>
+    <div class="duas">
+      <div class="cartao">
+        <p class="g-tit" id="raca-tit"></p>
+        <p class="g-exp">Raça/cor como a própria pessoa declarou ao se candidatar. A nomenclatura é a da fonte.</p>
+        <p class="escopo" id="raca-esc"></p>
+        <div id="g-raca"></div>
+        <p class="achado" id="raca-ach"></p>
+      </div>
+      <div class="cartao">
+        <p class="g-tit" id="edu-tit"></p>
+        <p class="g-exp">Escolaridade declarada no registro, da maior para a menor.</p>
+        <p class="escopo" id="edu-esc"></p>
+        <div id="g-edu"></div>
+        <p class="achado" id="edu-ach"></p>
+      </div>
+    </div>
+    <div class="duas" style="margin-top:20px">
+      <div class="cartao">
+        <p class="g-tit" id="idade-tit"></p>
+        <p class="g-exp">Idade que a pessoa teria na posse, em 1º de janeiro de 2025.</p>
+        <p class="escopo" id="idade-esc"></p>
+        <div id="g-idade"></div>
+        <p class="achado" id="idade-ach"></p>
+      </div>
+      <div class="cartao">
+        <p class="g-tit">Empresário é a ocupação mais declarada, depois de quem já era prefeito</p>
+        <p class="g-exp">Ocupação informada por cada pessoa no registro de candidatura.</p>
+        <p class="escopo"><span class="selo">Brasil · não muda com o filtro</span> 5.553 prefeitos · 12 ocupações mais frequentes</p>
+        <div id="g-ocup"></div>
+        <p class="nota">“Prefeito” indica quem já ocupava o cargo e “Outros” não informa profissão. Essas duas linhas não descrevem uma atividade econômica.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== GÊNERO ===================== -->
+  <section class="sec" id="genero" aria-labelledby="h-genero">
+    <div class="cab">
+      <p class="perg">Quantas mulheres e quantos homens?</p>
+      <h2 id="h-genero"></h2>
+      <p class="sub">A chapa é a mesma e a eleição é a mesma: cada município elegeu um prefeito e um vice no mesmo voto.</p>
+    </div>
+    <div class="cartao">
+      <p class="g-tit">A participação feminina é maior entre vice-prefeitos</p>
+      <p class="g-exp">Percentual de mulheres em cada um dos dois cargos.</p>
+      <p class="escopo" id="vice-esc"></p>
+      <div id="g-vice"></div>
+      <p class="achado" id="vice-ach"></p>
+    </div>
+  </section>
+
+  <!-- ===================== POPULAÇÃO ===================== -->
+  <section class="sec" id="populacao" aria-labelledby="h-pop">
+    <div class="cab">
+      <p class="perg">Como esse perfil se compara à população?</p>
+      <h2 id="h-pop"></h2>
+      <p class="sub" id="sub-pop"></p>
+    </div>
+    <div class="cartao">
+      <p class="g-tit">Participação entre quem foi eleito e na população brasileira</p>
+      <p class="g-exp">Os dois percentuais aparecem escritos em cada linha. A diferença é descritiva: ela mostra a distância, não a causa dela.</p>
+      <p class="escopo"><span class="selo">Brasil · não muda com o filtro</span> <span id="pop-esc"></span></p>
+      <div class="ll" id="g-pop"></div>
+      <p class="nota">O Censo 2022 do IBGE mede a população residente do país inteiro e não faz parte da base do TSE. Por isso esta comparação só é feita para o Brasil: comparar os prefeitos de uma região com a população nacional daria uma leitura errada.</p>
+    </div>
+  </section>
+
+  <!-- ===================== REGIÕES ===================== -->
+  <section class="sec" id="regioes" aria-labelledby="h-reg">
+    <div class="cab">
+      <p class="perg">O que muda entre as regiões?</p>
+      <h2 id="h-reg"></h2>
+      <p class="sub">Escolha um indicador. As cinco regiões aparecem sempre na mesma escala, e a região selecionada no filtro fica destacada.</p>
+    </div>
+    <div class="cartao">
+      <div class="ind" id="ind" role="group" aria-label="Indicador para comparar as regiões"></div>
+      <p class="g-tit" id="reg-tit"></p>
+      <p class="escopo" id="reg-esc"></p>
+      <div id="g-reg"></div>
+      <p class="achado" id="reg-ach"></p>
+    </div>
+  </section>
+
+  <!-- ===================== PARTIDOS E REELEIÇÃO ===================== -->
+  <section class="sec" id="poder" aria-labelledby="h-poder">
+    <div class="cab">
+      <p class="perg">Como se distribuem partidos e reeleição?</p>
+      <h2 id="h-poder"></h2>
+      <p class="sub" id="sub-poder"></p>
+    </div>
+    <div class="duas">
+      <div class="cartao">
+        <p class="g-tit" id="part-tit"></p>
+        <p class="g-exp">Partido pelo qual cada prefeito concorreu. Coligações não são agrupadas.</p>
+        <p class="escopo" id="part-esc"></p>
+        <div id="g-part"></div>
+        <p class="achado" id="part-ach"></p>
+      </div>
+      <div class="cartao">
+        <p class="g-tit" id="reel-tit"></p>
+        <p class="g-exp">Quem concorreu declarando-se candidato à reeleição no próprio município.</p>
+        <p class="escopo" id="reel-esc"></p>
+        <div class="emp" id="emp" role="img" aria-label=""></div>
+        <div class="leg"><span class="a"><i></i>Reeleitos</span><span><i></i>Não concorreram como reeleição</span></div>
+        <p class="achado" id="reel-ach"></p>
+        <p class="nota">“Não concorreram como reeleição” <b>não</b> quer dizer que a pessoa nunca foi prefeita. Ela pode ter governado o município em mandatos não seguidos, ou ter sido prefeita de outra cidade. A base registra apenas a declaração feita nesta eleição.</p>
+      </div>
+    </div>
+    <div class="cartao" style="margin-top:20px">
+      <p class="g-tit" id="bens-tit"></p>
+      <p class="g-exp">Valor total dos bens que cada pessoa declarou ao se candidatar, em reais.</p>
+      <p class="escopo" id="bens-esc"></p>
+      <div class="tres3" id="bens-cx"></div>
+      <p class="nota" id="bens-nota"></p>
+    </div>
+  </section>
+
+  </div><!-- /ocultar -->
+
+  <!-- ===================== SOBRE OS DADOS ===================== -->
+  <section class="sec" id="dados" aria-labelledby="h-dados">
+    <div class="cab">
+      <p class="perg">O que esses dados permitem concluir?</p>
+      <h2 id="h-dados">O painel descreve quem foi eleito em 2024 — e só isso</h2>
+    </div>
+    <div class="limites">
+      <ul>
+        <li><b>É a eleição de 2024, não quem está no cargo hoje.</b> São 5.530 chapas com eleição confirmada pelo TSE, 9 com cassação registrada e 14 com eleição documentada por fonte histórica, todas mantidas para retratar o pleito. Quem ocupa a prefeitura hoje pode ser outra pessoa.</li>
+        <li><b>Tudo é autodeclaração.</b> Gênero, raça/cor, escolaridade, ocupação e bens vêm do próprio registro de candidatura, sem auditoria e sem inferência por nome ou foto.</li>
+        <li><b>Dado que falta não é zero.</b> Raça/cor não consta para 16 prefeitos e bens declarados para 178. Esses casos ficam fora da conta, e o denominador usado está escrito em cada gráfico.</li>
+        <li><b>As características foram medidas separadamente.</b> Dizer que o perfil mais comum é homem, branco e com superior completo <b>não</b> quer dizer que todos sejam as três coisas ao mesmo tempo: <span id="lim-tres"></span></li>
+        <li><b>O painel mostra diferenças, não causas.</b> O perfil varia muito entre as regiões, mas nada aqui testa por quê. Porte do município, regras eleitorais, estrutura partidária e composição da população local não entram nesta base.</li>
+        <li><b>Não há série histórica, meta nem indicador de gestão.</b> A base cobre um único pleito. Não dá para dizer se a diversidade subiu ou caiu, nem avaliar o desempenho de nenhuma prefeitura.</li>
+      </ul>
+    </div>
+
+    <div class="duas" style="margin-top:20px">
+      <div class="cartao">
+        <p class="g-tit">Palavras que aparecem no painel</p>
+        <dl class="glos">
+          <dt>Idade central do grupo (mediana)</dt>
+          <dd>É a idade que fica no meio quando todos são colocados em ordem: metade do grupo está acima dela e metade abaixo. Não é a média, e por isso uma pessoa muito velha ou muito nova não a desloca.</dd>
+          <dt>Pontos percentuais (p.p.)</dt>
+          <dd>É a diferença entre dois percentuais, feita por subtração simples. Exemplo: de 10% para 15%, a diferença é de 5 pontos percentuais.</dd>
+          <dt>Raça/cor</dt>
+          <dd>São as categorias usadas pelo TSE e pelo IBGE: branca, parda, preta, amarela e indígena. Cada pessoa escolhe a sua ao se registrar — ninguém classifica por ela.</dd>
+          <dt>Valor do meio dos bens (mediana)</dt>
+          <dd>Metade das pessoas declarou até esse valor e metade declarou acima dele.</dd>
+        </dl>
+      </div>
+      <div class="cartao">
+        <p class="g-tit">De onde vêm estes números</p>
+        <p class="g-exp" style="margin-bottom:14px">Tribunal Superior Eleitoral — candidaturas e resultados das eleições municipais ordinárias de 2024. Extração de 01/10/2026.</p>
+        <dl class="glos">
+          <dt>Quem está contado</dt>
+          <dd>As 5.553 pessoas eleitas <b>prefeitas</b>, uma por município. Vice-prefeitos entram apenas na comparação de gênero.</dd>
+          <dt>Referência de população</dt>
+          <dd>Censo Demográfico 2022, IBGE. É uma fonte externa, usada só como parâmetro de comparação nacional.</dd>
+          <dt>Arredondamento</dt>
+          <dd>Os destaques usam uma casa decimal. Os valores exatos, com os totais de cada categoria, estão na tabela abaixo.</dd>
+        </dl>
+      </div>
+    </div>
+
+    <details id="det">
+      <summary>Ver a tabela com todos os números do recorte selecionado</summary>
+      <div class="tabw"><table id="tabela"></table></div>
+    </details>
+  </section>
+</div>
+</main>
+
+<footer>
+  <div class="caixa">
+    <p><b>Trabalho acadêmico.</b> Painel produzido para a disciplina de Storytelling de Dados do Mestrado em Administração Pública (IDP), sobre dados públicos. <b>Não é um sistema oficial</b> de nenhum órgão, instituição financeira ou empresa, e não representa a posição de nenhuma delas.</p>
+    <p><b>Fonte:</b> TSE, eleições municipais ordinárias de 2024, consolidadas em <code>dados/eleitos.csv</code>; prefeitos eleitos contados por município. <b>Referência externa:</b> Censo Demográfico 2022, IBGE. <b>Extração:</b> 01/10/2026.</p>
+  </div>
+</footer>
+
+<script>
+const D = {"blocos":{"Brasil":{"n":5553,"genero":{"Homens":4819,"Mulheres":734},"raca":{"Branca":3655,"Parda":1732,"Preta":128,"Amarela":13,"Indígena":9},"raca_na":16,"edu":{"Lê e escreve":21,"Fundamental incompleto":212,"Fundamental completo":266,"Médio incompleto":93,"Médio completo":1399,"Superior incompleto":256,"Superior completo":3306},"idade":{"Até 34":416,"35–44":1543,"45–54":1748,"55–64":1262,"65 ou mais":584},"idade_mediana":49.0,"ate29":114,"mais60":1137,"reeleicao":{"Sim":2469,"Não":3084},"partidos":{"PSD":890,"MDB":860,"PP":750,"UNIÃO":589,"PL":517,"REPUBLICANOS":437,"PSB":311,"PSDB":275},"n_partidos":24,"bens_q":[191226.27,476569.56,1126015.67],"bens_mediana":476569.56,"bens_n":5375,"bens_zero":144,"bens_1mi":1496,"vices_mulheres":1074,"vices_n":5553,"tres_juntas":1869},"Norte":{"n":449,"genero":{"Homens":375,"Mulheres":74},"raca":{"Branca":149,"Parda":277,"Preta":19,"Amarela":1,"Indígena":3},"raca_na":0,"edu":{"Lê e escreve":2,"Fundamental incompleto":16,"Fundamental completo":18,"Médio incompleto":8,"Médio completo":131,"Superior incompleto":22,"Superior completo":252},"idade":{"Até 34":34,"35–44":132,"45–54":149,"55–64":96,"65 ou mais":38},"idade_mediana":48.0,"ate29":10,"mais60":71,"reeleicao":{"Sim":228,"Não":221},"partidos":{"MDB":111,"UNIÃO":101,"REPUBLICANOS":82,"PP":59,"PSD":35,"PL":21,"PDT":11,"PODE":7},"n_partidos":18,"bens_q":[200000.0,539345.0,1364000.0],"bens_mediana":539345.0,"bens_n":429,"bens_zero":20,"bens_1mi":137,"vices_mulheres":106,"vices_n":449,"tres_juntas":74},"Nordeste":{"n":1791,"genero":{"Homens":1459,"Mulheres":332},"raca":{"Branca":855,"Parda":856,"Preta":68,"Amarela":4,"Indígena":4},"raca_na":4,"edu":{"Lê e escreve":10,"Fundamental incompleto":62,"Fundamental completo":86,"Médio incompleto":26,"Médio completo":478,"Superior incompleto":94,"Superior completo":1035},"idade":{"Até 34":190,"35–44":554,"45–54":554,"55–64":330,"65 ou mais":163},"idade_mediana":47.0,"ate29":64,"mais60":300,"reeleicao":{"Sim":851,"Não":940},"partidos":{"MDB":282,"PSD":275,"PP":214,"PSB":214,"PT":170,"UNIÃO":154,"REPUBLICANOS":124,"PL":79},"n_partidos":20,"bens_q":[158392.37,401819.89,915128.97],"bens_mediana":401819.89,"bens_n":1714,"bens_zero":64,"bens_1mi":382,"vices_mulheres":422,"vices_n":1791,"tres_juntas":384},"Centro-Oeste":{"n":467,"genero":{"Homens":406,"Mulheres":61},"raca":{"Branca":283,"Parda":171,"Preta":11,"Amarela":0,"Indígena":0},"raca_na":2,"edu":{"Lê e escreve":1,"Fundamental incompleto":17,"Fundamental completo":23,"Médio incompleto":10,"Médio completo":111,"Superior incompleto":21,"Superior completo":284},"idade":{"Até 34":36,"35–44":112,"45–54":149,"55–64":118,"65 ou mais":52},"idade_mediana":50.0,"ate29":5,"mais60":104,"reeleicao":{"Sim":232,"Não":235},"partidos":{"UNIÃO":155,"MDB":75,"PSDB":54,"PL":53,"PP":46,"PSB":19,"PODE":15,"REPUBLICANOS":14},"n_partidos":15,"bens_q":[385467.18,953178.34,2804514.76],"bens_mediana":953178.34,"bens_n":456,"bens_zero":7,"bens_1mi":222,"vices_mulheres":101,"vices_n":467,"tres_juntas":141},"Sudeste":{"n":1656,"genero":{"Homens":1504,"Mulheres":152},"raca":{"Branca":1253,"Parda":360,"Preta":28,"Amarela":6,"Indígena":2},"raca_na":7,"edu":{"Lê e escreve":7,"Fundamental incompleto":67,"Fundamental completo":79,"Médio incompleto":28,"Médio completo":388,"Superior incompleto":67,"Superior completo":1020},"idade":{"Até 34":111,"35–44":458,"45–54":505,"55–64":390,"65 ou mais":192},"idade_mediana":49.0,"ate29":27,"mais60":374,"reeleicao":{"Sim":717,"Não":939},"partidos":{"PSD":355,"PL":185,"REPUBLICANOS":181,"MDB":167,"PP":153,"UNIÃO":119,"PSDB":85,"PODE":66},"n_partidos":23,"bens_q":[180243.38,416017.8,1008021.32],"bens_mediana":416017.8,"bens_n":1607,"bens_zero":35,"bens_1mi":403,"vices_mulheres":260,"vices_n":1656,"tres_juntas":693},"Sul":{"n":1190,"genero":{"Homens":1075,"Mulheres":115},"raca":{"Branca":1115,"Parda":68,"Preta":2,"Amarela":2,"Indígena":0},"raca_na":3,"edu":{"Lê e escreve":1,"Fundamental incompleto":50,"Fundamental completo":60,"Médio incompleto":21,"Médio completo":291,"Superior incompleto":52,"Superior completo":715},"idade":{"Até 34":45,"35–44":287,"45–54":391,"55–64":328,"65 ou mais":139},"idade_mediana":51.0,"ate29":8,"mais60":288,"reeleicao":{"Sim":441,"Não":749},"partidos":{"PP":278,"MDB":225,"PSD":217,"PL":179,"UNIÃO":60,"PSDB":57,"PDT":55,"REPUBLICANOS":36},"n_partidos":15,"bens_q":[239063.06,560000.0,1225980.61],"bens_mediana":560000.0,"bens_n":1169,"bens_zero":18,"bens_1mi":352,"vices_mulheres":185,"vices_n":1190,"tres_juntas":577}},"extra":{"ocupacoes":{"PREFEITO":1689,"EMPRESÁRIO":831,"AGRICULTOR":316,"ADVOGADO":282,"OUTROS":234,"SERVIDOR PÚBLICO MUNICIPAL":220,"ADMINISTRADOR":197,"MÉDICO":181,"VEREADOR":138,"COMERCIANTE":132,"PRODUTOR AGROPECUÁRIO":116,"ENGENHEIRO":114},"classif":{"ELEITO_ATUAL_TSE":5530,"CHAPA_CASSADA_TSE":9,"ELEICAO_HISTORICA_DOCUMENTADA":14},"nasc_mesma_uf":0.875923}};
+const POP = { mulheres: 51.5, homens: 48.5, raca: { 'Branca': 43.5, 'Parda': 45.3, 'Preta': 10.2, 'Amarela': 0.4, 'Indígena': 0.6 } };
+const REG = ['Brasil', 'Norte', 'Nordeste', 'Centro-Oeste', 'Sudeste', 'Sul'];
+const R_ORD = ['Branca', 'Parda', 'Preta', 'Amarela', 'Indígena'];
+const ADJ = { Branca: 'brancos', Parda: 'pardos', Preta: 'pretos', Amarela: 'amarelos', 'Indígena': 'indígenas' };
+const DE = { Brasil: 'do Brasil', Norte: 'do Norte', Nordeste: 'do Nordeste', 'Centro-Oeste': 'do Centro-Oeste', Sudeste: 'do Sudeste', Sul: 'do Sul' };
+
+const NF = new Intl.NumberFormat('pt-BR');
+const NF1 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+const $ = i => document.getElementById(i);
+const soma = o => Object.values(o).reduce((a, b) => a + b, 0);
+const p = (x, t) => t ? 100 * x / t : 0;
+const p1 = (x, t) => NF1.format(p(x, t)) + '%';
+const pp = v => NF1.format(Math.abs(v)) + ' pontos';
+const REDUZ = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let escopo = 'Brasil', indicador = 'mulher';
+
+/* ---------- animação ---------- */
+function anima(el) {
+  if (REDUZ) return;
+  el.classList.add('ent');
+  void el.offsetWidth;
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.remove('ent')));
+}
+/* Conta do valor anterior para o novo (não reinicia em zero a cada filtro).
+   O valor final fica em data-fim para a impressão poder congelar o número certo. */
+const ultimo = {};
+let tok = 0;
+function conta(el, alvo, fmt, chave) {
+  const fim = fmt(alvo);
+  el.dataset.fim = fim;
+  const de = (chave && ultimo[chave] !== undefined) ? ultimo[chave] : 0;
+  if (chave) ultimo[chave] = alvo;
+  const meu = ++tok; el._t = meu;
+  if (REDUZ || de === alvo) { el.textContent = fim; return; }
+  const t0 = performance.now(), ms = 620;
+  const passo = t => {
+    if (el._t !== meu) return;
+    const k = Math.min((t - t0) / ms, 1);
+    el.textContent = k < 1 ? fmt(de + (alvo - de) * (1 - Math.pow(1 - k, 3))) : fim;
+    if (k < 1) requestAnimationFrame(passo);
+  };
+  requestAnimationFrame(passo);
+}
+function fixarNumeros() {
+  document.querySelectorAll('[data-fim]').forEach(e => { e._t = null; e.textContent = e.dataset.fim; });
+}
+
+/* ---------- barras ---------- */
+function barras(el, itens, o = {}) {
+  const max = o.max || Math.max(...itens.map(i => p(i.v, i.t)), 1);
+  const un = o.un || 'prefeitos';
+  el.innerHTML = itens.map((i, k) => {
+    const v = p(i.v, i.t);
+    const cls = i.lar ? 'l' : i.dest ? 'd' : '';
+    const d = REDUZ ? '' : `transition-delay:${Math.min(k * 45, 330)}ms`;
+    return `<div class="linha" tabindex="0" aria-label="${i.nome}: ${p1(i.v, i.t)}, ${NF.format(i.v)} de ${NF.format(i.t)} ${un}">
+      <span class="nm">${i.nome}</span>
+      <span class="tr"><span class="br ${cls}" style="width:${Math.min(v / max * 100, 100)}%;${d}"></span></span>
+      <span class="vl">${p1(i.v, i.t)}<small>${NF.format(i.v)}</small></span></div>`;
+  }).join('');
+  anima(el);
+}
+
+/* ---------- indicadores comparáveis entre regiões ---------- */
+const IND = {
+  mulher: { rot: 'Mulheres', tit: 'Prefeitas (mulheres)', un: '% do total de prefeitos',
+    v: b => p(b.genero.Mulheres, b.n), den: b => b.n, abs: b => b.genero.Mulheres,
+    f: v => NF1.format(v) + '%', uni: 'p.p.' },
+  branca: { rot: 'Prefeitos brancos', tit: 'Prefeitos que se declaram brancos', un: '% de quem declarou raça/cor',
+    v: b => p(b.raca.Branca, soma(b.raca)), den: b => soma(b.raca), abs: b => b.raca.Branca,
+    f: v => NF1.format(v) + '%', uni: 'p.p.' },
+  reel: { rot: 'Reeleitos', tit: 'Prefeitos reeleitos', un: '% do total de prefeitos',
+    v: b => p(b.reeleicao.Sim, b.n), den: b => b.n, abs: b => b.reeleicao.Sim,
+    f: v => NF1.format(v) + '%', uni: 'p.p.' },
+  sup: { rot: 'Superior completo', tit: 'Prefeitos com curso superior completo', un: '% do total de prefeitos',
+    v: b => p(b.edu['Superior completo'], b.n), den: b => b.n, abs: b => b.edu['Superior completo'],
+    f: v => NF1.format(v) + '%', uni: 'p.p.' },
+  idade: { rot: 'Idade central', tit: 'Idade central do grupo, na posse', un: 'anos',
+    v: b => b.idade_mediana, den: b => b.n, abs: null,
+    f: v => NF.format(Math.round(v)) + ' anos', uni: 'anos' }
+};
+
+function painelRegioes() {
+  const m = IND[indicador], regs = REG.slice(1);
+  const vals = regs.map(r => ({ nome: r, v: m.v(D.blocos[r]), b: D.blocos[r] })).sort((a, c) => c.v - a.v);
+  const max = Math.max(...vals.map(x => x.v)) * 1.06;
+  $('g-reg').innerHTML = vals.map((x, k) => {
+    const d = REDUZ ? '' : `transition-delay:${Math.min(k * 50, 250)}ms`;
+    const sel = x.nome === escopo;
+    const det = m.abs ? `<small>${NF.format(m.abs(x.b))} de ${NF.format(m.den(x.b))}</small>` : `<small>${NF.format(x.b.n)} prefeitos</small>`;
+    return `<div class="linha" tabindex="0" aria-label="${x.nome}${sel ? ', região selecionada' : ''}: ${m.f(x.v)}">
+      <span class="nm">${x.nome}${sel ? ' <b style="color:var(--laranja-t)">(selecionada)</b>' : ''}</span>
+      <span class="tr"><span class="br ${sel ? 'l' : 'd'}" style="width:${x.v / max * 100}%;${d}"></span></span>
+      <span class="vl">${m.f(x.v)}${det}</span></div>`;
+  }).join('');
+  anima($('g-reg'));
+  const alta = vals[0], baixa = vals[vals.length - 1], amp = alta.v - baixa.v;
+  $('reg-tit').textContent = `${m.tit}: de ${m.f(baixa.v)} ${DE[baixa.nome]} a ${m.f(alta.v)} ${DE[alta.nome]}`;
+  $('reg-esc').innerHTML = `Em ${m.un} · as cinco regiões, sempre na mesma escala`
+    + (escopo !== 'Brasil' ? ` · <b>${escopo} está destacado em laranja</b>` : '');
+  $('reg-ach').textContent = m.uni === 'anos'
+    ? `A diferença entre a região com a maior e a com a menor idade central é de ${NF.format(amp)} anos. Nesse indicador, o país varia pouco.`
+    : `A diferença entre ${alta.nome} e ${baixa.nome} é de ${pp(amp)} percentuais.`
+      + (amp >= 20 ? ' É a maior variação regional do painel.' : amp <= 10 ? ' É uma variação pequena: nesse indicador, as regiões se parecem.' : '');
+  document.querySelectorAll('.bt-ind').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.i === indicador)));
+}
+
+/* ---------- render principal ---------- */
+function render() {
+  const b = D.blocos[escopo], B = D.blocos.Brasil, X = D.extra, br = escopo === 'Brasil';
+  document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.r === escopo)));
+  $('at-txt').textContent = br ? 'Brasil (todas as regiões)' : escopo;
+  $('imp-txt').textContent = escopo;
+  $('limpar').disabled = br;
+
+  if (!b || !b.n) { document.body.classList.add('sem-dados'); return; }
+  document.body.classList.remove('sem-dados');
+
+  const n = b.n, rt = soma(b.raca), sup = b.edu['Superior completo'];
+  const dos = br ? '' : ' ' + DE[escopo];
+  const rec = br ? `Recorte: Brasil · ${NF.format(n)} prefeitos` : `Recorte: ${escopo} · ${NF.format(n)} prefeitos`;
+  const rOrd = R_ORD.map(k => ({ k, v: b.raca[k], p: p(b.raca[k], rt) })).sort((a, c) => c.p - a.p);
+  const eOrd = Object.keys(b.edu).map(k => ({ k, v: b.edu[k] })).sort((a, c) => c.v - a.v);
+  const iOrd = Object.keys(b.idade).map(k => ({ k, v: b.idade[k] })).sort((a, c) => c.v - a.v);
+  const fem = b.genero.Mulheres, C = Math.round(p(fem, n));
+
+  /* ---- capa ---- */
+  $('capa-olho').textContent = `Eleições municipais de 2024 · ${br ? 'Brasil' : escopo}`;
+  const empate = (rOrd[0].p - rOrd[1].p) < 1.5;
+  // "A maioria" é feminino singular e as categorias da fonte já vêm nessa forma
+  // (branca, parda...), então aqui usa-se a própria nomenclatura do TSE.
+  const fonte = k => k.toLowerCase();
+  const maioriaRaca = empate ? fonte(rOrd[0].k) + ' ou ' + fonte(rOrd[1].k) : fonte(rOrd[0].k);
+  $('conclusao').innerHTML =
+    `De cada 100 pessoas eleitas prefeitas${dos} em 2024, cerca de <b>${C} são mulheres</b>. `
+    + `A maioria se declara <b>${maioriaRaca}</b>, `
+    + `tem <b>${NF.format(b.idade_mediana)} anos</b> e <b>curso superior completo</b>.`;
+
+  const kpis = [
+    { k: 'n', v: n, f: x => NF.format(Math.round(x)), rt: br ? 'municípios no país' : 'municípios na região', un: 'Um prefeito eleito em cada um' },
+    { k: 'f', v: p(fem, n), f: x => NF1.format(x) + '%', rt: 'são mulheres', un: `${NF.format(fem)} de ${NF.format(n)} prefeitos`, lar: true },
+    { k: 'i', v: b.idade_mediana, f: x => NF.format(Math.round(x)) + ' anos', rt: 'é a idade central', un: 'Metade está acima, metade abaixo' },
+    { k: 's', v: p(sup, n), f: x => NF1.format(x) + '%', rt: 'têm curso superior', un: `${NF.format(sup)} de ${NF.format(n)} prefeitos` }
+  ];
+  $('kpis').innerHTML = kpis.map((k, i) =>
+    `<div class="kpi ${k.lar ? 'lar' : ''}"><b id="k${i}">0</b><span class="rt">${k.rt}</span><span class="un">${k.un}</span></div>`).join('');
+  kpis.forEach((k, i) => conta($('k' + i), k.v, k.f, k.k));
+
+  /* ---- em cada 100 ---- */
+  $('cem-tit').textContent = `De cada 100 pessoas eleitas prefeitas${dos}, cerca de ${C} são mulheres`;
+  $('cem-esc').textContent = `${rec} · ${NF.format(fem)} mulheres e ${NF.format(b.genero.Homens)} homens`;
+  // 100 figuras iguais; só a cor distingue os grupos. Cor abstrata, nunca tom de pele.
+  $('cem').innerHTML = Array.from({ length: 100 }, (_, i) => {
+    const atraso = REDUZ ? '' : ` style="transition-delay:${Math.min(i * 5, 430)}ms"`;
+    return `<svg viewBox="0 0 12 17" class="${i < C ? 'f' : ''}"${atraso} aria-hidden="true">`
+      + '<circle cx="6" cy="3.6" r="3.3" fill="currentColor"/>'
+      + '<path d="M6 8.2c-3 0-4.8 1.8-4.8 4.6V17h9.6v-4.2c0-2.8-1.8-4.6-4.8-4.6z" fill="currentColor"/></svg>';
+  }).join('');
+  $('cem').setAttribute('aria-label', `Cem figuras: ${C} em laranja representam mulheres e ${100 - C} em cinza representam homens.`);
+  $('cem-ach').textContent = `Os outros ${100 - C} são homens.`;
+  $('cem-nota').textContent = `As 100 figuras são um arredondamento de ${p1(fem, n)}, calculado sobre ${NF.format(n)} prefeitos${dos}.`;
+  anima($('cem').parentElement);
+
+  /* ---- perfil ---- */
+  $('h-perfil').textContent = `A maioria se declara ${maioriaRaca}, tem curso superior e ${NF.format(b.idade_mediana)} anos`;
+  $('sub-perfil').textContent = `Tudo o que aparece aqui foi declarado pela própria pessoa ao se candidatar. Nada foi deduzido a partir do nome, da foto ou de qualquer outra informação. Valores calculados sobre ${NF.format(n)} prefeitos${dos}.`;
+
+  $('raca-tit').textContent = empate
+    ? `Prefeitos ${ADJ[rOrd[0].k]} e ${ADJ[rOrd[1].k]} estão praticamente empatados: ${NF1.format(rOrd[0].p)}% e ${NF1.format(rOrd[1].p)}%`
+    : `${NF1.format(rOrd[0].p)}% dos prefeitos${dos} se declaram ${ADJ[rOrd[0].k]}`;
+  $('raca-esc').textContent = `${rec} · ${NF.format(rt)} declararam raça/cor` + (b.raca_na ? ` · ${NF.format(b.raca_na)} não informaram e ficam fora da conta` : '');
+  barras($('g-raca'), R_ORD.map(k => ({ nome: k, v: b.raca[k], t: rt, dest: k === rOrd[0].k, lar: empate && k === rOrd[1].k })), { un: 'que declararam' });
+  $('raca-ach').textContent = `Somados, prefeitos pardos e pretos são ${p1(b.raca.Parda + b.raca.Preta, rt)} de quem declarou${dos}.`;
+
+  $('edu-tit').textContent = `${p1(sup, n)} dos prefeitos${dos} têm curso superior completo`;
+  $('edu-esc').textContent = rec;
+  barras($('g-edu'), eOrd.map(x => ({ nome: x.k, v: x.v, t: n, dest: x.k === 'Superior completo' })));
+  $('edu-ach').textContent = `Somando quem tem superior completo e incompleto, ${p1(sup + b.edu['Superior incompleto'], n)} chegaram à universidade.`;
+
+  $('idade-tit').textContent = `A idade central dos prefeitos${dos} é ${NF.format(b.idade_mediana)} anos`;
+  $('idade-esc').textContent = `${rec} · faixas em ordem de idade`;
+  const imax = Math.max(...Object.values(b.idade));
+  barras($('g-idade'), Object.keys(b.idade).map(k => ({ nome: k, v: b.idade[k], t: n, dest: b.idade[k] === imax })));
+  $('idade-ach').textContent = `A faixa mais numerosa é ${iOrd[0].k}. Pessoas de até 29 anos são ${p1(b.ate29, n)} do total, e as de 60 anos ou mais, ${p1(b.mais60, n)}.`;
+
+  const oc = Object.entries(X.ocupacoes), cap = s => s.charAt(0) + s.slice(1).toLowerCase();
+  const maior = oc.filter(([k]) => !['PREFEITO', 'OUTROS'].includes(k))[0];
+  barras($('g-ocup'), oc.map(([k, v]) => ({ nome: cap(k), v: v, t: B.n, dest: k === maior[0] })));
+
+  /* ---- gênero / vice (agora acompanha o filtro) ---- */
+  const vf = b.vices_mulheres, dif = p(vf, b.vices_n) - p(fem, n);
+  $('h-genero').textContent = `${p1(fem, n)} das prefeituras${dos} foram para mulheres, contra ${p1(vf, b.vices_n)} das vice-prefeituras`;
+  $('vice-esc').textContent = `${rec} · ${NF.format(b.vices_n)} vice-prefeitos no mesmo recorte`;
+  barras($('g-vice'), [
+    { nome: 'Prefeitas', v: fem, t: n, lar: true },
+    { nome: 'Vice-prefeitas', v: vf, t: b.vices_n, lar: true }
+  ], { max: 30, un: 'eleitos' });
+  $('vice-ach').textContent = `A diferença é de ${pp(dif)} percentuais a favor da vice-prefeitura: ${NF.format(vf)} vice-prefeitas contra ${NF.format(fem)} prefeitas, na mesma eleição.`;
+
+  /* ---- população (sempre Brasil) ---- */
+  $('h-pop').textContent = `Mulheres são ${NF1.format(POP.mulheres)}% da população e ${p1(B.genero.Mulheres, B.n)} de quem foi eleito prefeito`;
+  $('sub-pop').textContent = br
+    ? 'Esta é a única comparação externa que a base permite: a composição de quem foi eleito, ao lado da composição da população medida pelo Censo 2022.'
+    : `A referência do Censo é do país inteiro. Comparar os prefeitos ${DE[escopo]} com a população nacional daria uma leitura errada, então este bloco continua mostrando o Brasil.`;
+  $('pop-esc').textContent = `5.553 prefeitos para gênero · 5.537 para raça/cor · população residente do Censo 2022`;
+  const itens = [{ nome: 'Mulheres', e: p(B.genero.Mulheres, B.n), q: POP.mulheres }]
+    .concat(R_ORD.map(k => ({ nome: k, e: p(B.raca[k], soma(B.raca)), q: POP.raca[k] })));
+  const mx = 55;
+  $('g-pop').innerHTML = itens.map((i, k) => {
+    const d1 = REDUZ ? '' : `transition-delay:${Math.min(k * 50, 280)}ms`;
+    const d2 = REDUZ ? '' : `transition-delay:${Math.min(k * 50 + 90, 360)}ms`;
+    const dd = i.e - i.q;
+    return `<div class="ll-it">
+      <p class="ll-nm">${i.nome}</p>
+      <div class="ll-p"><span class="q">Entre quem foi eleito</span>
+        <span class="tr"><span class="br d" style="width:${Math.min(i.e / mx * 100, 100)}%;${d1}"></span></span>
+        <span class="v">${NF1.format(i.e)}%</span></div>
+      <div class="ll-p"><span class="q">Na população brasileira</span>
+        <span class="tr"><span class="br" style="width:${Math.min(i.q / mx * 100, 100)}%;${d2}"></span></span>
+        <span class="v">${NF1.format(i.q)}%</span></div>
+      <p class="ll-dif">São <b>${pp(dd)} percentuais ${dd >= 0 ? 'a mais' : 'a menos'}</b> entre quem foi eleito do que na população.</p>
+    </div>`;
+  }).join('');
+  anima($('g-pop'));
+
+  /* ---- regiões ---- */
+  painelRegioes();
+
+  /* ---- partidos e reeleição ---- */
+  const pk = Object.keys(b.partidos), top5 = Object.values(b.partidos).slice(0, 5).reduce((a, c) => a + c, 0);
+  $('h-poder').textContent = `Cinco partidos ficaram com ${p1(top5, n)} das prefeituras${dos}`;
+  $('sub-poder').textContent = `Cada prefeitura é atribuída ao partido do próprio prefeito. No recorte ${escopo}, ${NF.format(b.n_partidos)} partidos elegeram ao menos um prefeito.`;
+  $('part-tit').textContent = `${pk[0]} é o partido com mais prefeituras${dos}: ${p1(b.partidos[pk[0]], n)}`;
+  $('part-esc').textContent = `${rec} · os 8 maiores partidos do recorte`;
+  barras($('g-part'), pk.map((k, i) => ({ nome: k, v: b.partidos[k], t: n, dest: i < 5 })), { un: 'prefeituras' });
+  $('part-ach').textContent = `Os cinco primeiros somam ${NF.format(top5)} das ${NF.format(n)} prefeituras do recorte.`;
+
+  const rs = b.reeleicao.Sim, rn = b.reeleicao['Não'];
+  $('reel-tit').textContent = `${p1(rs, n)} dos prefeitos${dos} foram reeleitos`;
+  $('reel-esc').textContent = rec;
+  const w1 = p(rs, n), w2 = p(rn, n);
+  $('emp').innerHTML =
+    `<div style="background:var(--azul);width:${w1}%;${REDUZ ? '' : 'transition-delay:0ms'}">${w1 > 12 ? NF1.format(w1) + '%' : ''}</div>`
+    + `<div style="background:var(--neutro);width:${w2}%;${REDUZ ? '' : 'transition-delay:120ms'}">${w2 > 12 ? NF1.format(w2) + '%' : ''}</div>`;
+  $('emp').setAttribute('aria-label', `${p1(rs, n)} reeleitos e ${p1(rn, n)} não concorreram como reeleição.`);
+  anima($('emp').parentElement);
+  $('reel-ach').textContent = `São ${NF.format(rs)} prefeitos que já ocupavam o cargo e foram reconduzidos, de um total de ${NF.format(n)}.`;
+
+  const q = b.bens_q;
+  $('bens-tit').textContent = `Metade dos prefeitos${dos} declarou até ${BRL.format(b.bens_mediana)} em bens`;
+  $('bens-esc').textContent = `${rec} · ${NF.format(b.bens_n)} com a informação · ${NF.format(n - b.bens_n)} sem a informação ficam fora da conta`;
+  const cel = [
+    ['bq1', q[0], 'Um quarto declarou até este valor', false],
+    ['bq2', q[1], 'Valor do meio: metade declarou até aqui', true],
+    ['bq3', q[2], 'Um quarto declarou acima deste valor', false]
+  ];
+  $('bens-cx').innerHTML = cel.map(c =>
+    `<div><b id="${c[0]}" style="display:block;font-size:${c[3] ? 32 : 25}px;font-weight:800;letter-spacing:-.03em;color:var(--azul-f);font-variant-numeric:tabular-nums">R$ 0</b>
+      <span style="font-size:14.5px;color:var(--suave);display:block;margin-top:5px">${c[2]}</span></div>`).join('');
+  cel.forEach(c => conta($(c[0]), c[1], x => BRL.format(x), c[0] + escopo));
+  $('bens-nota').textContent = `Valores declarados pela própria pessoa, sem auditoria, em reais da época do registro. `
+    + `No recorte ${escopo}, ${p1(b.bens_1mi, b.bens_n)} declararam mais de R$ 1 milhão e ${NF.format(b.bens_zero)} declararam R$ 0.`;
+
+  /* ---- limites e tabela ---- */
+  $('lim-tres').textContent = `no recorte ${escopo}, ${p1(b.tres_juntas, n)} dos prefeitos (${NF.format(b.tres_juntas)} de ${NF.format(n)}) reúnem as três características ao mesmo tempo.`;
+
+  const L = [['Prefeitos eleitos', n, '100,0%'],
+    ['Homens', b.genero.Homens, p1(b.genero.Homens, n)], ['Mulheres', fem, p1(fem, n)],
+    ['Vice-prefeitas (mulheres)', vf, p1(vf, b.vices_n)]]
+    .concat(R_ORD.map(k => ['Raça/cor: ' + k, b.raca[k], p1(b.raca[k], rt) + ' de quem declarou']))
+    .concat([['Raça/cor não informada', b.raca_na, '—']])
+    .concat(Object.keys(b.idade).map(k => ['Idade na posse: ' + k, b.idade[k], p1(b.idade[k], n)]))
+    .concat(Object.keys(b.edu).reverse().map(k => ['Escolaridade: ' + k, b.edu[k], p1(b.edu[k], n)]))
+    .concat(pk.map(k => ['Partido: ' + k, b.partidos[k], p1(b.partidos[k], n)]))
+    .concat([['Reeleitos', rs, p1(rs, n)], ['Não concorreram como reeleição', rn, p1(rn, n)],
+      ['Homem + branco + superior (as três)', b.tres_juntas, p1(b.tres_juntas, n)]]);
+  $('tabela').innerHTML =
+    `<caption>Recorte ${escopo} · eleição de 2024 · fonte TSE, extração de 01/10/2026. `
+    + `Idade central: ${NF.format(b.idade_mediana)} anos. Valor do meio dos bens: ${BRL.format(b.bens_mediana)}, sobre ${NF.format(b.bens_n)} prefeitos com a informação.</caption>`
+    + `<thead><tr><th scope="col">Indicador — ${escopo}</th><th scope="col">Pessoas</th><th scope="col">Participação</th></tr></thead><tbody>`
+    + L.map(l => `<tr><th scope="row" style="font-weight:400">${l[0]}</th><td>${NF.format(l[1])}</td><td>${l[2]}</td></tr>`).join('') + '</tbody>';
+}
+
+/* ---------- controles ---------- */
+$('chips').innerHTML = REG.map(r => `<button class="chip" type="button" data-r="${r}" aria-pressed="false">${r}</button>`).join('');
+$('chips').addEventListener('click', e => {
+  const b = e.target.closest('.chip');
+  if (b && b.dataset.r !== escopo) { escopo = b.dataset.r; render(); }
+});
+$('limpar').addEventListener('click', () => { if (escopo !== 'Brasil') { escopo = 'Brasil'; render(); } });
+
+$('ind').innerHTML = Object.keys(IND).map(k =>
+  `<button class="bt-ind" type="button" data-i="${k}" aria-pressed="false">${IND[k].rot}</button>`).join('');
+$('ind').addEventListener('click', e => {
+  const b = e.target.closest('.bt-ind');
+  if (b && b.dataset.i !== indicador) { indicador = b.dataset.i; painelRegioes(); }
+});
+
+const SOL = '<path d="M12 7a5 5 0 100 10 5 5 0 000-10zm0-5v3m0 14v3M2 12h3m14 0h3M4.2 4.2l2.1 2.1m11.4 11.4l2.1 2.1M19.8 4.2l-2.1 2.1M6.3 17.7l-2.1 2.1"stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>';
+const LUA = '<path d="M12 3a9 9 0 109 9 7 7 0 01-9-9z"/>';
+function aplicarTema(t) {
+  document.documentElement.setAttribute('data-tema', t);
+  const esc = t === 'escuro';
+  $('bt-tema').setAttribute('aria-pressed', String(esc));
+  $('tx-tema').textContent = esc ? 'Tema claro' : 'Tema escuro';
+  $('ic-tema').innerHTML = esc ? SOL : LUA;
+  try { localStorage.setItem('tema', t); } catch (e) {}
+}
+$('bt-tema').addEventListener('click', () =>
+  aplicarTema(document.documentElement.getAttribute('data-tema') === 'escuro' ? 'claro' : 'escuro'));
+
+$('bt-apres').addEventListener('click', function () {
+  const on = document.body.classList.toggle('apres');
+  this.setAttribute('aria-pressed', String(on));
+  this.querySelector('span').textContent = on ? 'Sair da apresentação' : 'Modo apresentação';
+});
+
+/* menu: marca a seção visível */
+const alvos = [...document.querySelectorAll('.menu a')];
+const obs = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if (!e.isIntersecting) return;
+    alvos.forEach(a => a.setAttribute('aria-current', String(a.getAttribute('href') === '#' + e.target.id)));
+  });
+}, { rootMargin: '-72px 0px -62% 0px' });
+['visao', 'perfil', 'regioes', 'dados'].forEach(i => { const e = $(i); if (e) obs.observe(e); });
+
+window.addEventListener('beforeprint', () => { $('det').open = true; fixarNumeros(); });
+
+let tIni = 'claro';
+try { if (localStorage.getItem('tema') === 'escuro') tIni = 'escuro'; } catch (e) {}
+if (tIni === 'claro' && matchMedia('(prefers-color-scheme: dark)').matches) {
+  try { if (!localStorage.getItem('tema')) tIni = 'escuro'; } catch (e) { tIni = 'escuro'; }
+}
+aplicarTema(tIni);
+render();
+</script>
+</body>
+</html>
