@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Continuidade e renovação nas prefeituras</title>
+<meta name="description" content="Dashboard para a aula inaugural de uma escola de governo: o equilíbrio entre prefeitos reeleitos e novos prefeitos nas eleições municipais de 2024.">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f3f5f8;
+    --surface: #ffffff;
+    --surface-2: #eef2f7;
+    --ink: #142235;
+    --ink-2: #47566b;
+    --ink-3: #6b7889;
+    --rule: #dbe1e9;
+    --grid: #e6eaf0;
+    --neutral-mark: #c3ccd8;
+    --cont: #2B63B0;      /* continuidade: prefeitos reeleitos */
+    --renov: #6FA4E6;     /* renovação: prefeitos novos */
+    --accent: #E36A1E;    /* destaque */
+    --accent-ink: #b34f10;
+    --accent-soft: #fdf0e6;
+    --shadow: 0 1px 2px rgba(20,34,53,.06), 0 4px 16px rgba(20,34,53,.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #0f141b;
+      --surface: #18202a;
+      --surface-2: #1f2935;
+      --ink: #eef2f7;
+      --ink-2: #b9c4d2;
+      --ink-3: #8e9bab;
+      --rule: #2b3644;
+      --grid: #253040;
+      --neutral-mark: #3d4a5b;
+      --cont: #2E61B2;
+      --renov: #6497DA;
+      --accent: #E2671F;
+      --accent-ink: #f29a5e;
+      --accent-soft: #2e2016;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0f141b; --surface: #18202a; --surface-2: #1f2935;
+    --ink: #eef2f7; --ink-2: #b9c4d2; --ink-3: #8e9bab;
+    --rule: #2b3644; --grid: #253040; --neutral-mark: #3d4a5b;
+    --cont: #2E61B2; --renov: #6497DA; --accent: #E2671F;
+    --accent-ink: #f29a5e; --accent-soft: #2e2016; --shadow: none;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px; line-height: 1.55;
+  }
+  main { max-width: 1040px; margin: 0 auto; padding: 32px 16px 64px; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* Cabeçalho */
+  header.capa { padding: 24px 0 8px; }
+  .kicker { font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+  h1 { font-size: clamp(28px, 4.6vw, 44px); line-height: 1.12; margin: 10px 0 14px; letter-spacing: -.01em; text-wrap: balance; }
+  .lead { font-size: clamp(17px, 2vw, 19px); color: var(--ink-2); max-width: 720px; margin: 0; }
+  .tema-toggle {
+    float: right; margin-top: -4px; font: inherit; font-size: 13px; color: var(--ink-2);
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 999px; padding: 6px 12px; cursor: pointer;
+  }
+
+  /* Seções */
+  section.bloco {
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 14px;
+    padding: clamp(18px, 3vw, 32px); margin-top: 24px; box-shadow: var(--shadow);
+  }
+  .passo { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--cont); }
+  :root[data-theme="dark"] .passo { color: var(--renov); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .passo { color: var(--renov); } }
+  h2 { font-size: clamp(21px, 2.8vw, 27px); line-height: 1.25; margin: 6px 0 10px; text-wrap: balance; }
+  .texto { color: var(--ink-2); max-width: 760px; margin: 0 0 18px; }
+  .texto strong { color: var(--ink); }
+  .fonte { font-size: 13px; color: var(--ink-3); margin: 14px 0 0; }
+
+  /* Herói */
+  .heroi { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 32px; align-items: center; }
+  .heroi .grande { font-size: clamp(56px, 10vw, 92px); font-weight: 750; line-height: 1; color: var(--cont); letter-spacing: -.02em; }
+  :root[data-theme="dark"] .heroi .grande { color: var(--renov); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .heroi .grande { color: var(--renov); } }
+  .heroi .rotulo { font-size: 17px; color: var(--ink-2); margin-top: 8px; }
+  .barra-total { display: flex; height: 56px; gap: 2px; margin: 8px 0 10px; }
+  .barra-total > div { height: 100%; position: relative; cursor: default; }
+  .barra-total .c { background: var(--cont); border-radius: 6px 0 0 6px; }
+  .barra-total .r { background: var(--renov); border-radius: 0 6px 6px 0; }
+  .legenda-total { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; }
+  .legenda-total b { display: block; font-size: 20px; color: var(--ink); }
+  .legenda-total span { color: var(--ink-2); }
+  .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: 1px; }
+  .sw.c { background: var(--cont); } .sw.r { background: var(--renov); } .sw.a { background: var(--accent); } .sw.n { background: var(--neutral-mark); }
+
+  .alerta {
+    display: flex; gap: 12px; align-items: flex-start; margin-top: 22px; padding: 14px 16px;
+    background: var(--accent-soft); border-left: 4px solid var(--accent); border-radius: 8px; color: var(--ink);
+  }
+  .alerta .ic { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 800; display: grid; place-items: center; font-size: 14px; }
+  .alerta p { margin: 0; color: var(--ink-2); }
+  .alerta strong { color: var(--ink); }
+
+  /* Filtros */
+  .filtros { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 18px; }
+  .filtros button {
+    font: inherit; font-size: 14px; padding: 7px 14px; border-radius: 999px; cursor: pointer;
+    background: var(--surface); color: var(--ink-2); border: 1px solid var(--rule);
+  }
+  .filtros button:hover { border-color: var(--ink-3); }
+  .filtros button[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+  .filtros button:focus-visible, .tema-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Cartões de região */
+  .regioes { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-bottom: 22px; }
+  .reg { background: var(--surface-2); border-radius: 10px; padding: 12px; border: 2px solid transparent; }
+  .reg.ativo { border-color: var(--cont); }
+  .reg .nome { font-size: 13px; color: var(--ink-2); }
+  .reg .v { font-size: 26px; font-weight: 700; line-height: 1.2; }
+  .reg .n { font-size: 12px; color: var(--ink-3); }
+  .reg.extremo .v { color: var(--accent-ink); }
+
+  /* Gráfico de barras horizontais (HTML) */
+  .barras { position: relative; }
+  .barras-area { --nome: 112px; --val: 58px; --gap: 10px; }
+  .linha { display: grid; grid-template-columns: var(--nome) minmax(0, 1fr) var(--val); align-items: center; gap: var(--gap); min-height: 26px; padding: 2px 0; border-radius: 6px; }
+  .linha .nome { font-size: 14px; color: var(--ink-2); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .linha .trilho { position: relative; height: 16px; }
+  .linha .preench { position: absolute; left: 0; top: 0; bottom: 0; background: var(--cont); border-radius: 0 4px 4px 0; transition: background .2s, opacity .2s; }
+  .linha .valor { font-size: 14px; font-weight: 600; color: var(--ink); }
+  .linha.apagada .preench { background: var(--neutral-mark); }
+  .linha.apagada .nome, .linha.apagada .valor { color: var(--ink-3); font-weight: 400; }
+  .linha.realce .preench { background: var(--accent); }
+  .linha:hover { background: var(--surface-2); }
+  .ref { position: absolute; top: -6px; bottom: -6px; border-left: 2px dashed var(--accent); pointer-events: none; }
+  .ref-rotulo { position: absolute; top: -22px; transform: translateX(-50%); font-size: 12px; font-weight: 600; color: var(--accent-ink); white-space: nowrap; }
+  .eixo { display: grid; grid-template-columns: var(--nome) minmax(0, 1fr) var(--val); gap: var(--gap); margin-top: 6px; }
+  .eixo .ticks { position: relative; height: 18px; border-top: 1px solid var(--rule); }
+  .eixo .ticks span { position: absolute; top: 2px; transform: translateX(-50%); font-size: 12px; color: var(--ink-3); }
+  .barras-area { position: relative; padding-top: 24px; }
+  #ocup, #porte { --nome: 180px; }
+  @media (max-width: 760px) { .barras-area { --nome: 84px; --val: 50px; --gap: 8px; } #ocup, #porte { --nome: 104px; } #ocup .nome, #porte .nome { white-space: normal; font-size: 13px; line-height: 1.2; } .eixo .ticks span:nth-child(even) { display: none; } }
+
+  /* Histograma agrupado */
+  .hist { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; align-items: end; height: 240px; border-bottom: 1px solid var(--rule); position: relative; }
+  .hist .grupo { display: flex; gap: 2px; align-items: flex-end; height: 100%; justify-content: center; }
+  .hist .b { width: 42%; max-width: 34px; border-radius: 4px 4px 0 0; position: relative; }
+  .hist .b.c { background: var(--cont); } .hist .b.r { background: var(--renov); }
+  .hist .b:hover { filter: brightness(1.12); }
+  .hist .b .lab { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--ink-2); padding-bottom: 2px; white-space: nowrap; }
+  .hist-eixo { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; margin-top: 6px; font-size: 12px; color: var(--ink-3); text-align: center; }
+  .legenda { display: flex; flex-wrap: wrap; gap: 16px; font-size: 14px; color: var(--ink-2); margin: 0 0 14px; }
+
+  .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 24px; }
+  .tile { background: var(--surface-2); border-radius: 10px; padding: 14px 16px; }
+  .tile .t { font-size: 13px; color: var(--ink-2); }
+  .tile .par { display: flex; gap: 18px; align-items: baseline; margin-top: 4px; flex-wrap: wrap; }
+  .tile .par div { font-size: 13px; color: var(--ink-3); }
+  .tile .par b { display: block; font-size: 26px; color: var(--ink); line-height: 1.2; }
+  .tile.destaque { background: var(--accent-soft); border: 1px solid var(--accent); }
+  .tile.destaque .grande-a { font-size: 34px; font-weight: 750; color: var(--accent-ink); line-height: 1.1; }
+
+  /* Hipóteses */
+  .hipoteses { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .hip { border: 1px solid var(--rule); border-radius: 12px; padding: 16px 18px; background: var(--surface); }
+  .hip h3 { margin: 0 0 8px; font-size: 17px; }
+  .hip p { margin: 0 0 8px; font-size: 15px; color: var(--ink-2); }
+  .hip .mostra, .hip .nao { font-size: 14px; padding-left: 10px; border-left: 3px solid var(--cont); margin-top: 8px; color: var(--ink-2); }
+  .hip .nao { border-left-color: var(--neutral-mark); color: var(--ink-3); }
+
+  .perguntas { counter-reset: q; list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+  .perguntas li { counter-increment: q; position: relative; padding: 14px 16px 14px 56px; background: var(--surface-2); border-radius: 10px; font-size: 17px; }
+  .perguntas li::before { content: counter(q); position: absolute; left: 16px; top: 13px; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; display: grid; place-items: center; font-size: 15px; }
+
+  details { margin-top: 16px; border-top: 1px solid var(--rule); padding-top: 12px; }
+  summary { cursor: pointer; font-weight: 600; color: var(--ink-2); font-size: 15px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; margin-top: 10px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--rule); }
+  th { color: var(--ink-3); font-weight: 600; }
+  td.r, th.r { text-align: right; font-variant-numeric: tabular-nums; }
+  .tabela-wrap { overflow-x: auto; }
+
+  .metodo { font-size: 14px; color: var(--ink-2); }
+  .metodo ul { padding-left: 20px; margin: 8px 0; }
+  .metodo li { margin: 4px 0; }
+  footer { text-align: center; font-size: 13px; color: var(--ink-3); margin-top: 32px; }
+
+  /* Tooltip */
+  #tip {
+    position: fixed; z-index: 10; pointer-events: none; opacity: 0; transition: opacity .12s;
+    background: var(--ink); color: var(--surface); font-size: 13px; line-height: 1.4;
+    padding: 8px 10px; border-radius: 8px; max-width: 260px; box-shadow: 0 6px 20px rgba(0,0,0,.18);
+  }
+  #tip b { display: block; font-size: 14px; }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  @media (max-width: 760px) {
+    .heroi { grid-template-columns: 1fr; gap: 18px; }
+    .regioes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .tiles, .hipoteses { grid-template-columns: 1fr; }
+    .hist { gap: 4px; height: 200px; }
+    .hist-eixo { gap: 4px; font-size: 11px; }
+    .hist .b .lab { display: none; }
+    .tema-toggle { float: none; display: inline-block; margin-bottom: 12px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<main>
+  <header class="capa">
+    <button class="tema-toggle" id="tema" type="button" aria-label="Alternar tema claro e escuro">◐ Tema</button>
+    <div class="kicker">Aula inaugural · Curso de lideranças municipais</div>
+    <h1>Quase metade fica, pouco mais da metade chega: o equilíbrio que governa as prefeituras desde 2025</h1>
+    <p class="lead">Cada um aqui conhece bem o próprio município. Este painel mostra o que acontece nos outros 5.500: quem permaneceu no comando das prefeituras nas eleições de 2024, quem chegou, e o que pode explicar esse equilíbrio, que muda bastante de um lugar para outro.</p>
+  </header>
+
+  <!-- 1. O retrato nacional -->
+  <section class="bloco" aria-labelledby="s1">
+    <div class="passo">1 · O retrato do país</div>
+    <h2 id="s1">44,5% dos prefeitos eleitos em 2024 foram reeleitos. Os outros 55,5% chegaram ao cargo agora</h2>
+    <div class="heroi">
+      <div>
+        <div class="grande num" id="heroi-pct">44,5%</div>
+        <div class="rotulo">dos <b class="num">5.553</b> prefeitos eleitos em 2024 estavam no cargo e foram <b>reconduzidos</b></div>
+      </div>
+      <div>
+        <div class="barra-total" id="barra-total" role="img" aria-label="2.469 prefeitos reeleitos (44,5%) e 3.084 prefeitos novos (55,5%)"></div>
+        <div class="legenda-total">
+          <div><span class="sw c"></span><span>Continuidade: reeleitos</span><b class="num" id="lt-c"></b></div>
+          <div style="text-align:right"><span class="sw r"></span><span>Renovação: novos no cargo</span><b class="num" id="lt-r"></b></div>
+        </div>
+      </div>
+    </div>
+    <div class="alerta" role="note">
+      <div class="ic" aria-hidden="true">!</div>
+      <p><strong>"Novo" não quer dizer que o eleitor rejeitou o prefeito anterior.</strong> Quem já estava no segundo mandato seguido não podia concorrer de novo. Parte da renovação é obrigatória pela regra eleitoral, e a base não permite separar esses casos. Também não há dados sobre quem tentou a reeleição e perdeu.</p>
+    </div>
+  </section>
+
+  <!-- 2. Território -->
+  <section class="bloco" aria-labelledby="s2">
+    <div class="passo">2 · A sua realidade não é a do país</div>
+    <h2 id="s2">De 67% em Roraima a 31% em Santa Catarina: o Sul renova mais; o Norte e o Centro-Oeste mantêm mais</h2>
+    <p class="texto">Escolha a sua região e compare-a com as outras. A linha laranja marca a média nacional. Barras acima dela indicam estados onde a continuidade pesou mais que no conjunto do país.</p>
+    <div class="filtros" role="group" aria-label="Filtrar por região" id="filtros"></div>
+    <div class="regioes" id="regioes"></div>
+    <div class="barras-area" id="ufs" role="img" aria-label="Percentual de prefeitos reeleitos por UF, em ordem decrescente"></div>
+    <p class="fonte">Percentual de prefeitos reeleitos entre os eleitos de cada UF. Estados com poucos municípios (RR: 15; AP: 16; AC: 22) variam muito com poucos casos.</p>
+  </section>
+
+  <!-- 3. Porte -->
+  <section class="bloco" aria-labelledby="s3">
+    <div class="passo">3 · Cidade pequena, cidade grande</div>
+    <h2 id="s3">O tamanho do município quase não muda o equilíbrio. Só nas maiores cidades a renovação ganha um pouco mais de espaço</h2>
+    <p class="texto">Os municípios estão agrupados pelo total de votos válidos para prefeito, que serve de indicador aproximado do tamanho do eleitorado. Até 100 mil votos, a taxa fica sempre entre 44% e 47%. A diferença entre regiões (seção 2) é muito maior que a diferença entre portes.</p>
+    <div class="barras-area" id="porte" role="img" aria-label="Percentual de prefeitos reeleitos por porte do município"></div>
+  </section>
+
+  <!-- 4. Força da continuidade -->
+  <section class="bloco" aria-labelledby="s4">
+    <div class="passo">4 · Como se vence</div>
+    <h2 id="s4">Quem permanece costuma vencer com folga: a vitória típica de um reeleito tem quase 11 pontos a mais que a de quem chega</h2>
+    <p class="texto">Distribuição da votação da chapa vencedora, em % dos votos válidos no turno decisivo. Cada grupo soma 100%. Os <strong>novos</strong> se concentram entre 50% e 60%, em disputas mais apertadas. Os <strong>reeleitos</strong> se espalham para a direita, com vitórias amplas.</p>
+    <div class="legenda"><span><span class="sw c"></span>Reeleitos (2.466 com votação disponível)</span><span><span class="sw r"></span>Novos (3.078 com votação disponível)</span></div>
+    <div class="hist" id="hist" role="img" aria-label="Histograma da votação dos vencedores reeleitos e novos"></div>
+    <div class="hist-eixo" id="hist-eixo"></div>
+    <div class="tiles">
+      <div class="tile"><div class="t">Votação mediana do vencedor</div>
+        <div class="par"><div><b class="num">65,0%</b><span class="sw c"></span>reeleitos</div><div><b class="num">54,4%</b><span class="sw r"></span>novos</div></div></div>
+      <div class="tile"><div class="t">Venceram com 70% ou mais dos votos</div>
+        <div class="par"><div><b class="num">38%</b><span class="sw c"></span>reeleitos</div><div><b class="num">11%</b><span class="sw r"></span>novos</div></div></div>
+      <div class="tile destaque"><div class="t">Reeleitos com praticamente 100% dos votos válidos</div>
+        <div class="grande-a num">195</div><div class="t">sinal de <b>candidatura única</b>, sem adversário. Entre os novos, foram 93.</div></div>
+    </div>
+  </section>
+
+  <!-- 5. Quem chega -->
+  <section class="bloco" aria-labelledby="s5">
+    <div class="passo">5 · Quem chega</div>
+    <h2 id="s5">A renovação vem principalmente de fora dos cargos eletivos: só 8% dos novos prefeitos se declararam políticos de profissão</h2>
+    <p class="texto">Ocupação declarada ao TSE pelos <strong>3.084 prefeitos novos</strong>. Em laranja, quem declarou um cargo eletivo: <strong>138 vereadores</strong>, <strong>73 que se declararam "prefeito"</strong> (provavelmente ex-prefeitos voltando depois de um intervalo), <strong>33 deputados</strong> e 1 senador.</p>
+    <div class="barras-area" id="ocup" role="img" aria-label="Ocupação declarada dos prefeitos novos, por grupo"></div>
+    <p class="fonte">A ocupação é uma declaração e não conta a trajetória completa. Ex-vices, secretários e assessores costumam aparecer com a profissão de origem. Por isso o número real de quem já vinha da política local tende a ser maior.</p>
+  </section>
+
+  <!-- 6. Partidos -->
+  <section class="bloco" aria-labelledby="s6">
+    <div class="passo">6 · Partidos</div>
+    <h2 id="s6">Nos maiores partidos, a continuidade vai de 35% (PSDB) a 52% (PSD), uma variação bem maior que a observada entre portes de cidade</h2>
+    <p class="texto">Percentual de reeleitos entre os prefeitos de cada partido (partidos com 150 prefeitos ou mais). O partido é o da candidatura de 2024. Prefeitos que trocaram de legenda antes da eleição entram no partido novo, o que pode inflar a continuidade de quem mais atraiu prefeitos em exercício.</p>
+    <div class="barras-area" id="partidos" role="img" aria-label="Percentual de prefeitos reeleitos por partido"></div>
+  </section>
+
+  <!-- 7. Hipóteses -->
+  <section class="bloco" aria-labelledby="s7">
+    <div class="passo">7 · O que pode estar por trás</div>
+    <h2 id="s7">Quatro pistas para explicar o equilíbrio, e o que os dados permitem ou não afirmar</h2>
+    <div class="hipoteses">
+      <div class="hip"><h3>A vantagem de quem governa</h3>
+        <p>Visibilidade, obras entregues, máquina administrativa e redes de apoio favorecem quem está no cargo.</p>
+        <div class="mostra"><b>A base mostra:</b> reeleitos vencem com folga (mediana de 65% dos votos).</div>
+        <div class="nao"><b>A base não mostra:</b> quantos prefeitos tentaram e perderam.</div></div>
+      <div class="hip"><h3>O limite de dois mandatos</h3>
+        <p>Boa parte da renovação é imposta pela regra: quem completou o segundo mandato seguido sai obrigatoriamente.</p>
+        <div class="mostra"><b>A base mostra:</b> 55,5% de prefeitos novos.</div>
+        <div class="nao"><b>A base não mostra:</b> quantos desses municípios tinham prefeito impedido de concorrer.</div></div>
+      <div class="hip"><h3>A competição local</h3>
+        <p>Onde a oposição não se organiza, a continuidade vence sem disputa, e o eleitor fica sem alternativa real.</p>
+        <div class="mostra"><b>A base mostra:</b> 195 reeleitos com praticamente todos os votos válidos.</div>
+        <div class="nao"><b>A base não mostra:</b> o número de candidaturas em cada município.</div></div>
+      <div class="hip"><h3>Cultura política regional e partidos</h3>
+        <p>O Sul renova muito mais que o Norte, e o tamanho da cidade pesa pouco. Tradições políticas, alianças estaduais e a migração de prefeitos entre partidos podem ajudar a explicar.</p>
+        <div class="mostra"><b>A base mostra:</b> uma diferença de 35 pontos entre RR e SC, e de 17 pontos entre PSD e PSDB.</div>
+        <div class="nao"><b>A base não mostra:</b> a causa. Os dados indicam associação, não explicação.</div></div>
+    </div>
+  </section>
+
+  <!-- 8. Reflexão -->
+  <section class="bloco" aria-labelledby="s8">
+    <div class="passo">8 · Para a turma</div>
+    <h2 id="s8">Três perguntas para começar o curso</h2>
+    <ol class="perguntas">
+      <li>No seu município, o último resultado foi de continuidade ou de renovação? A sua região se parece com o seu município?</li>
+      <li>Quando o prefeito é reeleito com mais de 70% dos votos, ou sem adversário, a continuidade expressa aprovação da gestão ou falta de alternativas?</li>
+      <li>Como uma gestão garante a continuidade das políticas públicas quando mais da metade das prefeituras muda de comando a cada eleição?</li>
+    </ol>
+  </section>
+
+  <!-- Método -->
+  <section class="bloco metodo" aria-labelledby="s9">
+    <div class="passo">Método e limites</div>
+    <h2 id="s9" style="font-size:20px">Como estes números foram calculados</h2>
+    <ul>
+      <li><b>Base:</b> eleitos.csv (Prof. Danny, IDP), com as eleições municipais ordinárias de 2024 e dados do TSE extraídos em 01/10/2026. Foram usadas só as linhas de <b>cargo = Prefeito</b>, uma por município: <b>5.553 municípios</b>. Dezesseis municípios ficaram fora da base por falta de confirmação.</li>
+      <li><b>Reeleito</b> é a declaração <i>ST_REELEICAO</i> do registro de candidatura. Não houve auditoria individual do mandato anterior.</li>
+      <li>Estão incluídas 9 chapas cassadas depois da eleição e 14 eleições históricas documentadas, porque a pergunta é sobre o resultado das urnas. Considerando só os eleitos confirmados hoje pelo TSE (5.530), a taxa de reeleição é de 44,5%, o mesmo valor.</li>
+      <li><b>Votação:</b> percentual de votos válidos da chapa no turno decisivo, segundo o reprocessamento atual do TSE (9 chapas sem dado). Anulações posteriores explicam os poucos vencedores com menos de 40%. O "porte" usa os votos válidos para prefeito como indicador aproximado do eleitorado.</li>
+      <li>A base retrata o resultado de 2024, não quem está no cargo hoje. Não inclui vereadores, candidatos derrotados nem eleições anteriores.</li>
+    </ul>
+    <details>
+      <summary>Ver os dados em tabela</summary>
+      <div class="tabela-wrap" id="tabelas"></div>
+    </details>
+  </section>
+
+  <footer>Storytelling com Dados · Mestrado em Administração Pública · IDP · Mauricio Marinho · 2026</footer>
+</main>
+<div id="tip" role="tooltip"></div>
+
+<script>
+const DADOS = {"total": 5553, "reeleitos": 2469, "regioes": [{"nome": "Norte", "n": 449, "reel": 228}, {"nome": "Nordeste", "n": 1791, "reel": 851}, {"nome": "Sudeste", "n": 1656, "reel": 717}, {"nome": "Centro-Oeste", "n": 467, "reel": 232}, {"nome": "Sul", "n": 1190, "reel": 441}], "ufs": [{"uf": "AC", "regiao": "Norte", "n": 22, "reel": 13}, {"uf": "AL", "regiao": "Nordeste", "n": 102, "reel": 54}, {"uf": "AM", "regiao": "Norte", "n": 62, "reel": 23}, {"uf": "AP", "regiao": "Norte", "n": 16, "reel": 8}, {"uf": "BA", "regiao": "Nordeste", "n": 416, "reel": 193}, {"uf": "CE", "regiao": "Nordeste", "n": 184, "reel": 89}, {"uf": "ES", "regiao": "Sudeste", "n": 78, "reel": 32}, {"uf": "GO", "regiao": "Centro-Oeste", "n": 246, "reel": 126}, {"uf": "MA", "regiao": "Nordeste", "n": 217, "reel": 111}, {"uf": "MG", "regiao": "Sudeste", "n": 852, "reel": 381}, {"uf": "MS", "regiao": "Centro-Oeste", "n": 79, "reel": 30}, {"uf": "MT", "regiao": "Centro-Oeste", "n": 142, "reel": 76}, {"uf": "PA", "regiao": "Norte", "n": 143, "reel": 78}, {"uf": "PB", "regiao": "Nordeste", "n": 223, "reel": 101}, {"uf": "PE", "regiao": "Nordeste", "n": 183, "reel": 86}, {"uf": "PI", "regiao": "Nordeste", "n": 224, "reel": 109}, {"uf": "PR", "regiao": "Sul", "n": 398, "reel": 163}, {"uf": "RJ", "regiao": "Sudeste", "n": 90, "reel": 39}, {"uf": "RN", "regiao": "Nordeste", "n": 167, "reel": 78}, {"uf": "RO", "regiao": "Norte", "n": 52, "reel": 25}, {"uf": "RR", "regiao": "Norte", "n": 15, "reel": 10}, {"uf": "RS", "regiao": "Sul", "n": 497, "reel": 186}, {"uf": "SC", "regiao": "Sul", "n": 295, "reel": 92}, {"uf": "SE", "regiao": "Nordeste", "n": 75, "reel": 30}, {"uf": "SP", "regiao": "Sudeste", "n": 636, "reel": 265}, {"uf": "TO", "regiao": "Norte", "n": 139, "reel": 71}], "porte": [{"faixa": "até 5 mil", "n": 1914, "reel": 855}, {"faixa": "5 a 10 mil", "n": 1470, "reel": 647}, {"faixa": "10 a 30 mil", "n": 1568, "reel": 697}, {"faixa": "30 a 100 mil", "n": 449, "reel": 210}, {"faixa": "mais de 100 mil", "n": 152, "reel": 60}], "votos": {"reeleitos": {"n": 2466, "bins": [3, 0, 1, 22, 143, 721, 637, 452, 239, 248], "mediana": 65.0, "acima70": 939, "unicos": 195}, "novos": {"n": 3078, "bins": [11, 0, 12, 158, 489, 1535, 532, 158, 73, 110], "mediana": 54.4, "acima70": 341, "unicos": 93}}, "ocup_novos": [{"cat": "Profissões liberais", "n": 734}, {"cat": "Empresa e comércio", "n": 717}, {"cat": "Outras ou não informadas", "n": 555}, {"cat": "Campo", "n": 398}, {"cat": "Serviço público", "n": 298}, {"cat": "Já na política", "n": 245}, {"cat": "Educação", "n": 137}], "ocup_politica": {"VEREADOR": 138, "DEPUTADO": 33, "PREFEITO": 73, "SENADOR": 1}, "partidos": [{"partido": "PSD", "n": 890, "reel": 464}, {"partido": "MDB", "n": 860, "reel": 375}, {"partido": "PP", "n": 750, "reel": 317}, {"partido": "UNIÃO", "n": 589, "reel": 295}, {"partido": "PL", "n": 517, "reel": 191}, {"partido": "REPUBLICANOS", "n": 437, "reel": 191}, {"partido": "PSB", "n": 311, "reel": 146}, {"partido": "PSDB", "n": 275, "reel": 97}, {"partido": "PT", "n": 252, "reel": 121}, {"partido": "PDT", "n": 151, "reel": 65}]};
+
+const fmt = (v, d = 1) => v.toLocaleString('pt-BR', { minimumFractionDigits: d, maximumFractionDigits: d });
+const int = v => v.toLocaleString('pt-BR');
+const pct = (a, b) => 100 * a / b;
+const NAC = pct(DADOS.reeleitos, DADOS.total);
+const NOMES_UF = {AC:'Acre',AL:'Alagoas',AM:'Amazonas',AP:'Amapá',BA:'Bahia',CE:'Ceará',ES:'Espírito Santo',GO:'Goiás',MA:'Maranhão',MG:'Minas Gerais',MS:'Mato Grosso do Sul',MT:'Mato Grosso',PA:'Pará',PB:'Paraíba',PE:'Pernambuco',PI:'Piauí',PR:'Paraná',RJ:'Rio de Janeiro',RN:'Rio Grande do Norte',RO:'Rondônia',RR:'Roraima',RS:'Rio Grande do Sul',SC:'Santa Catarina',SE:'Sergipe',SP:'São Paulo',TO:'Tocantins'};
+
+/* Tooltip compartilhado */
+const tip = document.getElementById('tip');
+function bindTip(el, html) {
+  el.tabIndex = 0;
+  const show = e => {
+    tip.innerHTML = html; tip.style.opacity = 1;
+    const r = el.getBoundingClientRect();
+    const x = e && e.clientX ? e.clientX : r.left + r.width / 2;
+    const y = e && e.clientY ? e.clientY : r.top;
+    const w = tip.offsetWidth, h = tip.offsetHeight;
+    tip.style.left = Math.min(Math.max(8, x - w / 2), innerWidth - w - 8) + 'px';
+    tip.style.top = (y - h - 12 < 8 ? y + 18 : y - h - 12) + 'px';
+  };
+  const hide = () => tip.style.opacity = 0;
+  el.addEventListener('mousemove', show); el.addEventListener('mouseleave', hide);
+  el.addEventListener('focus', () => show()); el.addEventListener('blur', hide);
+  el.addEventListener('touchstart', () => show(), { passive: true });
+}
+
+/* 1. Herói */
+(function () {
+  const novos = DADOS.total - DADOS.reeleitos;
+  const bar = document.getElementById('barra-total');
+  const c = document.createElement('div'); c.className = 'c'; c.style.width = NAC + '%';
+  const r = document.createElement('div'); r.className = 'r'; r.style.width = (100 - NAC) + '%';
+  bar.append(c, r);
+  bindTip(c, `<b>Continuidade</b>${int(DADOS.reeleitos)} prefeitos reeleitos · ${fmt(NAC)}%`);
+  bindTip(r, `<b>Renovação</b>${int(novos)} prefeitos novos · ${fmt(100 - NAC)}%`);
+  document.getElementById('lt-c').textContent = `${int(DADOS.reeleitos)} · ${fmt(NAC)}%`;
+  document.getElementById('lt-r').textContent = `${int(novos)} · ${fmt(100 - NAC)}%`;
+})();
+
+/* Gráfico de barras horizontais genérico */
+function barras(alvo, linhas, { max = 70, ticks = [0, 10, 20, 30, 40, 50, 60, 70], ref = NAC, refRotulo = 'Brasil ' + fmt(NAC) + '%', sufixo = '%' } = {}) {
+  const box = document.getElementById(alvo); box.innerHTML = '';
+  const wrap = document.createElement('div'); wrap.className = 'barras';
+  linhas.forEach(l => {
+    const row = document.createElement('div'); row.className = 'linha' + (l.classe ? ' ' + l.classe : '');
+    row.innerHTML = `<div class="nome" title="${l.nomeLongo || l.nome}">${l.nome}</div><div class="trilho"><div class="preench" style="width:${Math.min(100, l.v / max * 100)}%"></div></div><div class="valor num">${l.rotulo ?? fmt(l.v) + sufixo}</div>`;
+    if (l.tip) bindTip(row, l.tip);
+    wrap.append(row);
+  });
+  box.append(wrap);
+  // linha de referência posicionada sobre a coluna do trilho
+  if (ref != null) {
+    // posição proporcional à coluna do trilho, em CSS: acompanha qualquer largura de tela
+    const x = `calc(var(--nome) + var(--gap) + (100% - var(--nome) - var(--val) - 2 * var(--gap)) * ${ref / max})`;
+    const line = document.createElement('div'); line.className = 'ref';
+    line.style.left = x; line.style.top = '18px'; line.style.bottom = '24px';
+    const lab = document.createElement('div'); lab.className = 'ref-rotulo'; lab.style.left = x; lab.style.top = '0'; lab.textContent = refRotulo;
+    box.append(line, lab);
+  }
+  const eixo = document.createElement('div'); eixo.className = 'eixo';
+  eixo.innerHTML = `<div></div><div class="ticks">${ticks.map(t => `<span style="left:${t / max * 100}%">${t}${sufixo}</span>`).join('')}</div><div></div>`;
+  box.append(eixo);
+}
+
+/* 2. Regiões e UFs */
+const ORDEM_REG = ['Norte', 'Nordeste', 'Centro-Oeste', 'Sudeste', 'Sul'];
+let regiaoAtiva = 'Todas';
+function desenhaTerritorio() {
+  const regs = ORDEM_REG.map(n => DADOS.regioes.find(r => r.nome === n));
+  const vals = regs.map(r => pct(r.reel, r.n));
+  const maxV = Math.max(...vals), minV = Math.min(...vals);
+  document.getElementById('regioes').innerHTML = regs.map((r, i) => {
+    const v = vals[i];
+    const cls = ['reg', regiaoAtiva === r.nome ? 'ativo' : '', (v === maxV || v === minV) ? 'extremo' : ''].join(' ');
+    return `<div class="${cls}"><div class="nome">${r.nome}</div><div class="v num">${fmt(v)}%</div><div class="n num">${int(r.reel)} de ${int(r.n)}</div></div>`;
+  }).join('');
+  const ufs = DADOS.ufs.map(u => ({ ...u, p: pct(u.reel, u.n) })).sort((a, b) => b.p - a.p);
+  barras('ufs', ufs.map(u => ({
+    nome: u.uf, nomeLongo: NOMES_UF[u.uf], v: u.p,
+    classe: regiaoAtiva !== 'Todas' && u.regiao !== regiaoAtiva ? 'apagada' : '',
+    tip: `<b>${NOMES_UF[u.uf]} (${u.regiao})</b>${int(u.reel)} reeleitos de ${int(u.n)} prefeitos<br>${fmt(u.p)}% de continuidade · ${fmt(100 - u.p)}% de renovação`
+  })));
+}
+(function () {
+  const f = document.getElementById('filtros');
+  ['Todas', ...ORDEM_REG].forEach(n => {
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = n === 'Todas' ? 'Todas as regiões' : n;
+    b.setAttribute('aria-pressed', n === regiaoAtiva);
+    b.onclick = () => { regiaoAtiva = n; f.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); desenhaTerritorio(); };
+    f.append(b);
+  });
+  desenhaTerritorio();
+})();
+
+/* 3. Porte */
+barras('porte', DADOS.porte.map(p => ({
+  nome: p.faixa, v: pct(p.reel, p.n),
+  tip: `<b>Municípios com ${p.faixa} votos válidos</b>${int(p.n)} municípios · ${int(p.reel)} prefeitos reeleitos<br>${fmt(pct(p.reel, p.n))}% de continuidade`
+})), { max: 60, ticks: [0, 10, 20, 30, 40, 50, 60] });
+
+/* 4. Histograma */
+(function () {
+  const faixas = ['< 40%', '40–50%', '50–60%', '60–70%', '70–80%', '80–90%', '90–100%'];
+  const junta = b => [b[0] + b[1] + b[2] + b[3], ...b.slice(4)];
+  const C = junta(DADOS.votos.reeleitos.bins), R = junta(DADOS.votos.novos.bins);
+  const nC = DADOS.votos.reeleitos.n, nR = DADOS.votos.novos.n;
+  const pc = C.map(v => pct(v, nC)), pr = R.map(v => pct(v, nR));
+  const max = 55;
+  const h = document.getElementById('hist');
+  faixas.forEach((f, i) => {
+    const g = document.createElement('div'); g.className = 'grupo';
+    const bc = document.createElement('div'); bc.className = 'b c'; bc.style.height = pc[i] / max * 100 + '%';
+    bc.innerHTML = `<span class="lab num">${fmt(pc[i], 0)}%</span>`;
+    const br = document.createElement('div'); br.className = 'b r'; br.style.height = pr[i] / max * 100 + '%';
+    br.innerHTML = `<span class="lab num">${fmt(pr[i], 0)}%</span>`;
+    bindTip(bc, `<b>Reeleitos · votação ${f}</b>${int(C[i])} prefeitos · ${fmt(pc[i])}% dos reeleitos`);
+    bindTip(br, `<b>Novos · votação ${f}</b>${int(R[i])} prefeitos · ${fmt(pr[i])}% dos novos`);
+    g.append(bc, br); h.append(g);
+  });
+  document.getElementById('hist-eixo').innerHTML = faixas.map(f => `<div>${f}</div>`).join('');
+})();
+
+/* 5. Ocupações dos novos */
+(function () {
+  const tot = DADOS.ocup_novos.reduce((s, o) => s + o.n, 0);
+  const op = DADOS.ocup_politica;
+  barras('ocup', DADOS.ocup_novos.map(o => ({
+    nome: o.cat, v: pct(o.n, tot), rotulo: fmt(pct(o.n, tot), 0) + '%',
+    classe: o.cat === 'Já na política' ? 'realce' : '',
+    tip: o.cat === 'Já na política'
+      ? `<b>Já na política: ${int(o.n)} prefeitos</b>${op.VEREADOR} vereadores · ${op.PREFEITO} "prefeito" · ${op.DEPUTADO} deputados · ${op.SENADOR || 0} senador`
+      : `<b>${o.cat}</b>${int(o.n)} dos ${int(tot)} prefeitos novos (${fmt(pct(o.n, tot))}%)`
+  })), { max: 30, ticks: [0, 10, 20, 30], ref: null });
+})();
+
+/* 6. Partidos */
+(function () {
+  const ps = DADOS.partidos.map(p => ({ ...p, p: pct(p.reel, p.n) })).sort((a, b) => b.p - a.p);
+  barras('partidos', ps.map(p => ({
+    nome: p.partido === 'UNIÃO' ? 'União' : p.partido === 'REPUBLICANOS' ? 'Republicanos' : p.partido, v: p.p,
+    tip: `<b>${p.partido}</b>${int(p.n)} prefeitos eleitos · ${int(p.reel)} reeleitos<br>${fmt(p.p)}% de continuidade`
+  })), { max: 60, ticks: [0, 10, 20, 30, 40, 50, 60] });
+})();
+
+/* Tabelas (visão acessível dos dados) */
+(function () {
+  const t = (titulo, cab, linhas) => `<h3 style="font-size:15px;margin:16px 0 0">${titulo}</h3><table><thead><tr>${cab.map((c, i) => `<th class="${i ? 'r' : ''}">${c}</th>`).join('')}</tr></thead><tbody>${linhas.map(l => `<tr>${l.map((c, i) => `<td class="${i ? 'r' : ''}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  const lin = (nome, n, r) => [nome, int(n), int(r), fmt(pct(r, n)) + '%'];
+  const cab = ['Grupo', 'Prefeitos', 'Reeleitos', '% reeleitos'];
+  document.getElementById('tabelas').innerHTML =
+    t('Por região', cab, ORDEM_REG.map(n => { const r = DADOS.regioes.find(x => x.nome === n); return lin(n, r.n, r.reel); })) +
+    t('Por UF', cab, DADOS.ufs.map(u => lin(`${NOMES_UF[u.uf]} (${u.uf})`, u.n, u.reel))) +
+    t('Por porte (votos válidos)', cab, DADOS.porte.map(p => lin(p.faixa, p.n, p.reel))) +
+    t('Por partido (150+ prefeitos)', cab, DADOS.partidos.map(p => lin(p.partido, p.n, p.reel))) +
+    t('Ocupação declarada dos prefeitos novos', ['Grupo', 'Prefeitos', '% dos novos'], DADOS.ocup_novos.map(o => [o.cat, int(o.n), fmt(pct(o.n, DADOS.total - DADOS.reeleitos)) + '%']));
+})();
+
+/* Tema */
+(function () {
+  const btn = document.getElementById('tema');
+  try { const s = localStorage.getItem('tema'); if (s) document.documentElement.dataset.theme = s; } catch (e) {}
+  btn.onclick = () => {
+    const atual = document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const novo = atual === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = novo;
+    try { localStorage.setItem('tema', novo); } catch (e) {}
+  };
+})();
+
+</script>
+</body>
+</html>
