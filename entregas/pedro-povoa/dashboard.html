@@ -5,36 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ninguém governa sozinho: o mapa partidário de 2025</title>
 <style>
-:root{--bg:#faf8f4;--card:#fff;--ink:#1c1b19;--soft:#5e5a53;--line:#dcd7cd;--acc:#8a2b1d;--outros:#b9b4aa;
+:root{--bg:#f7f9f4;--card:#fff;--ink:#14213d;--soft:#4f5b6e;--line:#d5ddd0;--acc:#002776;--verde:#009C3B;--verde-esc:#00662a;--amarelo:#FFDF00;--azul:#002776;--outros:#b9bfc7;
 --esq:#8e3b8f;--cen:#a7b0ba;--dir:#1f6f6b;--sem:#e3e0d9}
-@media(prefers-color-scheme:dark){:root{--bg:#161512;--card:#201f1b;--ink:#f1eee7;--soft:#aaa59b;--line:#3a3832;--acc:#e07a5f;--outros:#6b675f;--sem:#3a3832}}
+@media(prefers-color-scheme:dark){:root{--bg:#0c1420;--card:#142033;--ink:#eef2f7;--soft:#a7b3c4;--line:#27364d;--acc:#FFDF00;--verde:#2bc060;--verde-esc:#2bc060;--outros:#6b7686;--sem:#27364d}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 .wrap{max-width:880px;margin:0 auto;padding:0 16px}
 h1,h2{font-family:Georgia,"Times New Roman",serif;line-height:1.15;letter-spacing:-.01em}
-header{padding:56px 0 24px}
-.kicker{font:700 13px/1 system-ui;letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+header{padding:0 0 24px}
+.band{background:var(--azul);color:#fff;padding:52px 0 34px;margin-bottom:0;border-bottom:8px solid var(--verde);position:relative}
+.band:after{content:"";position:absolute;left:0;bottom:-8px;width:100%;height:8px;background:linear-gradient(90deg,var(--verde) 0 62%,var(--amarelo) 62% 100%)}
+.band h1{color:#fff}.band .lead{color:#dbe4f5}
+.kicker{font:700 13px/1 system-ui;letter-spacing:.12em;text-transform:uppercase;color:var(--amarelo)}
 h1{font-size:clamp(32px,6vw,56px);margin:14px 0 16px}
 .lead{font-size:clamp(18px,2.4vw,21px);color:var(--soft);max-width:680px}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:28px 0 8px}
 .stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
-.stat b{display:block;font:700 clamp(28px,5vw,40px)/1 Georgia,serif;color:var(--acc)}
+.stat b{display:block;font:700 clamp(28px,5vw,40px)/1 Georgia,serif;color:var(--verde-esc)}
 .stat span{font-size:14px;color:var(--soft)}
 section{padding:44px 0 8px;border-top:1px solid var(--line);margin-top:36px}
-.num{font:700 13px/1 system-ui;color:var(--acc);letter-spacing:.1em}
+.num{font:700 13px/1 system-ui;color:var(--verde-esc);letter-spacing:.1em}
 h2{font-size:clamp(25px,4vw,34px);margin:8px 0 10px}
 p.read{color:var(--soft);max-width:680px;margin:0 0 18px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 16px}
 .ctl{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
 .ctl button,.ctl label{font:600 14px system-ui;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:7px 12px;border-radius:999px;cursor:pointer}
-.ctl button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.ctl button[aria-pressed=true]{background:var(--azul);color:#fff;border-color:var(--azul)}
 .row{display:grid;grid-template-columns:104px 1fr;align-items:center;gap:10px;margin:5px 0;font-size:14px}
 .row .l{text-align:right;font-weight:600}
 .bar{height:22px;border-radius:3px;min-width:2px;position:relative;transition:width .4s}
 .val{font-size:13px;color:var(--soft);margin-left:8px;white-space:nowrap}
 .bw{display:flex;align-items:center}
 .note{font-size:13px;color:var(--soft);margin-top:12px}
-.hl{background:color-mix(in srgb,var(--acc) 14%,transparent);padding:0 4px;border-radius:3px}
+.hl{background:color-mix(in srgb,var(--amarelo) 55%,transparent);padding:0 4px;border-radius:3px}
 .colx{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;align-items:end;height:230px;padding-top:8px}
 .col{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;font-size:12px}
 .col i{display:block;width:100%;border-radius:3px 3px 0 0;background:var(--outros)}
@@ -57,20 +60,22 @@ p.read{color:var(--soft);max-width:680px;margin:0 0 18px}
 .srow .t{font-size:14px;font-weight:600}
 footer{padding:36px 0 64px;font-size:13.5px;color:var(--soft)}
 footer h3{font-size:15px;color:var(--ink);margin:18px 0 6px}
-.final{background:var(--ink);color:var(--bg);border-radius:12px;padding:26px 22px;margin:20px 0}
-.final h2{margin-top:0;color:var(--bg)}
+.final{background:var(--azul);color:#fff;border-radius:12px;padding:26px 22px;margin:20px 0;border-left:8px solid var(--verde)}
+.final h2{margin-top:0;color:var(--amarelo)}
 .final p{margin:.5em 0;opacity:.92}
 @media(max-width:560px){.row{grid-template-columns:84px 1fr;font-size:13px}.stats{grid-template-columns:1fr}.heat{grid-template-columns:84px repeat(4,1fr);font-size:12px}}
 </style>
 </head>
 <body>
-<div class="wrap">
 <header>
+<div class="band"><div class="wrap">
   <div class="kicker">Eleições municipais 2024 · O mapa partidário de 2025</div>
   <h1>Ninguém governa sozinho</h1>
   <p class="lead">Nenhum partido controla sequer uma em cada cinco prefeituras do país. O poder local brasileiro não se divide entre siglas: ele se organiza em alianças, e a aliança quase sempre atravessa partidos, e até campos políticos, dentro da mesma chapa.</p>
-  <div class="stats" id="stats"></div>
+</div></div>
+<div class="wrap"><div class="stats" id="stats"></div></div>
 </header>
+<div class="wrap">
 
 <section>
   <div class="num">1 · PULVERIZAÇÃO</div>

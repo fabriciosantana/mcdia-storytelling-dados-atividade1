@@ -43,3 +43,13 @@ Q7b) Concordo. Q8) pedro-povoa. Q9-Q10) OK. Q11) Ok. Você consegue pesquisar as
 ```
 
 **O que funcionou / o que mudei:** Aqui eu mudei de rumo em um ponto: o Claude tinha recomendado evitar as cores oficiais dos partidos, mas eu pedi que as pesquisasse. Ele pesquisou (Wikipédia pt) e aplicou só nas 10 maiores siglas, avisando que vários azuis são parecidos e por isso toda barra leva a sigla escrita. Também confirmou a classificação ideológica na fonte (survey de 2018) e achou um problema que eu não previa: MDB, PSD e PSDB ficam a centésimos da fronteira entre centro e direita, então o dashboard ganhou uma chave de sensibilidade. A pesquisa mostrou também que o PRD, partido novo, não foi avaliado e entra como "sem classificação". Daí o Claude agregou os dados, gerou o dashboard, o `claude.md` e a `skill.md`, e conferiu o HTML no navegador antes de eu abrir o PR.
+
+---
+
+## Prompt 5
+
+```
+a paleta de cores está a do claude padrão. Pode usar as cores do Brasil?
+```
+
+**O que funcionou / o que mudei:** Olhei o primeiro resultado e achei a interface genérica (fundo creme e vermelho-tijolo). O pedido curto bastou: o Claude trocou só a interface pelas cores da bandeira (faixa de abertura azul com filete verde e amarelo, números verdes, fecho azul) e manteve as cores dos partidos nos gráficos, para uma coisa não confundir a outra. Atualizou também a `skill.md` (de forma genérica) e o `claude.md`. Se eu fosse especificar melhor, diria já no começo qual identidade visual eu queria.

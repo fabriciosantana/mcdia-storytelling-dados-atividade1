@@ -31,9 +31,9 @@ Ao criar qualquer dashboard, painel ou página de gráficos cujo objetivo é faz
 
 ## Paleta de cores
 
-- Fundo claro quente `#faf8f4`, cartões `#ffffff`, texto `#1c1b19`, texto secundário `#5e5a53`, linhas `#dcd7cd`.
-- Cor de ênfase única para o que o capítulo quer destacar: `#8a2b1d`.
-- Neutro para "o restante": `#b9b4aa`.
+- Parta de uma paleta de interface com poucas cores e papéis claros: fundo, cartão, texto, texto secundário, linhas, uma cor de ênfase e um neutro para "o restante". Defina cada uma por variável CSS.
+- Se o projeto pedir identidade nacional, use as cores da bandeira do Brasil: azul `#002776` (faixa de abertura, botões, bloco final), verde `#009C3B` (números-âncora e rótulos de capítulo; use `#00662a` quando for texto sobre fundo claro, por contraste) e amarelo `#FFDF00` (destaques e kicker sobre azul). Fundo claro levemente esverdeado `#f7f9f4`, texto `#14213d`, neutro `#b9bfc7`.
+- Sem pedido de identidade, escolha uma paleta sóbria de uma única cor de ênfase.
 - Use cor de categoria só para os 6 a 10 itens principais; os demais ficam no neutro. Mais de 10 cores deixa o gráfico ilegível.
 - Se as cores vierem de uma identidade externa (marcas, siglas), mantenha-as, mas nunca use a cor como único canal: escreva o nome em cada elemento, porque cores parecidas (vários azuis) confundem.
 - Escalas de grupos analíticos (ex.: categorias ordenadas) usam paleta própria, diferente de qualquer identidade de marca, para não gerar associação errada.
