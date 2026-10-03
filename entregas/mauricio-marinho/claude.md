@@ -34,22 +34,34 @@ Gestores, servidores e assessores municipais de várias regiões, na aula inaugu
 
 ## Decisões de design
 
-Seguir a skill `painel-narrativo-institucional` (skill.md).
+Seguir a skill `assinatura-visual-marinho` (skill.md), a minha assinatura pessoal para dashboards: impacto na primeira dobra, sofisticação nos detalhes e movimento com propósito. Ela está instalada em `~/.claude/skills/assinatura-visual-marinho/` e foi carregada pelo Claude Code para construir esta versão.
 
-- **Arco narrativo em 8 blocos numerados:** retrato do país → território → porte → como se vence → quem chega → partidos → hipóteses → perguntas para a turma, com uma nota de método no final. O público começa no geral, é confrontado com a diversidade regional e termina refletindo sobre a própria realidade.
-- **Títulos que já dizem a conclusão.** Quem só ler os títulos entende a história.
-- **Alerta logo no início:** "novo" não quer dizer rejeição. O limite de dois mandatos torna parte da renovação obrigatória. É o principal cuidado contra a leitura errada.
-- **Cores com papel fixo**, validadas para daltonismo e contraste nos modos claro e escuro: azul escuro `#2B63B0` para continuidade, azul claro `#6FA4E6` para renovação, cinzas para contexto e laranja `#E36A1E` só para destaques (média nacional, regiões extremas, os 195 sem adversário, "já na política").
-- **Gráficos:**
-  - Barra única dividida para a proporção nacional.
-  - Barras horizontais ordenadas para UF, porte, ocupação e partido, com a linha de referência da média nacional.
-  - Histograma agrupado para comparar as distribuições de votos.
-  - Números de destaque para medianas e contagens.
-  - Sem pizza, sem 3D, sem eixo duplo.
-- **Interação a serviço do público:** o filtro por região destaca os estados da região escolhida e apaga os demais, para cada participante "encontrar a sua realidade". Há tooltip com valores absolutos em todas as marcas.
-- **Rigor visível:** cada hipótese traz "a base mostra / a base não mostra". As associações não são apresentadas como causas. A nota de método e a tabela de dados ficam ao final.
-- **Ficaram de fora:** o mapa coroplético (exigiria um GeoJSON pesado e não acrescenta à comparação ordenada) e a análise por gênero e raça (a taxa de reeleição praticamente não varia por gênero e esse recorte é de outros temas).
-- **Técnica:** HTML único com CSS e JS embutidos, sem biblioteca externa, dados já agregados embutidos como JSON, layout responsivo (testado em 1200px e 390px), modo escuro e tabela acessível.
+- **Versão 2, interativa.** A primeira versão (PR #9) era estática. Esta mantém a mesma história e os mesmos títulos, mas transforma cada gráfico em algo explorável. O público conhece a própria realidade, e os filtros permitem que cada gestor coloque a sua região, o seu porte ou o seu partido ao lado do país.
+- **Hero de impacto:** faixa azul-noite com o título-mensagem em serifa editorial (Source Serif 4) e 4 números-chave que contam até o valor e se atualizam com os filtros: % de reeleitos, municípios no recorte, reeleitos sem adversário e % dos novos vindos da política.
+- **Filtros globais cruzados** numa barra fixa no topo: região, porte e partido. Cada gráfico aplica os filtros das outras dimensões e **destaca** (em vez de filtrar) a própria dimensão, para não perder a comparação. Clicar em uma barra (região, estado, porte ou partido) filtra o painel inteiro, e clicar de novo desfaz. "Limpar filtros" volta ao Brasil.
+- **Agrupamentos e alternâncias**, com um controle segmentado de indicador deslizante:
+  - bloco 01: recorte inteiro ou por região;
+  - bloco 02: região ou estado, e % ou nº de prefeitos (barras empilhadas de reeleitos e novos);
+  - bloco 03: % ou nº;
+  - bloco 04: % do grupo ou nº;
+  - bloco 05: novos ou reeleitos;
+  - bloco 06: % ou nº, ordenado por % ou por tamanho.
+- **Movimento suave:** todas as mudanças usam o mesmo easing (`cubic-bezier(.22,1,.36,1)`).
+  - As barras crescem e mudam de largura em 750ms.
+  - As listas se reordenam deslizando (técnica FLIP).
+  - Os números contam do valor anterior até o novo.
+  - Os blocos entram com fade em cascata.
+  - Tudo é desligado com `prefers-reduced-motion`.
+- **Os títulos descrevem o país e não mudam com os filtros.** Abaixo de cada gráfico, uma "leitura do recorte" com ponto laranja descreve o filtro ativo e mostra o n. Com n < 30, aparece o aviso "recorte pequeno, interprete com cautela".
+- **Cores com papel fixo**, validadas para daltonismo e contraste nos dois modos:
+  - azul `#2B63B0` para continuidade e azul claro `#6FA4E6` para renovação;
+  - cinzas para itens fora de foco;
+  - laranja `#E36A1E` só para a média de referência, os "sem adversário", o "já na política" e o foco do teclado.
+- **Histograma com faixa própria para "sem adversário"** (≈100% dos votos), rotulada em laranja, para que as vitórias sem disputa apareçam como fenômeno distinto.
+- **Rigor:** as hipóteses trazem "a base mostra / não mostra". O alerta "novo ≠ rejeição" fica no primeiro bloco. Método e limites ficam no final, com uma tabela por UF que segue os filtros.
+- **Dados embutidos agregados em três cubos de contagem**, cada um com as dimensões de filtro (região ou UF, porte, partido, situação) mais uma dimensão de análise (UF, faixa de votação ou ocupação). Não há nomes nem identificadores. Partidos com menos de 150 prefeitos entram como "Outros". Testei antes um cubo único com todas as dimensões, mas ele tinha 4.162 células, 3.344 delas com n = 1 (praticamente a base linha a linha), e foi descartado.
+- **Ficaram de fora:** mapa coroplético (GeoJSON pesado; a comparação ordenada com filtro cumpre melhor o papel) e recortes por gênero e raça (a taxa de reeleição praticamente não varia por gênero, e esses recortes são de outros temas).
+- **Técnica:** HTML único com CSS e JS embutidos, sem biblioteca de gráficos e com fontes do Google Fonts (há fallback para fontes do sistema). Testado com Playwright em 1280px e 390px e no modo escuro, sem erros no console e sem rolagem horizontal. Os números conferem com a versão 1 (Brasil 44,5%, Sul 37,1%, Norte 50,8%).
 
 ## Instruções para o Claude
 
@@ -58,5 +70,6 @@ Seguir a skill `painel-narrativo-institucional` (skill.md).
 - Nunca chame "novo prefeito" de "derrota do incumbente": a base não tem candidatos derrotados.
 - Diga "associação", nunca "causa". Toda hipótese deve dizer o que a base mostra e o que não mostra.
 - Agregue os dados em Python e embuta só o JSON resultante no HTML. O HTML não pode ler o CSV.
-- Use a paleta azul e cinza com laranja só para destaque. Valide as cores (daltonismo e contraste) antes de usar.
+- Siga a skill `assinatura-visual-marinho`: paleta azul e cinza com laranja só para destaque, filtros cruzados, agrupamentos e transições suaves.
+- Os títulos descrevem o país; o que muda com o filtro vai na leitura do recorte.
 - Renderize e confira o dashboard em desktop e celular antes de entregar.

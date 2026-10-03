@@ -1,108 +1,134 @@
 ---
-name: painel-narrativo-institucional
-description: Regras de narrativa, visualização, cor e linguagem para dashboards em HTML que contam uma história com dados para públicos do setor público e institucional. Use sempre que for criar ou revisar um dashboard, painel, gráfico ou relatório visual em HTML.
+name: assinatura-visual-marinho
+description: Assinatura visual e narrativa de Mauricio Marinho para dashboards em HTML com impacto e sofisticação. Usa azuis e cinzas com laranja só para destaque, interatividade com agrupamentos e filtros cruzados sempre que possível e transições suaves em toda mudança de estado. Use sempre que for criar ou revisar um dashboard, painel, gráfico ou relatório visual, com qualquer base de dados.
 ---
 
-# Painel narrativo institucional
+# Assinatura visual Marinho
+
+> **Impacto na primeira dobra, sofisticação nos detalhes, movimento com propósito.**
+> O painel deve parecer editorial (revista de dados), e não um relatório de sistema. O leitor entende a mensagem em 5 segundos e quer explorar por 5 minutos.
 
 ## Quando usar
 
-- Ao criar ou revisar qualquer dashboard, painel ou relatório visual em HTML, com qualquer base de dados.
-- Quando o objetivo for **levar um público específico a uma conclusão ou reflexão**, e não só exibir números.
-- Não use para análises exploratórias internas, em que a velocidade importa mais que a narrativa.
+- Ao criar ou revisar qualquer dashboard, painel, gráfico ou relatório visual em HTML.
+- Vale para qualquer base de dados e qualquer público. Ajuste o tom da linguagem ao público, mas mantenha a assinatura visual.
 
-## Antes de desenhar: três perguntas
+## 1. Os cinco princípios da assinatura
 
-1. **Quem vai ler, e o que essa pessoa já sabe?** Escreva o público em uma frase e não perca isso de vista.
-2. **Qual é a mensagem central em uma frase?** Se não couber em uma frase, a história ainda não está pronta.
-3. **O que a base permite e o que não permite afirmar?** Liste os limites (recorte, ausências, variáveis declaradas e não auditadas) antes de escrever qualquer título.
+1. **Impacto primeiro.** Abra com uma faixa de abertura (hero) escura em azul profundo, com o título-mensagem e 3 ou 4 números-chave que contam de zero até o valor ao carregar.
+2. **Sofisticação contida.** Muito espaço em branco, poucas cores, tipografia editorial e nenhum ornamento sem função. Elegância vem de alinhamento, ritmo e consistência, não de efeitos.
+3. **Explorar é parte da história.** Todo gráfico que admite recorte ganha **filtro** e, quando houver hierarquia ou dimensão alternativa, **agrupamento**. Os filtros são globais e cruzados.
+4. **Movimento suave e significativo.** Nada muda de estado "aos saltos": barras crescem, listas se reordenam deslizando e números contam. A animação mostra o que mudou e nunca atrasa a leitura.
+5. **Rigor visível.** Títulos afirmam só o que os dados sustentam, cada recorte mostra o seu n e os limites ficam escritos.
 
-## Estrutura narrativa
+## 2. Estrutura narrativa
 
-- **Abra com a mensagem principal** como título do painel. Logo abaixo, um parágrafo de 2 a 3 frases que situa o leitor.
-- **Do geral para o particular, e de volta ao leitor:** retrato geral → onde ele varia → como ele se manifesta → quem está por trás → hipóteses → pergunta ou chamada final ligada à realidade do público.
-- **Numere os blocos** (1, 2, 3…) com um rótulo curto em caixa alta acima do título. Assim o leitor sabe onde está no percurso.
-- **Cada título de bloco é uma conclusão, não um assunto.** Use "O Sul renova mais que o Norte", não "Dados por região". Lendo só os títulos, o leitor deve entender a história.
-- **Logo na abertura, coloque um alerta contra a leitura errada mais provável** (caixa com ícone e borda de destaque).
-- **Separe fato de hipótese.** Hipóteses ficam em um bloco próprio. Cada uma traz "o que os dados mostram" e "o que os dados não mostram".
-- **Feche com perguntas ou próximos passos** para o público, nunca com um gráfico solto.
-- **Termine com uma nota de método:** fonte, recorte, definições, exclusões e uma tabela com os dados dos gráficos.
+- **Hero:** rótulo pequeno em caixa alta (contexto e público), título-mensagem em fonte serifada, um parágrafo de 2 a 3 frases e os números-chave.
+- **Barra de filtros fixa no topo** (sticky), logo abaixo do hero, com controles segmentados para as dimensões principais, um botão "Limpar" e um resumo do recorte ativo ("Mostrando 1.200 de 5.000 · Categoria A").
+- **Blocos numerados** (01, 02, 03…). Cada um tem um rótulo curto, um **título que é uma conclusão**, uma frase de apoio, o gráfico e uma **leitura do recorte** que se atualiza com os filtros ("No recorte atual: 42%").
+- **Títulos descrevem o quadro geral; a leitura do recorte descreve o filtro.** Nunca reescreva o título com base no filtro, porque ele pode deixar de ser verdade.
+- **Alerta de leitura errada** logo no primeiro bloco: uma caixa com borda laranja.
+- **Hipóteses separadas dos fatos**, cada uma com "os dados mostram / os dados não mostram".
+- **Fechamento** com perguntas para o público e, depois, **método, limites e tabela de dados** (a tabela também segue os filtros).
 
-## Escolha de gráficos
+## 3. Interatividade: agrupar e filtrar sempre que possível
 
-| Para mostrar | Use | Evite |
+**Filtros globais (cross-filter)**
+- Todos os gráficos leem o mesmo estado de filtros, guardado em um único objeto (`estado = {dimA: null, dimB: null, …}`) e redesenhado por uma única função `atualizar()`.
+- **Um gráfico não filtra a própria dimensão; ele a destaca.** No gráfico por categoria com o filtro "A", todas as categorias continuam visíveis, a categoria A fica em cor plena e as demais em cinza. Assim a comparação não se perde.
+- **Clicar em uma barra filtra por ela**, e clicar de novo desfaz. Mostre um cursor de mão e a dica "clique para filtrar".
+- Quando o recorte ficar pequeno (n < 30), mostre um aviso discreto: "recorte pequeno: interprete com cautela".
+- Mantenha os filtros sempre visíveis e reversíveis, com um "Limpar" de um clique.
+
+**Agrupamentos**
+- Use um **controle segmentado** (pílulas lado a lado com um indicador que desliza) acima do gráfico para trocar a unidade ou o agrupamento: "Grupo | Subgrupo", "Categoria | Família", "% | Nº absoluto", "Grupo A | Grupo B".
+- Ofereça **ordenação** ("por valor | por tamanho | alfabética") quando a lista tiver mais de 8 itens.
+- Trocar o agrupamento anima a transição; o gráfico não é recriado do zero.
+
+**Tooltip**
+- Em toda marca de dado, com o rótulo completo, o valor absoluto, o percentual e o n. Funciona com mouse, toque e foco do teclado.
+- Fundo azul-noite, texto claro, cantos de 10px, aparecendo em 150ms com leve deslocamento vertical.
+
+## 4. Movimento
+
+| Token | Valor | Uso |
 |---|---|---|
-| Um número que resume tudo | Número de destaque grande + barra única dividida | Gráfico de pizza, velocímetro |
-| Comparar categorias | Barras horizontais **ordenadas por valor** | Barras em ordem alfabética, 3D |
-| Comparar com uma referência | Barras + linha tracejada de referência rotulada | Cores diferentes para acima e abaixo sem legenda |
-| Comparar duas distribuições | Histograma agrupado, cada grupo normalizado para 100% | Sobrepor contagens absolutas de grupos de tamanhos diferentes |
-| Evolução no tempo | Linha com no máximo 4 séries | Barras empilhadas no tempo |
-| Pares de valores-chave | Cartões com dois números lado a lado | Tabelas longas no meio da narrativa |
+| `--ease` | `cubic-bezier(.22, 1, .36, 1)` | Padrão de tudo: começa rápido e pousa suave |
+| `--t-rapido` | `180ms` | Hover, foco, tooltip |
+| `--t-medio` | `450ms` | Cores, opacidade, controle segmentado |
+| `--t-longo` | `750ms` | Largura e altura de barras, reordenação |
 
-- **Nunca use eixo duplo.** Medidas de escalas diferentes vão em gráficos separados.
-- **Eixos de barras começam em zero.** Linhas de grade quase invisíveis. Rótulo do valor no fim de cada barra.
-- **Sempre exiba o n** (base de cálculo) no tooltip ou no rodapé. Avise quando um grupo for pequeno e o percentual instável.
-- **Rótulos curtos** (siglas ou nomes abreviados), com o nome completo no tooltip.
+- **Barras:** anime `width`/`height` (ou `transform: scaleX`) com `--t-longo`. Na primeira exibição, crescem a partir de zero.
+- **Reordenação:** use a técnica FLIP. Meça as posições antes, reordene o DOM, aplique o `translateY` inverso e anime até zero. As barras deslizam para a nova posição.
+- **Números:** contam do valor anterior até o novo em 600 a 900ms, com easing.
+- **Entrada dos blocos:** surgem com fade e deslocamento de 16px quando entram na tela (`IntersectionObserver`), em cascata de 60ms entre os elementos.
+- **Hover:** cartões sobem 2px com sombra suave. Barras fora do hover ficam em 55% de opacidade.
+- **Sempre** respeite `prefers-reduced-motion: reduce`, desligando animações e mantendo só as trocas de estado.
+- Nunca use bounce, rotação, parallax ou animação em loop.
 
-## Paleta de cores
-
-A cor tem função, não decoração. Até 2 cores de série, cinzas para contexto e 1 cor de destaque.
+## 5. Paleta: azuis e cinzas, laranja para destaque
 
 | Papel | Claro | Escuro | Uso |
 |---|---|---|---|
+| Azul-noite (hero, tooltip) | `#0E2240` | `#0A1626` | Faixa de abertura e superfícies de contraste |
 | Série principal | `#2B63B0` | `#2E61B2` | A categoria central da história |
-| Série secundária | `#6FA4E6` | `#6497DA` | A categoria em contraste com a principal |
-| Destaque | `#E36A1E` | `#E2671F` | Referências, extremos e o que o leitor **precisa** ver. No máximo 1 ou 2 elementos por bloco |
-| Texto de destaque | `#B34F10` | `#F29A5E` | Números em laranja (contraste de texto garantido) |
-| Fundo destaque | `#FDF0E6` | `#2E2016` | Caixas de alerta e cartões em evidência |
-| Texto principal | `#142235` | `#EEF2F7` | Títulos e valores |
-| Texto secundário | `#47566B` | `#B9C4D2` | Parágrafos e rótulos |
-| Texto auxiliar | `#6B7889` | `#8E9BAB` | Eixos, notas, fontes |
-| Marca neutra | `#C3CCD8` | `#3D4A5B` | Barras fora do foco (filtro ativo) |
+| Série secundária | `#6FA4E6` | `#6497DA` | A categoria em contraste |
+| Azul de apoio | `#A9C6EC` | `#294A75` | Faixas, fundos de destaque frio |
+| **Destaque laranja** | `#E36A1E` | `#E2671F` | Referência, extremo, foco. **No máximo 1 ou 2 por bloco** |
+| Texto laranja | `#B34F10` | `#F29A5E` | Números em destaque (contraste de texto) |
+| Fundo laranja | `#FDF0E6` | `#2E2016` | Alertas e cartões em evidência |
+| Texto | `#142235` / `#47566B` / `#6B7889` | `#EEF2F7` / `#B9C4D2` / `#8E9BAB` | Principal / secundário / auxiliar |
+| Neutro de marca | `#C3CCD8` | `#3D4A5B` | Itens fora de foco |
 | Linhas | `#DBE1E9` | `#2B3644` | Bordas e eixos |
-| Fundo da página / cartão | `#F3F5F8` / `#FFFFFF` | `#0F141B` / `#18202A` | Superfícies |
+| Fundo / cartão | `#F3F5F8` / `#FFFFFF` | `#0F141B` / `#18202A` | Superfícies |
 
-- **Uma categoria tem sempre a mesma cor** em todos os gráficos do painel.
-- **O laranja nunca vira uma terceira série.** Ele marca exceção ou referência.
-- **Texto nunca usa a cor da série.** O valor fica na cor de texto, e a cor aparece em uma amostra (quadradinho) ao lado.
-- **Valide toda paleta nova** para daltonismo (protanopia, deuteranopia, tritanopia) e contraste com o fundo, nos dois modos. Se o contraste de uma cor com o fundo ficar abaixo de 3:1, ofereça rótulos diretos e uma tabela.
-- **Modo escuro com tons escolhidos para ele**, não uma inversão automática. Ofereça um botão de alternância e respeite `prefers-color-scheme`.
+- **Cada categoria tem a mesma cor em todos os gráficos.** O laranja nunca vira uma série a mais.
+- **Texto nunca usa a cor da série.** A cor aparece em uma amostra ao lado.
+- **Valide** toda paleta nova para daltonismo e contraste nos dois modos, antes de usar.
+- O **modo escuro** usa tons escolhidos para ele, com um botão de alternância e respeito a `prefers-color-scheme`.
 
-## Tipografia e layout
+## 6. Tipografia e composição
 
-- Fonte do sistema (`system-ui`). Título do painel com 28 a 44px (`clamp`), títulos de bloco com 21 a 27px, texto com 16 a 17px e notas com 13px.
-- Números tabulares (`font-variant-numeric: tabular-nums`) em valores e tabelas.
-- Coluna de leitura com até 760px de largura para parágrafos. Largura máxima do painel entre 1000 e 1100px.
-- Cada bloco em um cartão com cantos arredondados (12 a 14px), padding generoso e sombra mínima.
-- **Responsivo:** teste em 390px e em 1200px. No celular, grades viram 1 ou 2 colunas, rótulos de eixo são reduzidos e nenhum elemento gera rolagem horizontal na página.
+- **Títulos:** serifada editorial (`"Source Serif 4"`, fallback `Georgia, serif`), peso 600 e entrelinha de 1,1 a 1,2.
+- **Texto e números:** sem serifa (`"Inter"`, fallback `system-ui`), com números tabulares (`font-variant-numeric: tabular-nums`).
+- Carregue as fontes via Google Fonts com `display=swap`. O painel precisa ficar bonito também com os fallbacks.
+- Escala: hero de 36 a 56px, título de bloco de 24 a 32px, texto de 16 a 17px e notas de 13px. Rótulos de seção em 12px, caixa alta e espaçamento de 0,12em.
+- Largura máxima do painel de 1120px e coluna de texto de até 720px. Respiro de 32 a 48px entre blocos.
+- Cartões com cantos de 16px, borda de 1px, sombra muito suave e padding de 24 a 36px.
+- **Responsivo:** teste em 390px e em 1280px. No celular, filtros viram uma faixa com rolagem horizontal, as grades viram 1 coluna e não pode haver rolagem horizontal da página.
 - Posicione linhas de referência em unidades proporcionais (CSS `calc` com %), nunca em pixels calculados uma vez só.
 
-## Interação
+## 7. Escolha de gráficos
 
-- **Tooltip em toda marca de dado**, com o rótulo completo, o valor absoluto, o percentual e o n. Precisa funcionar com mouse, toque e teclado (foco).
-- **Filtros em uma única linha acima do gráfico**, como botões com `aria-pressed`. Filtrar **destaca e esmaece**; não remove as outras categorias, para preservar a comparação.
-- Sem animações longas; respeite `prefers-reduced-motion`.
+| Para mostrar | Use | Evite |
+|---|---|---|
+| A mensagem principal | Número grande com contagem animada + barra única dividida | Pizza, velocímetro |
+| Comparar categorias | Barras horizontais ordenadas, clicáveis para filtrar | Ordem alfabética como padrão, 3D |
+| Comparar com uma referência | Linha tracejada laranja rotulada | Duas cores para acima e abaixo sem explicação |
+| Duas distribuições | Histograma agrupado normalizado para 100%, com alternância "% / nº" | Contagens absolutas de grupos de tamanhos diferentes |
+| Composição | Barras horizontais de 100% com o rótulo do segmento | Rosca com mais de 3 fatias |
 
-## Linguagem para o público
+- Nunca use eixo duplo. Barras começam em zero. Grade quase invisível. Valor rotulado no fim da barra.
 
-- Escreva para quem decide e não para quem analisa: frases curtas, voz ativa, números arredondados no texto (44,5% → "quase metade") e precisos nos gráficos.
-- Formato numérico do idioma do público (pt-BR: `44,5%`, `5.553`).
-- **Nunca transforme associação em causa.** Use "está associado a", "coincide com", "pode indicar".
-- Nomeie limites com honestidade: "a base não permite saber…".
-- Evite jargão estatístico ("mediana" pode aparecer, mas acompanhada de uma explicação do que significa).
+## 8. Linguagem
 
-## Requisitos técnicos
+- Frases curtas, voz ativa, linguagem do público, números arredondados no texto e precisos no gráfico.
+- Formato numérico do idioma do público (pt-BR: `12,5%`, `1.234`).
+- Use "associado a", "coincide com" ou "pode indicar", nunca "causa", a menos que o desenho do estudo permita.
+- Diga com clareza o que os dados não permitem afirmar.
 
-- Um único arquivo HTML. CSS e JS embutidos. Bibliotecas, se houver, só por CDN.
-- **Os dados entram já agregados**, como um objeto JSON embutido. O painel nunca lê arquivos locais.
-- Faça a agregação em um script separado e reprodutível. Confira os totais (linhas, chaves únicas) com `assert` antes de exportar.
-- Inclua `lang`, `viewport`, `title`, `aria-label` nos gráficos e uma tabela de dados em `<details>` como alternativa acessível.
+## 9. Requisitos técnicos
 
-## Checklist final
+- Um único arquivo HTML com CSS e JS embutidos e sem dependências obrigatórias, exceto as fontes por CDN, que têm fallback.
+- Os dados entram **agregados**: tabelas de contagem (cubos) com as dimensões de filtro e uma dimensão de análise por cubo. Nada de identificadores pessoais. A agregação fica em um script separado, com `assert` nos totais.
+- Inclua `aria-label` nos gráficos, `aria-pressed` nos filtros, foco visível em laranja e uma tabela de dados em `<details>`.
 
-- [ ] A mensagem central aparece no título e é sustentada por todos os blocos?
-- [ ] Lendo só os títulos, a história faz sentido?
-- [ ] Todo número no texto confere com o dado agregado?
-- [ ] Os limites da base estão explícitos e nenhuma frase afirma uma causa?
-- [ ] O laranja aparece só onde precisa?
-- [ ] O painel foi aberto e conferido no desktop, no celular e no modo escuro, sem erros no console?
+## 10. Checklist da assinatura
+
+- [ ] O hero causa impacto e diz a mensagem em uma frase?
+- [ ] Todo gráfico que admite recorte tem filtro, e os filtros se cruzam entre os gráficos?
+- [ ] Há agrupamento ou ordenação alternativa onde faz sentido?
+- [ ] Toda mudança de estado é animada, suave e respeita `prefers-reduced-motion`?
+- [ ] O laranja aparece só onde o olho precisa ir?
+- [ ] Os títulos continuam verdadeiros com qualquer filtro, e a leitura do recorte mostra o n?
+- [ ] O painel foi conferido no desktop, no celular e no modo escuro, sem erros no console?
