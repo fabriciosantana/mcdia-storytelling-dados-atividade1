@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>De cada 100 prefeituras, 13 são comandadas por uma mulher</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --page: #f9f9f7;
+        --surface: #fcfcfb;
+        --ink: #0b0b0b;
+        --ink-2: #52514e;
+        --muted: #898781;
+        --grid: #e1e0d9;
+        --axis: #c3c2b7;
+        --border: rgba(11, 11, 11, 0.1);
+        --women: #eb6834;
+        --men: #2a78d6;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          color-scheme: dark;
+          --page: #0d0d0d;
+          --surface: #1a1a19;
+          --ink: #ffffff;
+          --ink-2: #c3c2b7;
+          --muted: #898781;
+          --grid: #2c2c2a;
+          --axis: #383835;
+          --border: rgba(255, 255, 255, 0.1);
+          --women: #d95926;
+          --men: #3987e5;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        font-size: 16px;
+        line-height: 1.55;
+        background: var(--page);
+        color: var(--ink);
+      }
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 40px 16px 56px;
+      }
+      h1 {
+        font-size: clamp(28px, 5vw, 40px);
+        line-height: 1.15;
+        margin: 8px 0 12px;
+        letter-spacing: -0.01em;
+      }
+      h2 {
+        font-size: clamp(20px, 3vw, 24px);
+        line-height: 1.25;
+        margin: 0 0 8px;
+      }
+      h3 {
+        font-size: 16px;
+        margin: 0 0 12px;
+      }
+      p {
+        margin: 0 0 12px;
+        max-width: 70ch;
+      }
+      .kicker {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink-2);
+        margin: 0;
+      }
+      .lead {
+        font-size: 18px;
+        color: var(--ink-2);
+      }
+      .act {
+        margin: 48px 0 16px;
+      }
+      .act .kicker {
+        margin-bottom: 4px;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        margin: 16px 0;
+      }
+      .reading {
+        color: var(--ink-2);
+        margin: 16px 0 0;
+      }
+      .note {
+        font-size: 13px;
+        color: var(--muted);
+        margin: 8px 0 0;
+      }
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      .grid-2 > .card,
+      .grid-3 > .card {
+        margin: 0;
+      }
+
+      /* Destaque de abertura */
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 260px) 1fr;
+        gap: 28px;
+        align-items: center;
+      }
+      .waffle {
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        gap: 3px;
+        width: 100%;
+        max-width: 260px;
+      }
+      .waffle span {
+        aspect-ratio: 1;
+        border-radius: 3px;
+        background: var(--men);
+      }
+      .waffle span.w {
+        background: var(--women);
+      }
+      .big {
+        font-size: clamp(48px, 9vw, 72px);
+        font-weight: 700;
+        line-height: 1;
+        margin: 0 0 8px;
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 18px;
+        font-size: 14px;
+        color: var(--ink-2);
+        margin: 12px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+      .legend li {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .swatch {
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+        flex: none;
+      }
+      .swatch.w {
+        background: var(--women);
+      }
+      .swatch.m {
+        background: var(--men);
+      }
+
+      /* Indicadores */
+      .stat .value {
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1.1;
+        margin: 0 0 4px;
+      }
+      .stat .label {
+        color: var(--ink-2);
+        font-size: 14px;
+        margin: 0;
+      }
+
+      /* Barras horizontais */
+      .bars {
+        display: grid;
+        gap: 6px;
+      }
+      .bar-row {
+        display: grid;
+        grid-template-columns: var(--label-w, 150px) 1fr 56px;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+      }
+      .bar-row .name {
+        color: var(--ink-2);
+        overflow-wrap: anywhere;
+      }
+      .bar-row .val {
+        font-variant-numeric: tabular-nums;
+        text-align: right;
+      }
+      .track {
+        position: relative;
+        height: 16px;
+        background-image: linear-gradient(
+          to right,
+          var(--grid) 1px,
+          transparent 1px
+        );
+        background-size: calc(100% / var(--ticks, 3)) 100%;
+        border-right: 1px solid var(--grid);
+      }
+      .bars.dense .track {
+        height: 12px;
+      }
+      .fill {
+        height: 100%;
+        border-radius: 0 4px 4px 0;
+        background: var(--women);
+        min-width: 2px;
+      }
+      .fill.m {
+        background: var(--men);
+      }
+      .ref {
+        position: absolute;
+        top: -4px;
+        bottom: -4px;
+        width: 0;
+        border-left: 2px dashed var(--ink-2);
+      }
+      .axis {
+        display: grid;
+        grid-template-columns: var(--label-w, 150px) 1fr 56px;
+        gap: 10px;
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .axis .scale {
+        display: flex;
+        justify-content: space-between;
+      }
+      .ref-key {
+        display: inline-block;
+        width: 0;
+        height: 12px;
+        border-left: 2px dashed var(--ink-2);
+        margin-right: 6px;
+        vertical-align: middle;
+      }
+      .bar-row:hover .name,
+      .bar-row:focus .name {
+        color: var(--ink);
+      }
+      .bar-row:focus {
+        outline: 2px solid var(--axis);
+        outline-offset: 2px;
+      }
+
+      #tip {
+        position: fixed;
+        z-index: 10;
+        pointer-events: none;
+        display: none;
+        background: var(--ink);
+        color: var(--page);
+        font-size: 13px;
+        line-height: 1.35;
+        padding: 6px 10px;
+        border-radius: 6px;
+        max-width: 240px;
+      }
+
+      details {
+        margin-top: 16px;
+      }
+      summary {
+        cursor: pointer;
+        color: var(--ink-2);
+        font-size: 14px;
+      }
+      .table-wrap {
+        overflow-x: auto;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 14px;
+        margin-top: 8px;
+      }
+      th,
+      td {
+        text-align: right;
+        padding: 6px 8px;
+        border-bottom: 1px solid var(--grid);
+        font-variant-numeric: tabular-nums;
+      }
+      th:first-child,
+      td:first-child {
+        text-align: left;
+      }
+      th {
+        color: var(--ink-2);
+        font-weight: 600;
+      }
+
+      .closing {
+        border-left: 4px solid var(--women);
+        padding-left: 16px;
+        margin: 48px 0 0;
+      }
+      footer {
+        margin-top: 40px;
+        padding-top: 16px;
+        border-top: 1px solid var(--grid);
+        font-size: 13px;
+        color: var(--ink-2);
+      }
+      footer p {
+        max-width: none;
+        margin-bottom: 8px;
+      }
+
+      @media (max-width: 720px) {
+        .hero,
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+        .bar-row,
+        .axis {
+          --label-w: 104px;
+          grid-template-columns: var(--label-w) 1fr 48px;
+          gap: 8px;
+        }
+        .card {
+          padding: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="kicker">
+        Eleições municipais de 2024 · Mulheres e homens no comando das
+        prefeituras
+      </p>
+      <h1>De cada 100 prefeituras, 13 são comandadas por uma mulher</h1>
+      <p class="lead">
+        Em 2024, o Brasil elegeu 5.553 prefeitos nos municípios desta base. Este
+        painel mostra quantos são mulheres e quantos são homens, onde a
+        diferença é maior e o que os dois grupos têm em comum.
+      </p>
+
+      <!-- ATO 1 -->
+      <section class="act" aria-labelledby="a1">
+        <p class="kicker">1 · O tamanho da diferença</p>
+        <h2 id="a1">Os homens comandam 87 de cada 100 prefeituras</h2>
+      </section>
+
+      <div class="card hero">
+        <div>
+          <div
+            class="waffle"
+            id="waffle"
+            role="img"
+            aria-label="Quadro com 100 quadrados: 13 representam prefeituras comandadas por mulheres e 87 por homens."
+          ></div>
+          <ul class="legend">
+            <li><span class="swatch w"></span>Mulheres</li>
+            <li><span class="swatch m"></span>Homens</li>
+          </ul>
+        </div>
+        <div>
+          <p class="big">13,2%</p>
+          <p>
+            das prefeituras elegeram uma mulher: são
+            <strong>734 prefeitas</strong> e <strong>4.819 prefeitos</strong>.
+          </p>
+          <p class="reading">
+            Cada quadrado representa 1% das prefeituras. As mulheres comandam
+            cerca de uma em cada oito.
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Sete em cada dez chapas não têm nenhuma mulher</h3>
+        <div
+          class="bars"
+          id="chapas"
+          style="--label-w: 210px; --ticks: 4"
+        ></div>
+        <div class="axis" style="--label-w: 210px">
+          <span></span
+          ><span class="scale"
+            ><span>0%</span><span>25%</span><span>50%</span><span>75%</span
+            ><span>100%</span></span
+          ><span></span>
+        </div>
+        <p class="reading">
+          Cada município elege uma chapa com prefeito e vice. Em 3.864 das 5.553
+          chapas, os dois são homens. Só 119 chapas são formadas por duas
+          mulheres.
+        </p>
+        <p class="note">
+          Percentual sobre o total de 5.553 chapas eleitas. Em azul, chapas
+          comandadas por homem; em laranja, por mulher.
+        </p>
+      </div>
+
+      <!-- ATO 2 -->
+      <section class="act" aria-labelledby="a2">
+        <p class="kicker">2 · Onde elas estão</p>
+        <h2 id="a2">
+          Mais na vice do que na cabeça da chapa, mais no Nordeste do que no
+          Sudeste
+        </h2>
+      </section>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Há mais mulheres como vice do que como prefeita</h3>
+          <div class="bars" id="cargo" style="--label-w: 120px"></div>
+          <div class="axis" style="--label-w: 120px">
+            <span></span
+            ><span class="scale"
+              ><span>0%</span><span>10%</span><span>20%</span
+              ><span>30%</span></span
+            ><span></span>
+          </div>
+          <p class="reading">
+            São 1.074 vice-prefeitas para 734 prefeitas. Mesmo na vice, quatro
+            em cada cinco eleitos são homens.
+          </p>
+        </div>
+        <div class="card">
+          <h3>O Nordeste elege o dobro de prefeitas do Sudeste</h3>
+          <div class="bars" id="regioes" style="--label-w: 120px"></div>
+          <div class="axis" style="--label-w: 120px">
+            <span></span
+            ><span class="scale"
+              ><span>0%</span><span>10%</span><span>20%</span
+              ><span>30%</span></span
+            ><span></span>
+          </div>
+          <p class="reading">
+            Nordeste e Norte ficam acima da média nacional; Sul e Sudeste ficam
+            abaixo de 10%.
+          </p>
+          <p class="note">
+            <span class="ref-key"></span>Média nacional: 13,2%.
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>
+          De 2,6% a 26,7%: a presença de prefeitas muda dez vezes entre os
+          estados
+        </h3>
+        <div class="bars dense" id="ufs" style="--label-w: 170px"></div>
+        <div class="axis" style="--label-w: 170px">
+          <span></span
+          ><span class="scale"
+            ><span>0%</span><span>10%</span><span>20%</span
+            ><span>30%</span></span
+          ><span></span>
+        </div>
+        <p class="reading">
+          No Rio Grande do Norte e na Paraíba, uma em cada quatro prefeituras
+          elegeu uma mulher. No Espírito Santo, foram 2 em 78.
+        </p>
+        <p class="note">
+          <span class="ref-key"></span>Média nacional: 13,2%. Roraima, Amapá e
+          Acre têm poucos municípios (15, 16 e 22), então um único resultado
+          muda bastante o percentual. Passe o mouse ou toque em uma barra para
+          ver os números.
+        </p>
+        <details>
+          <summary>Ver os números por estado em tabela</summary>
+          <div class="table-wrap">
+            <table id="uf-table">
+              <thead>
+                <tr>
+                  <th>Estado</th>
+                  <th>Prefeituras</th>
+                  <th>Prefeitas</th>
+                  <th>% de prefeitas</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
+      <div class="card">
+        <h3>Nas maiores cidades, menos de 10% dos eleitos são mulheres</h3>
+        <div class="bars" id="porte" style="--label-w: 170px"></div>
+        <div class="axis" style="--label-w: 170px">
+          <span></span
+          ><span class="scale"
+            ><span>0%</span><span>10%</span><span>20%</span
+            ><span>30%</span></span
+          ><span></span>
+        </div>
+        <p class="reading">
+          A presença de prefeitas cresce até os municípios médios, com pico de
+          16,1%, e cai nos maiores.
+        </p>
+        <p class="note">
+          <span class="ref-key"></span>Média nacional: 13,2%. O porte é medido
+          pelos votos válidos do município no turno decisivo, porque a base não
+          traz população. Nove municípios sem esse dado ficaram fora deste
+          gráfico.
+        </p>
+      </div>
+
+      <!-- ATO 3 -->
+      <section class="act" aria-labelledby="a3">
+        <p class="kicker">3 · Quem são</p>
+        <h2 id="a3">
+          A diferença não está no perfil: mesma idade, mais escolaridade
+        </h2>
+      </section>
+
+      <div class="grid-3">
+        <div class="card stat">
+          <p class="value">49 anos</p>
+          <p class="label">
+            é a idade mediana na posse, tanto das prefeitas quanto dos
+            prefeitos.
+          </p>
+        </div>
+        <div class="card stat">
+          <p class="value">45% e 44%</p>
+          <p class="label">
+            das prefeitas e dos prefeitos, respectivamente, declararam estar
+            sendo reeleitos.
+          </p>
+        </div>
+        <div class="card stat">
+          <p class="value">81% e 56%</p>
+          <p class="label">
+            das prefeitas e dos prefeitos, respectivamente, têm ensino superior
+            completo.
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Quatro em cada cinco prefeitas têm ensino superior completo</h3>
+        <div
+          class="bars"
+          id="escolaridade"
+          style="--label-w: 120px; --ticks: 4"
+        ></div>
+        <div class="axis" style="--label-w: 120px">
+          <span></span
+          ><span class="scale"
+            ><span>0%</span><span>25%</span><span>50%</span><span>75%</span
+            ><span>100%</span></span
+          ><span></span>
+        </div>
+        <p class="reading">
+          Entre os homens eleitos, pouco mais da metade concluiu o ensino
+          superior. Entre as mulheres eleitas, são quatro em cada cinco.
+        </p>
+        <p class="note">
+          Percentual de eleitos com ensino superior completo dentro de cada
+          grupo (734 prefeitas e 4.819 prefeitos).
+        </p>
+      </div>
+
+      <div class="closing">
+        <h2>O que fica</h2>
+        <p>
+          Mulheres e homens não estão presentes do mesmo jeito no comando dos
+          municípios: elas são 13% dos prefeitos, 19% dos vices, e sete em cada
+          dez chapas não têm mulher alguma.
+        </p>
+        <p>
+          A diferença muda conforme o lugar, sendo menor no Nordeste e no Norte
+          e maior no Sul, no Sudeste e nas grandes cidades. E não se explica por
+          idade, reeleição ou escolaridade de quem foi eleito.
+        </p>
+      </div>
+
+      <footer>
+        <p>
+          <strong>Fonte:</strong> TSE, eleições municipais ordinárias de 2024,
+          consolidadas em <code>dados/eleitos.csv</code> (extração de
+          referência: 01/10/2026).
+        </p>
+        <p>
+          <strong>Recorte:</strong> 5.553 municípios em 26 estados, com uma
+          chapa (prefeito e vice) por município. Ficaram de fora 16 municípios
+          sem confirmação suficiente do resultado; o Distrito Federal não tem
+          eleição municipal.
+        </p>
+        <p>
+          <strong>Ressalvas:</strong> o gênero é o declarado ao TSE na
+          candidatura. Os dados retratam quem foi eleito em 2024, não quem está
+          no cargo hoje. A reeleição é a declaração eleitoral, sem auditoria do
+          mandato anterior. Os dados mostram onde a diferença está, não as
+          causas dela.
+        </p>
+      </footer>
+    </main>
+
+    <div id="tip" role="status"></div>
+
+    <script>
+      // Dados já agregados a partir de dados/eleitos.csv (cargo = Prefeito, salvo indicação).
+      var DATA = {
+        chapas: [
+          { name: "Prefeito e vice homens", n: 3864, men: true },
+          { name: "Prefeito homem, vice mulher", n: 955, men: true },
+          { name: "Prefeita mulher, vice homem", n: 615 },
+          { name: "Prefeita e vice mulheres", n: 119 },
+        ],
+        cargo: [
+          { name: "Prefeitas", n: 734, total: 5553 },
+          { name: "Vice-prefeitas", n: 1074, total: 5553 },
+        ],
+        regioes: [
+          { name: "Nordeste", n: 332, total: 1791 },
+          { name: "Norte", n: 74, total: 449 },
+          { name: "Centro-Oeste", n: 61, total: 467 },
+          { name: "Sul", n: 115, total: 1190 },
+          { name: "Sudeste", n: 152, total: 1656 },
+        ],
+        ufs: [
+          ["Roraima", 4, 15],
+          ["Rio Grande do Norte", 42, 167],
+          ["Paraíba", 54, 223],
+          ["Alagoas", 24, 102],
+          ["Ceará", 38, 184],
+          ["Pará", 28, 143],
+          ["Maranhão", 42, 217],
+          ["Tocantins", 25, 139],
+          ["Amazonas", 11, 62],
+          ["Sergipe", 13, 75],
+          ["Mato Grosso do Sul", 13, 79],
+          ["Pernambuco", 30, 183],
+          ["Rio de Janeiro", 14, 90],
+          ["Bahia", 60, 416],
+          ["Goiás", 35, 246],
+          ["Santa Catarina", 39, 295],
+          ["Piauí", 29, 224],
+          ["Amapá", 2, 16],
+          ["São Paulo", 68, 636],
+          ["Paraná", 37, 398],
+          ["Mato Grosso", 13, 142],
+          ["Minas Gerais", 68, 852],
+          ["Rio Grande do Sul", 39, 497],
+          ["Rondônia", 3, 52],
+          ["Acre", 1, 22],
+          ["Espírito Santo", 2, 78],
+        ].map(function (u) {
+          return { name: u[0], n: u[1], total: u[2] };
+        }),
+        porte: [
+          { name: "Até 5 mil votos", n: 237, total: 1905 },
+          { name: "5 a 10 mil", n: 185, total: 1470 },
+          { name: "10 a 20 mil", n: 171, total: 1178 },
+          { name: "20 a 50 mil", n: 107, total: 666 },
+          { name: "50 a 100 mil", n: 18, total: 173 },
+          { name: "Mais de 100 mil", n: 15, total: 152 },
+        ],
+        escolaridade: [
+          { name: "Prefeitas", n: 593, total: 734 },
+          { name: "Prefeitos", n: 2713, total: 4819, men: true },
+        ],
+      };
+      var AVG = (734 / 5553) * 100;
+
+      function pct(v) {
+        return v.toFixed(1).replace(".", ",") + "%";
+      }
+      function int(v) {
+        return v.toLocaleString("pt-BR");
+      }
+
+      function drawBars(id, rows, opts) {
+        var el = document.getElementById(id);
+        rows.forEach(function (r) {
+          var total = r.total || opts.total;
+          var value = (r.n / total) * 100;
+          var row = document.createElement("div");
+          row.className = "bar-row";
+          row.tabIndex = 0;
+          row.dataset.tip =
+            r.name +
+            ": " +
+            int(r.n) +
+            " de " +
+            int(total) +
+            " (" +
+            pct(value) +
+            ")";
+          var name = document.createElement("span");
+          name.className = "name";
+          name.textContent = r.name;
+          var track = document.createElement("div");
+          track.className = "track";
+          var fill = document.createElement("div");
+          fill.className = "fill" + (r.men ? " m" : "");
+          fill.style.width = (value / opts.max) * 100 + "%";
+          track.appendChild(fill);
+          if (opts.ref) {
+            var ref = document.createElement("div");
+            ref.className = "ref";
+            ref.style.left = (AVG / opts.max) * 100 + "%";
+            track.appendChild(ref);
+          }
+          var val = document.createElement("span");
+          val.className = "val";
+          val.textContent = pct(value);
+          row.appendChild(name);
+          row.appendChild(track);
+          row.appendChild(val);
+          el.appendChild(row);
+        });
+      }
+
+      // Quadro de 100: 13 quadrados para as prefeitas.
+      var waffle = document.getElementById("waffle");
+      for (var i = 0; i < 100; i++) {
+        var sq = document.createElement("span");
+        if (i < 13) sq.className = "w";
+        waffle.appendChild(sq);
+      }
+
+      drawBars("chapas", DATA.chapas, { max: 100, total: 5553 });
+      drawBars("cargo", DATA.cargo, { max: 30 });
+      drawBars("regioes", DATA.regioes, { max: 30, ref: true });
+      drawBars("ufs", DATA.ufs, { max: 30, ref: true });
+      drawBars("porte", DATA.porte, { max: 30, ref: true });
+      drawBars("escolaridade", DATA.escolaridade, { max: 100 });
+
+      var tbody = document.querySelector("#uf-table tbody");
+      DATA.ufs.forEach(function (u) {
+        var tr = document.createElement("tr");
+        [u.name, int(u.total), int(u.n), pct((u.n / u.total) * 100)].forEach(
+          function (text) {
+            var td = document.createElement("td");
+            td.textContent = text;
+            tr.appendChild(td);
+          },
+        );
+        tbody.appendChild(tr);
+      });
+
+      // Detalhe ao passar o mouse, tocar ou focar uma barra.
+      var tip = document.getElementById("tip");
+      function showTip(row, x, y) {
+        tip.textContent = row.dataset.tip;
+        tip.style.display = "block";
+        var w = tip.offsetWidth,
+          h = tip.offsetHeight;
+        tip.style.left =
+          Math.max(8, Math.min(x + 12, window.innerWidth - w - 8)) + "px";
+        tip.style.top = Math.max(8, y - h - 12) + "px";
+      }
+      document.querySelectorAll(".bar-row").forEach(function (row) {
+        row.addEventListener("mousemove", function (e) {
+          showTip(row, e.clientX, e.clientY);
+        });
+        row.addEventListener("mouseleave", function () {
+          tip.style.display = "none";
+        });
+        row.addEventListener("focus", function () {
+          var b = row.getBoundingClientRect();
+          showTip(row, b.left + b.width / 2, b.top);
+        });
+        row.addEventListener("blur", function () {
+          tip.style.display = "none";
+        });
+      });
+    </script>
+  </body>
+</html>
