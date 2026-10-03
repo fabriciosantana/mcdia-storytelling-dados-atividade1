@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Encabeçar ou integrar: o mapa partidário das prefeituras de 2024</title>
+<meta name="description" content="Como as prefeituras eleitas em 2024 se distribuíram entre partidos e alianças: quem encabeça a prefeitura e quem integra a chapa vencedora, no país, nas regiões e nas UFs.">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FFFFFF; --paper-alt:#F5F6F7;
+  --ink:#1A1F24; --ink-2:#48515A; --ink-3:#646D77;
+  --rule:#DDE1E5; --rule-strong:#8A939C;
+  --accent:#0E7470; --accent-light:#9FCFCB;
+  --seq-1:#EEF0F2; --seq-2:#CDD3D9; --seq-3:#9AA4AE; --seq-4:#5E6872; --seq-5:#262D34;
+  --serif:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --sans:"Libre Franklin", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:18px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:0 24px}
+.prose{max-width:680px}
+@media (max-width:767px){.wrap{padding:0 16px} body{font-size:17px}}
+
+/* Cabeçalho */
+header.top{padding:72px 0 56px}
+.kicker{font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin:0 0 16px}
+h1{font-family:var(--serif);font-weight:700;font-size:46px;line-height:1.1;margin:0 0 20px;max-width:820px;letter-spacing:-.01em}
+.dek{font-size:21px;line-height:1.45;color:var(--ink-2);margin:0 0 28px;max-width:680px}
+.meta{font-family:var(--sans);font-size:14px;line-height:1.5;color:var(--ink-2);border-top:1px solid var(--ink);border-bottom:1px solid var(--rule);padding:12px 0;margin:0;max-width:680px}
+.meta strong{color:var(--ink);font-weight:600}
+@media (max-width:767px){header.top{padding:48px 0 40px} h1{font-size:30px;line-height:1.15} .dek{font-size:18px}}
+
+/* Seções */
+section.bloco{border-top:1px solid var(--rule);padding:72px 0 80px}
+h2{font-family:var(--serif);font-weight:700;font-size:30px;line-height:1.2;margin:0 0 20px;max-width:760px}
+@media (max-width:767px){section.bloco{padding:48px 0 56px} h2{font-size:24px}}
+p{margin:0 0 18px}
+.transicao{font-style:italic;color:var(--ink-2);margin-top:32px}
+strong{font-weight:700}
+
+/* Figuras */
+figure{margin:36px 0 0;padding:0}
+.fig-title{font-family:var(--sans);font-size:17px;font-weight:600;line-height:1.3;margin:0 0 4px;color:var(--ink)}
+.fig-sub{font-family:var(--sans);font-size:15px;line-height:1.4;color:var(--ink-2);margin:0 0 16px}
+.fig-note,.fonte{font-family:var(--sans);font-size:13px;line-height:1.5;color:var(--ink-3);margin:12px 0 0}
+.fonte{margin-top:6px}
+.callout{font-family:var(--sans);font-size:14px;line-height:1.45;color:var(--ink-2);margin:8px 0 0;padding-left:12px;border-left:1px solid var(--ink-3)}
+.callout b{color:var(--ink)}
+.chart{width:100%}
+.chart svg{display:block;overflow:visible}
+@media (max-width:767px){.fig-title{font-size:16px} .fig-sub{font-size:14px}}
+
+/* Texto em SVG */
+svg text{font-family:var(--sans);font-size:13px;fill:var(--ink-2);font-variant-numeric:tabular-nums}
+svg .lab{fill:var(--ink)}
+svg .strong{font-weight:700;fill:var(--ink)}
+svg .tick{fill:var(--ink-3);font-size:12px}
+svg .val-acc{fill:var(--accent);font-weight:600}
+svg .val-ink{fill:var(--ink)}
+svg .on-dark{fill:#FFFFFF;font-weight:600}
+svg .grid{stroke:var(--rule);stroke-width:1}
+svg .axis{stroke:var(--ink-3);stroke-width:1}
+svg .lead{stroke:var(--ink-3);stroke-width:1}
+svg .b-ink{fill:var(--ink)}
+svg .b-ctx{fill:var(--rule-strong)}
+svg .b-iso{fill:var(--rule-strong)}
+svg .b-fed{fill:var(--ink-2)}
+svg .b-acc{fill:var(--accent)}
+svg .b-light{fill:var(--accent-light);stroke:var(--accent);stroke-width:1}
+svg .conn{stroke:var(--rule-strong);stroke-width:2}
+svg .sq{fill:var(--ink)}
+svg .dot{fill:var(--accent);stroke:#FFFFFF;stroke-width:2}
+
+/* Legendas com forma */
+.legenda{font-family:var(--sans);font-size:14px;color:var(--ink-2);display:flex;flex-wrap:wrap;gap:8px 24px;margin:0 0 12px;padding:0;list-style:none}
+.legenda li{display:flex;align-items:center;gap:8px}
+.legenda svg{flex:none}
+.legenda b{color:var(--ink);font-weight:600}
+
+/* KPIs */
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin:36px 0 8px;max-width:760px}
+.kpi{border-top:2px solid var(--accent);padding-top:12px}
+.kpi-num{font-family:var(--sans);font-weight:700;font-size:64px;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi-txt{font-family:var(--sans);font-size:16px;line-height:1.4;color:var(--ink);margin-top:8px}
+@media (max-width:559px){.kpis{grid-template-columns:1fr;gap:24px} .kpi-num{font-size:48px}}
+
+/* Esquema explicativo */
+.defs{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:28px 0 0;max-width:760px;font-family:var(--sans)}
+.defs div{border-top:1px solid var(--ink);padding-top:10px}
+.defs dt{font-weight:700;font-size:16px;display:flex;align-items:center;gap:8px;margin:0 0 4px}
+.defs dd{margin:0;font-size:15px;line-height:1.5;color:var(--ink-2)}
+@media (max-width:559px){.defs{grid-template-columns:1fr}}
+.esquema{margin:36px 0 0;max-width:760px;font-family:var(--sans);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:20px 0}
+.esquema .cab{font-size:13px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;color:var(--ink-2);margin:0 0 14px}
+.chapa{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 16px;padding:0;list-style:none}
+.chapa li{border:1px solid var(--rule-strong);padding:8px 12px;min-width:140px;background:var(--paper)}
+.chapa li.prefeito{border:2px solid var(--ink)}
+.chapa .sig{display:flex;align-items:center;gap:6px;font-weight:700;font-size:15px;color:var(--ink)}
+.chapa .papel{font-size:13px;color:var(--ink-2);margin-top:2px}
+.conta{display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:15px;line-height:1.45;color:var(--ink)}
+.conta div{display:flex;gap:8px;align-items:flex-start}
+.conta svg{flex:none;margin-top:3px}
+@media (max-width:559px){.conta{grid-template-columns:1fr}}
+
+/* Matriz regional */
+.matriz-wrap{max-width:760px}
+table{border-collapse:collapse;font-family:var(--sans);font-variant-numeric:tabular-nums}
+table.matriz{width:100%;table-layout:fixed;font-size:14px}
+.matriz caption,.tabela caption{text-align:left;font-size:13px;color:var(--ink-3);padding:0 0 8px}
+.matriz th{font-weight:600;color:var(--ink);padding:6px 4px;vertical-align:bottom}
+.matriz thead th{text-align:center;border-bottom:1px solid var(--ink);font-size:14px;line-height:1.25}
+.matriz thead th .n{display:block;font-weight:400;color:var(--ink-3);font-size:13px}
+.matriz thead th:first-child{text-align:left;width:30%}
+.matriz tbody th{text-align:left;font-weight:600;border-bottom:1px solid var(--paper);padding-right:8px;width:30%}
+.matriz td{text-align:center;padding:9px 2px;border:2px solid var(--paper);color:var(--ink)}
+.matriz td.s1{background:var(--seq-1)} .matriz td.s2{background:var(--seq-2)} .matriz td.s3{background:var(--seq-3)}
+.matriz td.s4{background:var(--seq-4);color:#FFFFFF} .matriz td.s5{background:var(--seq-5);color:#FFFFFF}
+.matriz td.max{font-weight:700;box-shadow:inset 0 0 0 2px var(--ink),inset 0 0 0 4px #FFFFFF}
+.matriz tr.outros th{font-weight:400;color:var(--ink-2)}
+.abbr{display:none}
+@media (max-width:559px){.matriz .full{display:none} .matriz .abbr{display:inline} table.matriz{font-size:13px} .matriz thead th:first-child{width:27%} .matriz tbody th{padding-right:4px} .matriz .pct-s{display:none}}
+
+/* Escala */
+.escala{display:flex;flex-wrap:wrap;gap:6px 16px;font-family:var(--sans);font-size:13px;color:var(--ink-2);margin:12px 0 0;padding:0;list-style:none}
+.escala li{display:flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:18px;height:14px;border:1px solid var(--rule-strong)}
+.sw.s1{background:var(--seq-1)} .sw.s2{background:var(--seq-2)} .sw.s3{background:var(--seq-3)} .sw.s4{background:var(--seq-4)} .sw.s5{background:var(--seq-5)}
+.sw.df{background:var(--paper);border:1px dashed var(--rule-strong)}
+.sw.mx{background:var(--paper);box-shadow:inset 0 0 0 2px var(--ink)}
+
+/* Tile map */
+.tile-ctrl{font-family:var(--sans);font-size:14px;color:var(--ink-2);margin:0 0 14px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.tile-ctrl select{font-family:var(--sans);font-size:15px;padding:6px 8px;border:1px solid var(--rule-strong);background:var(--paper);color:var(--ink);border-radius:0}
+.tile-ctrl output{color:var(--ink)}
+.tilemap-box{position:relative;max-width:600px}
+.tilemap{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
+.tile{aspect-ratio:1/1;border:0;margin:0;padding:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--sans);line-height:1.15;color:var(--ink);cursor:pointer;min-width:0;overflow:hidden;font-variant-numeric:tabular-nums}
+.tile .uf{font-size:13px;font-weight:700;letter-spacing:.02em}
+.tile .sg{font-size:13px;font-weight:600}
+.tile .pc{font-size:13px}
+.tile .nm{font-size:12px;opacity:.9}
+.tile.f1{background:var(--seq-1)} .tile.f2{background:var(--seq-2)} .tile.f3{background:var(--seq-3)}
+.tile.f4{background:var(--seq-4);color:#FFFFFF} .tile.f5{background:var(--seq-5);color:#FFFFFF}
+.tile.df{background:var(--paper);border:1px dashed var(--rule-strong);color:var(--ink-3);cursor:default}
+.tile.hl{box-shadow:inset 0 0 0 3px var(--ink),inset 0 0 0 5px #FFFFFF}
+.tile.hl .sg{text-decoration:underline;text-underline-offset:2px;font-weight:700}
+.tile:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (max-width:599px){.tile .nm,.tile .dfx{display:none}}
+@media (max-width:400px){.tile .sg,.tile .pc{font-size:12px}}
+.tip{position:absolute;z-index:5;max-width:260px;background:var(--paper);border:1px solid var(--ink);padding:10px 12px;font-family:var(--sans);font-size:13px;line-height:1.45;color:var(--ink);pointer-events:none}
+.tip[hidden]{display:none}
+.tip b{font-weight:700}
+
+/* Tabelas equivalentes */
+details{margin:16px 0 0;font-family:var(--sans);max-width:760px}
+summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--ink-2);padding:6px 0}
+summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tabela-wrap{max-width:100%}
+table.tabela{width:100%;font-size:14px;margin-top:8px}
+.tabela th,.tabela td{padding:6px 8px 6px 0;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+.tabela th{font-weight:600;color:var(--ink);border-bottom:1px solid var(--ink)}
+.tabela td.num,.tabela th.num{text-align:right}
+@media (max-width:559px){table.tabela{font-size:13px} .tabela th,.tabela td{padding:5px 6px 5px 0} .tabela .opt{display:none}}
+
+/* Fechamento */
+.sintese{list-style:none;padding:0;margin:24px 0 0;max-width:680px}
+.sintese li{border-top:1px solid var(--rule);padding:14px 0}
+.limites{font-family:var(--sans);font-size:15px;line-height:1.55;color:var(--ink);max-width:680px;padding-left:20px}
+.limites li{margin:0 0 10px}
+.metodo{font-family:var(--sans);font-size:15px;line-height:1.55;max-width:680px}
+.metodo dt{font-weight:700;margin-top:14px}
+.metodo dd{margin:2px 0 0;color:var(--ink-2)}
+h3{font-family:var(--serif);font-size:22px;line-height:1.25;margin:40px 0 12px}
+footer{border-top:1px solid var(--ink);padding:24px 0 64px;font-family:var(--sans);font-size:13px;color:var(--ink-3);line-height:1.6}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9em}
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+a{color:var(--accent)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <p class="kicker">Eleições municipais de 2024 · Análise de dados</p>
+    <h1>Encabeçar ou integrar: o mapa partidário das prefeituras eleitas em 2024</h1>
+    <p class="dek">PSD, MDB e PP encabeçam 45% das 5.553 prefeituras da base. Mas 94% das chapas vencedoras foram coligações, e contar todos os partidos que as compõem muda a leitura do mapa.</p>
+    <p class="meta"><strong>Base:</strong> 5.553 municípios da base · <strong>Eleição:</strong> municipal de 2024 · <strong>Dados consolidados em:</strong> 01/10/2026. Retrato do resultado da eleição: não representa necessariamente quem ocupa os cargos hoje.</p>
+  </div>
+</header>
+
+<main>
+
+<!-- 1 · Fotografia nacional -->
+<section class="bloco" id="fotografia" aria-labelledby="h-v1">
+  <div class="wrap">
+    <p class="kicker">1 · Fotografia nacional</p>
+    <h2 id="h-v1">PSD, MDB e PP encabeçam 45% das prefeituras</h2>
+    <div class="prose">
+      <p>A forma mais comum de contar o resultado de uma eleição municipal é pelo partido do prefeito eleito. Por esse critério, 24 partidos conquistaram ao menos uma das 5.553 prefeituras da base em 2024.</p>
+      <p>Os três maiores — PSD, MDB e PP — somam 2.500 prefeituras, <strong>45,0%</strong> do total; os cinco maiores chegam a <strong>64,9%</strong>. Nenhum partido, sozinho, chega a 17%.</p>
+    </div>
+    <figure>
+      <p class="fig-title">Prefeituras encabeçadas, por partido do prefeito</p>
+      <p class="fig-sub">Número de prefeitos eleitos e % dos 5.553 municípios da base</p>
+      <div class="chart" id="v1"></div>
+      <p class="callout"><b>PSD e MDB estão separados por apenas 30 prefeituras</b> (890 e 860).</p>
+      <p class="fig-note">Percentuais calculados sobre os 5.553 municípios da base; arredondados, podem não somar exatamente 100%. Outros 15 partidos: PDT 151, AVANTE 136, PODE 127, PRD 77, SOLIDARIEDADE 63, CIDADANIA 33, MOBILIZA 21, NOVO 19, PC do B 19, PV 14, REDE 4, AGIR 3, PMB 2, DC 2, PRTB 1.</p>
+      <p class="fonte">Fonte: TSE, eleições municipais de 2024 (dados/eleitos.csv), consolidado em 01/10/2026.</p>
+      <details>
+        <summary>Ver tabela de dados</summary>
+        <div class="tabela-wrap"><table class="tabela"><caption>Prefeituras encabeçadas por partido (5.553 municípios)</caption><thead><tr><th scope="col">Partido</th><th scope="col" class="num">Prefeituras</th><th scope="col" class="num">% (2 casas)</th></tr></thead><tbody><tr><th scope="row">PSD</th><td class="num">890</td><td class="num">16,03</td></tr><tr><th scope="row">MDB</th><td class="num">860</td><td class="num">15,49</td></tr><tr><th scope="row">PP</th><td class="num">750</td><td class="num">13,51</td></tr><tr><th scope="row">UNIÃO</th><td class="num">589</td><td class="num">10,61</td></tr><tr><th scope="row">PL</th><td class="num">517</td><td class="num">9,31</td></tr><tr><th scope="row">REPUBLICANOS</th><td class="num">437</td><td class="num">7,87</td></tr><tr><th scope="row">PSB</th><td class="num">311</td><td class="num">5,60</td></tr><tr><th scope="row">PSDB</th><td class="num">275</td><td class="num">4,95</td></tr><tr><th scope="row">PT</th><td class="num">252</td><td class="num">4,54</td></tr><tr><th scope="row">PDT</th><td class="num">151</td><td class="num">2,72</td></tr><tr><th scope="row">AVANTE</th><td class="num">136</td><td class="num">2,45</td></tr><tr><th scope="row">PODE</th><td class="num">127</td><td class="num">2,29</td></tr><tr><th scope="row">PRD</th><td class="num">77</td><td class="num">1,39</td></tr><tr><th scope="row">SOLIDARIEDADE</th><td class="num">63</td><td class="num">1,13</td></tr><tr><th scope="row">CIDADANIA</th><td class="num">33</td><td class="num">0,59</td></tr><tr><th scope="row">MOBILIZA</th><td class="num">21</td><td class="num">0,38</td></tr><tr><th scope="row">NOVO</th><td class="num">19</td><td class="num">0,34</td></tr><tr><th scope="row">PC do B</th><td class="num">19</td><td class="num">0,34</td></tr><tr><th scope="row">PV</th><td class="num">14</td><td class="num">0,25</td></tr><tr><th scope="row">REDE</th><td class="num">4</td><td class="num">0,07</td></tr><tr><th scope="row">AGIR</th><td class="num">3</td><td class="num">0,05</td></tr><tr><th scope="row">PMB</th><td class="num">2</td><td class="num">0,04</td></tr><tr><th scope="row">DC</th><td class="num">2</td><td class="num">0,04</td></tr><tr><th scope="row">PRTB</th><td class="num">1</td><td class="num">0,02</td></tr><tr><th scope="row">Total</th><td class="num">5.553</td><td class="num">100,00</td></tr></tbody></table></div>
+      </details>
+    </figure>
+    <p class="prose transicao">Mas o nome do partido do prefeito é só a parte mais visível de uma chapa vencedora.</p>
+  </div>
+</section>
+
+<!-- 2 · Uma prefeitura, vários partidos -->
+<section class="bloco" id="metrica" aria-labelledby="h-met">
+  <div class="wrap">
+    <p class="kicker">2 · Como ler este levantamento</p>
+    <h2 id="h-met">Uma prefeitura, vários partidos</h2>
+    <div class="prose">
+      <p>Prefeito e vice são eleitos juntos, na mesma chapa, e essa chapa pode reunir vários partidos em uma coligação. Por isso, este levantamento usa duas contagens.</p>
+    </div>
+    <dl class="defs">
+      <div>
+        <dt><svg width="12" height="12" aria-hidden="true"><rect width="12" height="12" fill="#1A1F24"/></svg>Encabeça</dt>
+        <dd>O partido pelo qual o prefeito concorreu. Cada prefeitura tem um só.</dd>
+      </div>
+      <div>
+        <dt><svg width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="6" fill="#0E7470"/></svg>Integra</dt>
+        <dd>Cada sigla que aparece na composição registrada da chapa vencedora. Uma prefeitura conta para vários partidos.</dd>
+      </div>
+    </dl>
+    <div class="esquema" role="group" aria-label="Exemplo ilustrativo: a chapa vencedora em Acrelândia, no Acre, tem prefeito do REPUBLICANOS, vice do UNIÃO e coligação formada por REPUBLICANOS, PL e UNIÃO. Conta como uma prefeitura encabeçada pelo REPUBLICANOS e três presenças em chapa vencedora.">
+      <p class="cab">Exemplo ilustrativo · Chapa vencedora em Acrelândia (AC)</p>
+      <ul class="chapa">
+        <li class="prefeito"><span class="sig"><svg width="10" height="10" aria-hidden="true"><rect width="10" height="10" fill="#1A1F24"/></svg>REPUBLICANOS</span><span class="papel">partido do prefeito</span></li>
+        <li><span class="sig">UNIÃO</span><span class="papel">partido do vice</span></li>
+        <li><span class="sig">PL</span><span class="papel">integra a coligação</span></li>
+      </ul>
+      <div class="conta">
+        <div><svg width="12" height="12" aria-hidden="true"><rect width="12" height="12" fill="#1A1F24"/></svg><span><b>1 prefeitura encabeçada:</b> REPUBLICANOS.</span></div>
+        <div><svg width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="6" fill="#0E7470"/></svg><span><b>3 presenças em chapa vencedora:</b> REPUBLICANOS, PL e UNIÃO.</span></div>
+      </div>
+    </div>
+    <p class="fig-note prose">Exemplo apenas ilustrativo (primeiro registro do arquivo). O número de partidos por coligação varia: a mediana é de 3 siglas, e a maior coligação vencedora reúne 17. Integrar a chapa não mede o peso de cada partido na aliança, cargos ou compromissos depois da eleição.</p>
+    <p class="prose transicao">Esse arranjo não é exceção. É a regra.</p>
+  </div>
+</section>
+
+<!-- 3 · Alianças -->
+<section class="bloco" id="aliancas" aria-labelledby="h-v2">
+  <div class="wrap">
+    <p class="kicker">3 · Alianças</p>
+    <h2 id="h-v2">94 de cada 100 chapas vencedoras eram coligações</h2>
+    <div class="prose">
+      <p>Quase todas as prefeituras foram conquistadas por chapas formadas por mais de um partido. E, na maior parte delas, prefeito e vice vieram de partidos diferentes.</p>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><div class="kpi-num">94,3%</div><div class="kpi-txt">das chapas vencedoras eram coligações</div></div>
+      <div class="kpi"><div class="kpi-num">77,5%</div><div class="kpi-txt">tinham prefeito e vice de partidos diferentes</div></div>
+    </div>
+    <figure>
+      <p class="fig-title">Como as chapas vencedoras se registraram</p>
+      <p class="fig-sub">% das 5.553 chapas vencedoras, por tipo de agremiação</p>
+      <div class="chart" id="v2"></div>
+      <p class="fig-note"><b>Coligação:</b> partidos que se unem para disputar a prefeitura. <b>Federação sem coligação:</b> chapa registrada apenas por uma federação partidária; federações também aparecem dentro de coligações. Valores exatos: 94,33% coligações, 5,01% partido isolado, 0,67% federação sem coligação; 77,45% das chapas (4.301) com prefeito e vice de partidos diferentes. O vice é eleito na mesma chapa e não recebe votação própria.</p>
+      <p class="fig-note"><b>Atenção:</b> a base contém apenas chapas vencedoras. Por isso não é possível concluir que coligar “faz vencer” — não há comparação com as chapas derrotadas.</p>
+      <p class="fonte">Fonte: TSE, eleições municipais de 2024 (dados/eleitos.csv), consolidado em 01/10/2026.</p>
+      <details>
+        <summary>Ver tabela de dados</summary>
+        <div class="tabela-wrap"><table class="tabela"><caption>Tipo de agremiação e composição prefeito/vice (5.553 chapas vencedoras)</caption><thead><tr><th scope="col">Categoria</th><th scope="col" class="num">Chapas</th><th scope="col" class="num">%</th></tr></thead><tbody><tr><th scope="row">Coligação</th><td class="num">5.238</td><td class="num">94,33</td></tr><tr><th scope="row">Partido isolado</th><td class="num">278</td><td class="num">5,01</td></tr><tr><th scope="row">Federação sem coligação</th><td class="num">37</td><td class="num">0,67</td></tr><tr><th scope="row">Prefeito e vice de partidos diferentes</th><td class="num">4.301</td><td class="num">77,45</td></tr><tr><th scope="row">Prefeito e vice do mesmo partido</th><td class="num">1.252</td><td class="num">22,55</td></tr></tbody></table></div>
+      </details>
+    </figure>
+    <p class="prose transicao">Se quase todas as chapas são alianças, vale contar de outro jeito: em quantas chapas vencedoras cada sigla aparece? A partir daqui, federações contam como um bloco, como no registro da chapa.</p>
+  </div>
+</section>
+
+<!-- 4 e 5 · Presença e contraste -->
+<section class="bloco" id="contraste" aria-labelledby="h-v3">
+  <div class="wrap">
+    <p class="kicker">4 · Presença nas chapas vencedoras</p>
+    <h2 id="h-v3">Encabeçar e integrar contam histórias diferentes</h2>
+    <div class="prose">
+      <p>Contando a presença na composição, MDB, PP e PSD aparecem, cada um, em cerca de 4 de cada 10 chapas vencedoras: 2.245, 2.168 e 2.166, respectivamente. A diferença entre eles é pequena — 77 chapas entre MDB e PP, 2 entre PP e PSD.</p>
+    </div>
+    <figure>
+      <p class="fig-title">Encabeça × integra, por sigla ou federação</p>
+      <p class="fig-sub">% dos 5.553 municípios da base · 10 siglas ou federações com maior presença</p>
+      <ul class="legenda" aria-hidden="true">
+        <li><svg width="12" height="12"><rect width="12" height="12" fill="#1A1F24"/></svg><span><b>Encabeça</b> — partido do prefeito</span></li>
+        <li><svg width="14" height="14"><circle cx="7" cy="7" r="6" fill="#0E7470"/></svg><span><b>Integra</b> — presença na composição da chapa vencedora</span></li>
+      </ul>
+      <div class="chart" id="v3"></div>
+      <p class="callout"><b>MDB, PP e PSD estão praticamente empatados na presença</b> (40,4%, 39,0% e 39,0%), embora o PSD tenha mais prefeitos.</p>
+      <p class="callout"><b>O PODE encabeça 2,3% das prefeituras</b> e está em 20,3% das chapas vencedoras.</p>
+      <p class="fig-note"><b>A presença não é aditiva:</b> cada chapa conta para todos os partidos que a compõem. Somadas todas as siglas, são 21.016 presenças — 378,5% de 5.553. Presença na composição indica participação na chapa, não peso político. <b>Fe Brasil</b> = federação de PT, PC do B e PV (encabeça 285: PT 252, PC do B 19, PV 14). <b>Fed. PSDB/Cidadania</b> encabeça 308 (PSDB 275, CIDADANIA 33).</p>
+      <p class="fonte">Fonte: TSE, eleições municipais de 2024 (dados/eleitos.csv), consolidado em 01/10/2026.</p>
+      <details>
+        <summary>Ver tabela de dados</summary>
+        <div class="tabela-wrap"><table class="tabela"><caption>Encabeça e integra por sigla ou federação (% de 5.553 municípios)</caption><thead><tr><th scope="col">Sigla/federação</th><th scope="col" class="num">Integra</th><th scope="col" class="num">% integra</th><th scope="col" class="num">Encabeça</th><th scope="col" class="num">% encabeça</th></tr></thead><tbody><tr><th scope="row">MDB</th><td class="num">2.245</td><td class="num">40,4</td><td class="num">860</td><td class="num">15,5</td></tr><tr><th scope="row">PP</th><td class="num">2.168</td><td class="num">39,0</td><td class="num">750</td><td class="num">13,5</td></tr><tr><th scope="row">PSD</th><td class="num">2.166</td><td class="num">39,0</td><td class="num">890</td><td class="num">16,0</td></tr><tr><th scope="row">UNIÃO</th><td class="num">1.874</td><td class="num">33,7</td><td class="num">589</td><td class="num">10,6</td></tr><tr><th scope="row">REPUBLICANOS</th><td class="num">1.723</td><td class="num">31,0</td><td class="num">437</td><td class="num">7,9</td></tr><tr><th scope="row">PL</th><td class="num">1.569</td><td class="num">28,3</td><td class="num">517</td><td class="num">9,3</td></tr><tr><th scope="row">Fed. PSDB/Cidadania</th><td class="num">1.342</td><td class="num">24,2</td><td class="num">308</td><td class="num">5,5</td></tr><tr><th scope="row">PSB</th><td class="num">1.334</td><td class="num">24,0</td><td class="num">311</td><td class="num">5,6</td></tr><tr><th scope="row">PODE</th><td class="num">1.130</td><td class="num">20,3</td><td class="num">127</td><td class="num">2,3</td></tr><tr><th scope="row">Fe Brasil</th><td class="num">1.118</td><td class="num">20,1</td><td class="num">285</td><td class="num">5,1</td></tr></tbody></table></div>
+      </details>
+    </figure>
+    <div class="prose" style="margin-top:36px">
+      <p>O PSD tem mais prefeitos; na presença, os três maiores ficam praticamente empatados. O REPUBLICANOS, 6º em número de prefeitos, é o 5º em presença. A distância entre os dois pontos mostra em quantas chapas vencedoras a sigla aparece sem encabeçar.</p>
+    </div>
+    <p class="prose transicao">Para algumas siglas, a diferença entre as duas contagens é ainda maior.</p>
+  </div>
+</section>
+
+<!-- 6 · Parceiros de composição -->
+<section class="bloco" id="parceiros" aria-labelledby="h-v4">
+  <div class="wrap">
+    <p class="kicker">5 · Parceiros de composição</p>
+    <h2 id="h-v4">Para várias siglas, a presença nas prefeituras é quase toda na composição da chapa</h2>
+    <div class="prose">
+      <p>Outra forma de comparar é perguntar: das chapas vencedoras em que a sigla aparece, em quantas ela encabeça? Para PSD e MDB, cerca de 4 em 10 (41,1% e 38,3%). Para o PODE, 11,2%; para o PRD, 9,8%; para o SOLIDARIEDADE, 9,7%.</p>
+      <p>Em algumas siglas, a presença é quase toda como integrante: o DC aparece em 223 chapas vencedoras e encabeça 2; o AGIR aparece em 250 e encabeça 3.</p>
+    </div>
+    <figure>
+      <p class="fig-title">Das chapas vencedoras em que a sigla aparece, quantas ela encabeça</p>
+      <p class="fig-sub">% das presenças de cada sigla ou federação · à direita, número de chapas vencedoras em que aparece</p>
+      <ul class="legenda" aria-hidden="true">
+        <li><svg width="22" height="12"><rect width="22" height="12" fill="#1A1F24"/></svg><span><b>Encabeça</b></span></li>
+        <li><svg width="22" height="12"><rect x=".5" y=".5" width="21" height="11" fill="#9FCFCB" stroke="#0E7470"/></svg><span><b>Só integra</b> (aparece na composição sem ter o prefeito)</span></li>
+      </ul>
+      <div class="chart" id="v4"></div>
+      <p class="fig-note">Proporções calculadas apenas sobre chapas vencedoras; não indicam estratégia, intenção nem desempenho nas eleições perdidas. Fed. PSOL/Rede: as 4 prefeituras encabeçadas são da REDE.</p>
+      <p class="fonte">Fonte: TSE, eleições municipais de 2024 (dados/eleitos.csv), consolidado em 01/10/2026.</p>
+      <details>
+        <summary>Ver tabela de dados</summary>
+        <div class="tabela-wrap"><table class="tabela"><caption>Chapas vencedoras em que a sigla aparece e parcela que encabeça (21 siglas/federações)</caption><thead><tr><th scope="col">Sigla/federação</th><th scope="col" class="num">Integra</th><th scope="col" class="num">Encabeça</th><th scope="col" class="num">% encabeça</th></tr></thead><tbody><tr><th scope="row">PSD</th><td class="num">2.166</td><td class="num">890</td><td class="num">41,1</td></tr><tr><th scope="row">MDB</th><td class="num">2.245</td><td class="num">860</td><td class="num">38,3</td></tr><tr><th scope="row">PP</th><td class="num">2.168</td><td class="num">750</td><td class="num">34,6</td></tr><tr><th scope="row">PL</th><td class="num">1.569</td><td class="num">517</td><td class="num">33,0</td></tr><tr><th scope="row">UNIÃO</th><td class="num">1.874</td><td class="num">589</td><td class="num">31,4</td></tr><tr><th scope="row">Fe Brasil</th><td class="num">1.118</td><td class="num">285</td><td class="num">25,5</td></tr><tr><th scope="row">REPUBLICANOS</th><td class="num">1.723</td><td class="num">437</td><td class="num">25,4</td></tr><tr><th scope="row">PSB</th><td class="num">1.334</td><td class="num">311</td><td class="num">23,3</td></tr><tr><th scope="row">Fed. PSDB/Cidadania</th><td class="num">1.342</td><td class="num">308</td><td class="num">23,0</td></tr><tr><th scope="row">AVANTE</th><td class="num">727</td><td class="num">136</td><td class="num">18,7</td></tr><tr><th scope="row">PDT</th><td class="num">960</td><td class="num">151</td><td class="num">15,7</td></tr><tr><th scope="row">NOVO</th><td class="num">152</td><td class="num">19</td><td class="num">12,5</td></tr><tr><th scope="row">PODE</th><td class="num">1.130</td><td class="num">127</td><td class="num">11,2</td></tr><tr><th scope="row">PRD</th><td class="num">782</td><td class="num">77</td><td class="num">9,8</td></tr><tr><th scope="row">SOLIDARIEDADE</th><td class="num">651</td><td class="num">63</td><td class="num">9,7</td></tr><tr><th scope="row">MOBILIZA</th><td class="num">227</td><td class="num">21</td><td class="num">9,3</td></tr><tr><th scope="row">Fed. PSOL/Rede</th><td class="num">102</td><td class="num">4</td><td class="num">3,9</td></tr><tr><th scope="row">PMB</th><td class="num">120</td><td class="num">2</td><td class="num">1,7</td></tr><tr><th scope="row">AGIR</th><td class="num">250</td><td class="num">3</td><td class="num">1,2</td></tr><tr><th scope="row">DC</th><td class="num">223</td><td class="num">2</td><td class="num">0,9</td></tr><tr><th scope="row">PRTB</th><td class="num">153</td><td class="num">1</td><td class="num">0,7</td></tr></tbody></table></div>
+      </details>
+    </figure>
+    <p class="prose transicao">Essas são as médias do país. Mas o mapa de quem encabeça as prefeituras muda bastante de uma região para outra.</p>
+  </div>
+</section>
+
+<!-- 7 · Regiões -->
+<section class="bloco" id="regioes" aria-labelledby="h-v5">
+  <div class="wrap">
+    <p class="kicker">6 · Geografia: regiões</p>
+    <h2 id="h-v5">Quatro partidos diferentes têm a maior fatia das prefeituras nas cinco regiões</h2>
+    <div class="prose">
+      <p>No Sudeste, o PSD tem a maior participação (21,4%); no Sul, o PP (23,4%); no Centro-Oeste, o UNIÃO (33,2%); no Norte, o MDB (24,7%). No Nordeste, MDB (15,7%) e PSD (15,4%) estão praticamente empatados — 282 e 275 prefeituras.</p>
+      <p>O PSD, maior partido do país em número de prefeitos, encabeça 8 prefeituras no Centro-Oeste. Já o Nordeste, que reúne 32,3% dos municípios da base, concentra 67,5% das prefeituras do PT e 68,8% das do PSB. Os dados mostram a distribuição; não explicam por que ela ocorre.</p>
+    </div>
+    <figure class="matriz-wrap">
+      <p class="fig-title">Participação de cada partido nas prefeituras de cada região</p>
+      <p class="fig-sub">% das prefeituras da região encabeçadas pelo partido · cada coluna soma cerca de 100%</p>
+      <table class="matriz"><caption>Linhas: partido do prefeito. Colunas: região, com o número de municípios (n). Valores em % das prefeituras da região.</caption><thead><tr><th scope="col">Partido</th><th scope="col"><span class="full">Norte</span><span class="abbr">N</span><span class="n">n = 449</span></th><th scope="col"><span class="full">Nordeste</span><span class="abbr">NE</span><span class="n">n = 1.791</span></th><th scope="col"><span class="full">Centro-Oeste</span><span class="abbr">CO</span><span class="n">n = 467</span></th><th scope="col"><span class="full">Sudeste</span><span class="abbr">SE</span><span class="n">n = 1.656</span></th><th scope="col"><span class="full">Sul</span><span class="abbr">S</span><span class="n">n = 1.190</span></th></tr></thead><tbody><tr><th scope="row">PSD</th><td class="s2">7,8<span class="pct-s">%</span></td><td class="s4">15,4<span class="pct-s">%</span></td><td class="s1">1,7<span class="pct-s">%</span></td><td class="s5 max">21,4<span class="pct-s">%</span><span class="sr"> (maior participação na região)</span></td><td class="s4">18,2<span class="pct-s">%</span></td></tr><tr><th scope="row">MDB</th><td class="s5 max">24,7<span class="pct-s">%</span><span class="sr"> (maior participação na região)</span></td><td class="s4 max">15,7<span class="pct-s">%</span><span class="sr"> (maior participação na região)</span></td><td class="s4">16,1<span class="pct-s">%</span></td><td class="s3">10,1<span class="pct-s">%</span></td><td class="s4">18,9<span class="pct-s">%</span></td></tr><tr><th scope="row">PP</th><td class="s3">13,1<span class="pct-s">%</span></td><td class="s3">11,9<span class="pct-s">%</span></td><td class="s2">9,9<span class="pct-s">%</span></td><td class="s2">9,2<span class="pct-s">%</span></td><td class="s5 max">23,4<span class="pct-s">%</span><span class="sr"> (maior participação na região)</span></td></tr><tr><th scope="row">UNIÃO</th><td class="s5">22,5<span class="pct-s">%</span></td><td class="s2">8,6<span class="pct-s">%</span></td><td class="s5 max">33,2<span class="pct-s">%</span><span class="sr"> (maior participação na região)</span></td><td class="s2">7,2<span class="pct-s">%</span></td><td class="s2">5,0<span class="pct-s">%</span></td></tr><tr><th scope="row">PL</th><td class="s1">4,7<span class="pct-s">%</span></td><td class="s1">4,4<span class="pct-s">%</span></td><td class="s3">11,3<span class="pct-s">%</span></td><td class="s3">11,2<span class="pct-s">%</span></td><td class="s4">15,0<span class="pct-s">%</span></td></tr><tr><th scope="row"><span class="full">REPUBLICANOS</span><span class="abbr" title="REPUBLICANOS">REPUB.</span></th><td class="s4">18,3<span class="pct-s">%</span></td><td class="s2">6,9<span class="pct-s">%</span></td><td class="s1">3,0<span class="pct-s">%</span></td><td class="s3">10,9<span class="pct-s">%</span></td><td class="s1">3,0<span class="pct-s">%</span></td></tr><tr><th scope="row">PSB</th><td class="s1">0,4<span class="pct-s">%</span></td><td class="s3">11,9<span class="pct-s">%</span></td><td class="s1">4,1<span class="pct-s">%</span></td><td class="s1">3,3<span class="pct-s">%</span></td><td class="s1">1,8<span class="pct-s">%</span></td></tr><tr><th scope="row">PSDB</th><td class="s1">0,7<span class="pct-s">%</span></td><td class="s1">4,2<span class="pct-s">%</span></td><td class="s3">11,6<span class="pct-s">%</span></td><td class="s2">5,1<span class="pct-s">%</span></td><td class="s1">4,8<span class="pct-s">%</span></td></tr><tr><th scope="row">PT</th><td class="s1">1,6<span class="pct-s">%</span></td><td class="s2">9,5<span class="pct-s">%</span></td><td class="s1">0,6<span class="pct-s">%</span></td><td class="s1">2,5<span class="pct-s">%</span></td><td class="s1">2,5<span class="pct-s">%</span></td></tr><tr class="outros"><th scope="row"><span class="full">Outros (15 partidos)</span><span class="abbr">Outros</span></th><td class="s2">6,2<span class="pct-s">%</span></td><td class="s3">11,3<span class="pct-s">%</span></td><td class="s2">8,6<span class="pct-s">%</span></td><td class="s4">19,0<span class="pct-s">%</span></td><td class="s2">7,2<span class="pct-s">%</span></td></tr></tbody></table>
+      <ul class="escala" aria-label="Escala de tons da matriz">
+        <li><span class="sw s1"></span>menos de 5%</li>
+        <li><span class="sw s2"></span>5% a 10%</li>
+        <li><span class="sw s3"></span>10% a 15%</li>
+        <li><span class="sw s4"></span>15% a 20%</li>
+        <li><span class="sw s5"></span>20% ou mais</li>
+        <li><span class="sw mx"></span><b>contorno e negrito</b>: maior participação na região</li>
+      </ul>
+      <p class="fig-note">Contagem pelo partido do prefeito. “Outros” reúne os 15 partidos menores. Percentuais arredondados podem não somar exatamente 100%.</p>
+      <p class="fonte">Fonte: TSE, eleições municipais de 2024 (dados/eleitos.csv), consolidado em 01/10/2026.</p>
+    </figure>
+    <p class="prose transicao">Dentro das regiões, os estados variam ainda mais.</p>
+  </div>
+</section>
+
+<!-- 8 · UFs -->
+<section class="bloco" id="ufs" aria-labelledby="h-v6">
+  <div class="wrap">
+    <p class="kicker">7 · Geografia: estados</p>
+    <h2 id="h-v6">Oito partidos têm a maior participação em ao menos um estado</h2>
+    <div class="prose">
+      <p>Em cinco estados — AL, AC, PA, AP e MS — um único partido encabeça mais da metade das prefeituras. Em Minas Gerais, o estado com mais municípios (852), o partido com maior participação tem 16,7%, e 23 partidos elegeram prefeitos. PE (17,5%) e MA (18,4%) também ficam abaixo de 20%.</p>
+      <p>Em estados com poucos municípios — RR (15), AP (16) e AC (22) — poucas prefeituras mudam muito o percentual.</p>
+    </div>
+    <figure>
+      <p class="fig-title">Partido com maior participação nas prefeituras de cada UF</p>
+      <p class="fig-sub">Cada quadrado é uma UF, todos do mesmo tamanho. <b>O tom indica o percentual do partido com maior participação, não o partido</b>, que aparece escrito.</p>
+      <div class="tile-ctrl">
+        <label for="hl">Destacar partido:</label>
+        <select id="hl">
+          <option value="">nenhum</option>
+          <option value="PSD" data-label="PSD">PSD (6 UFs)</option><option value="UNIÃO" data-label="UNIÃO">UNIÃO (5 UFs)</option><option value="MDB" data-label="MDB">MDB (3 UFs)</option><option value="PP" data-label="PP">PP (3 UFs)</option><option value="PSB" data-label="PSB">PSB (3 UFs)</option><option value="PL" data-label="PL">PL (3 UFs)</option><option value="PSDB" data-label="PSDB">PSDB (2 UFs)</option><option value="REPUBLICANOS" data-label="REPUBLICANOS">REPUBLICANOS (1 UF)</option>
+        </select>
+        <output id="hl-out" aria-live="polite"></output>
+      </div>
+      <div class="tilemap-box" id="tilebox">
+        <div class="tilemap" role="group" aria-label="Mapa em quadrados das 26 UFs e do Distrito Federal. Cada quadrado mostra a UF, o partido com maior participação entre as prefeituras e o percentual. A tabela equivalente está logo abaixo.">
+          <button type="button" class="tile f4" style="grid-column:2;grid-row:1" data-uf="RR" data-lider="PP" data-tip="&lt;b&gt;Roraima (RR)&lt;/b&gt; · 15 municípios&lt;br&gt;Maior participação: &lt;b&gt;PP&lt;/b&gt; 7 (46,7%)&lt;br&gt;2º: REPUBLICANOS 6 (40,0%)&lt;br&gt;4 partidos com prefeito" aria-label="Roraima (RR): PP tem a maior participação, 7 de 15 prefeituras, 46,7%. Segundo: REPUBLICANOS 6 (40,0%). 4 partidos com prefeito."><span class="uf" aria-hidden="true">RR*</span><span class="sg" aria-hidden="true">PP</span><span class="pc" aria-hidden="true">46,7%</span><span class="nm" aria-hidden="true">15 mun.</span></button><button type="button" class="tile f5" style="grid-column:3;grid-row:1" data-uf="AP" data-lider="UNIÃO" data-tip="&lt;b&gt;Amapá (AP)&lt;/b&gt; · 16 municípios&lt;br&gt;Maior participação: &lt;b&gt;UNIÃO&lt;/b&gt; 9 (56,2%)&lt;br&gt;2º: MDB 3 (18,8%)&lt;br&gt;5 partidos com prefeito" aria-label="Amapá (AP): UNIÃO tem a maior participação, 9 de 16 prefeituras, 56,2%. Segundo: MDB 3 (18,8%). 5 partidos com prefeito."><span class="uf" aria-hidden="true">AP*</span><span class="sg" aria-hidden="true">UNIÃO</span><span class="pc" aria-hidden="true">56,2%</span><span class="nm" aria-hidden="true">16 mun.</span></button><button type="button" class="tile f3" style="grid-column:2;grid-row:2" data-uf="AM" data-lider="UNIÃO" data-tip="&lt;b&gt;Amazonas (AM)&lt;/b&gt; · 62 municípios&lt;br&gt;Maior participação: &lt;b&gt;UNIÃO&lt;/b&gt; 24 (38,7%)&lt;br&gt;2º: MDB 14 (22,6%)&lt;br&gt;11 partidos com prefeito" aria-label="Amazonas (AM): UNIÃO tem a maior participação, 24 de 62 prefeituras, 38,7%. Segundo: MDB 14 (22,6%). 11 partidos com prefeito."><span class="uf" aria-hidden="true">AM</span><span class="sg" aria-hidden="true">UNIÃO</span><span class="pc" aria-hidden="true">38,7%</span><span class="nm" aria-hidden="true">62 mun.</span></button><button type="button" class="tile f5" style="grid-column:3;grid-row:2" data-uf="PA" data-lider="MDB" data-tip="&lt;b&gt;Pará (PA)&lt;/b&gt; · 143 municípios&lt;br&gt;Maior participação: &lt;b&gt;MDB&lt;/b&gt; 84 (58,7%)&lt;br&gt;2º: PP 16 (11,2%)&lt;br&gt;13 partidos com prefeito" aria-label="Pará (PA): MDB tem a maior participação, 84 de 143 prefeituras, 58,7%. Segundo: PP 16 (11,2%). 13 partidos com prefeito."><span class="uf" aria-hidden="true">PA</span><span class="sg" aria-hidden="true">MDB</span><span class="pc" aria-hidden="true">58,7%</span><span class="nm" aria-hidden="true">143 mun.</span></button><button type="button" class="tile f1" style="grid-column:4;grid-row:2" data-uf="MA" data-lider="PL" data-tip="&lt;b&gt;Maranhão (MA)&lt;/b&gt; · 217 municípios&lt;br&gt;Maior participação: &lt;b&gt;PL&lt;/b&gt; 40 (18,4%)&lt;br&gt;2º: MDB 37 (17,1%)&lt;br&gt;17 partidos com prefeito" aria-label="Maranhão (MA): PL tem a maior participação, 40 de 217 prefeituras, 18,4%. Segundo: MDB 37 (17,1%). 17 partidos com prefeito."><span class="uf" aria-hidden="true">MA</span><span class="sg" aria-hidden="true">PL</span><span class="pc" aria-hidden="true">18,4%</span><span class="nm" aria-hidden="true">217 mun.</span></button><button type="button" class="tile f3" style="grid-column:5;grid-row:2" data-uf="CE" data-lider="PSB" data-tip="&lt;b&gt;Ceará (CE)&lt;/b&gt; · 184 municípios&lt;br&gt;Maior participação: &lt;b&gt;PSB&lt;/b&gt; 65 (35,3%)&lt;br&gt;2º: PT 47 (25,5%)&lt;br&gt;12 partidos com prefeito" aria-label="Ceará (CE): PSB tem a maior participação, 65 de 184 prefeituras, 35,3%. Segundo: PT 47 (25,5%). 12 partidos com prefeito."><span class="uf" aria-hidden="true">CE</span><span class="sg" aria-hidden="true">PSB</span><span class="pc" aria-hidden="true">35,3%</span><span class="nm" aria-hidden="true">184 mun.</span></button><button type="button" class="tile f2" style="grid-column:6;grid-row:2" data-uf="RN" data-lider="MDB" data-tip="&lt;b&gt;Rio Grande do Norte (RN)&lt;/b&gt; · 167 municípios&lt;br&gt;Maior participação: &lt;b&gt;MDB&lt;/b&gt; 45 (26,9%)&lt;br&gt;2º: UNIÃO 28 (16,8%)&lt;br&gt;12 partidos com prefeito" aria-label="Rio Grande do Norte (RN): MDB tem a maior participação, 45 de 167 prefeituras, 26,9%. Segundo: UNIÃO 28 (16,8%). 12 partidos com prefeito."><span class="uf" aria-hidden="true">RN</span><span class="sg" aria-hidden="true">MDB</span><span class="pc" aria-hidden="true">26,9%</span><span class="nm" aria-hidden="true">167 mun.</span></button><button type="button" class="tile f5" style="grid-column:1;grid-row:3" data-uf="AC" data-lider="PP" data-tip="&lt;b&gt;Acre (AC)&lt;/b&gt; · 22 municípios&lt;br&gt;Maior participação: &lt;b&gt;PP&lt;/b&gt; 14 (63,6%)&lt;br&gt;2º: REPUBLICANOS e PL empatados (2 cada, 9,1%)&lt;br&gt;7 partidos com prefeito" aria-label="Acre (AC): PP tem a maior participação, 14 de 22 prefeituras, 63,6%. Segundo: REPUBLICANOS e PL empatados (2 cada, 9,1%). 7 partidos com prefeito."><span class="uf" aria-hidden="true">AC*</span><span class="sg" aria-hidden="true">PP</span><span class="pc" aria-hidden="true">63,6%</span><span class="nm" aria-hidden="true">22 mun.</span></button><button type="button" class="tile f3" style="grid-column:2;grid-row:3" data-uf="RO" data-lider="UNIÃO" data-tip="&lt;b&gt;Rondônia (RO)&lt;/b&gt; · 52 municípios&lt;br&gt;Maior participação: &lt;b&gt;UNIÃO&lt;/b&gt; 16 (30,8%)&lt;br&gt;2º: PL 12 (23,1%)&lt;br&gt;9 partidos com prefeito" aria-label="Rondônia (RO): UNIÃO tem a maior participação, 16 de 52 prefeituras, 30,8%. Segundo: PL 12 (23,1%). 9 partidos com prefeito."><span class="uf" aria-hidden="true">RO</span><span class="sg" aria-hidden="true">UNIÃO</span><span class="pc" aria-hidden="true">30,8%</span><span class="nm" aria-hidden="true">52 mun.</span></button><button type="button" class="tile f4" style="grid-column:3;grid-row:3" data-uf="TO" data-lider="REPUBLICANOS" data-tip="&lt;b&gt;Tocantins (TO)&lt;/b&gt; · 139 municípios&lt;br&gt;Maior participação: &lt;b&gt;REPUBLICANOS&lt;/b&gt; 57 (41,0%)&lt;br&gt;2º: UNIÃO 37 (26,6%)&lt;br&gt;13 partidos com prefeito" aria-label="Tocantins (TO): REPUBLICANOS tem a maior participação, 57 de 139 prefeituras, 41,0%. Segundo: UNIÃO 37 (26,6%). 13 partidos com prefeito."><span class="uf" aria-hidden="true">TO</span><span class="sg" aria-hidden="true">REPUB.</span><span class="pc" aria-hidden="true">41,0%</span><span class="nm" aria-hidden="true">139 mun.</span></button><button type="button" class="tile f2" style="grid-column:4;grid-row:3" data-uf="PI" data-lider="PSD" data-tip="&lt;b&gt;Piauí (PI)&lt;/b&gt; · 224 municípios&lt;br&gt;Maior participação: &lt;b&gt;PSD&lt;/b&gt; 65 (29,0%)&lt;br&gt;2º: MDB 57 (25,4%)&lt;br&gt;10 partidos com prefeito" aria-label="Piauí (PI): PSD tem a maior participação, 65 de 224 prefeituras, 29,0%. Segundo: MDB 57 (25,4%). 10 partidos com prefeito."><span class="uf" aria-hidden="true">PI</span><span class="sg" aria-hidden="true">PSD</span><span class="pc" aria-hidden="true">29,0%</span><span class="nm" aria-hidden="true">224 mun.</span></button><button type="button" class="tile f1" style="grid-column:5;grid-row:3" data-uf="PE" data-lider="PSDB" data-tip="&lt;b&gt;Pernambuco (PE)&lt;/b&gt; · 183 municípios&lt;br&gt;Maior participação: &lt;b&gt;PSDB&lt;/b&gt; 32 (17,5%)&lt;br&gt;2º: PSB 31 (16,9%)&lt;br&gt;16 partidos com prefeito" aria-label="Pernambuco (PE): PSDB tem a maior participação, 32 de 183 prefeituras, 17,5%. Segundo: PSB 31 (16,9%). 16 partidos com prefeito."><span class="uf" aria-hidden="true">PE</span><span class="sg" aria-hidden="true">PSDB</span><span class="pc" aria-hidden="true">17,5%</span><span class="nm" aria-hidden="true">183 mun.</span></button><button type="button" class="tile f3" style="grid-column:6;grid-row:3" data-uf="PB" data-lider="PSB" data-tip="&lt;b&gt;Paraíba (PB)&lt;/b&gt; · 223 municípios&lt;br&gt;Maior participação: &lt;b&gt;PSB&lt;/b&gt; 69 (30,9%)&lt;br&gt;2º: REPUBLICANOS 50 (22,4%)&lt;br&gt;13 partidos com prefeito" aria-label="Paraíba (PB): PSB tem a maior participação, 69 de 223 prefeituras, 30,9%. Segundo: REPUBLICANOS 50 (22,4%). 13 partidos com prefeito."><span class="uf" aria-hidden="true">PB</span><span class="sg" aria-hidden="true">PSB</span><span class="pc" aria-hidden="true">30,9%</span><span class="nm" aria-hidden="true">223 mun.</span></button><button type="button" class="tile f4" style="grid-column:2;grid-row:4" data-uf="MT" data-lider="UNIÃO" data-tip="&lt;b&gt;Mato Grosso (MT)&lt;/b&gt; · 142 municípios&lt;br&gt;Maior participação: &lt;b&gt;UNIÃO&lt;/b&gt; 60 (42,3%)&lt;br&gt;2º: PL 22 (15,5%)&lt;br&gt;11 partidos com prefeito" aria-label="Mato Grosso (MT): UNIÃO tem a maior participação, 60 de 142 prefeituras, 42,3%. Segundo: PL 22 (15,5%). 11 partidos com prefeito."><span class="uf" aria-hidden="true">MT</span><span class="sg" aria-hidden="true">UNIÃO</span><span class="pc" aria-hidden="true">42,3%</span><span class="nm" aria-hidden="true">142 mun.</span></button><button type="button" class="tile f3" style="grid-column:3;grid-row:4" data-uf="GO" data-lider="UNIÃO" data-tip="&lt;b&gt;Goiás (GO)&lt;/b&gt; · 246 municípios&lt;br&gt;Maior participação: &lt;b&gt;UNIÃO&lt;/b&gt; 95 (38,6%)&lt;br&gt;2º: MDB 47 (19,1%)&lt;br&gt;15 partidos com prefeito" aria-label="Goiás (GO): UNIÃO tem a maior participação, 95 de 246 prefeituras, 38,6%. Segundo: MDB 47 (19,1%). 15 partidos com prefeito."><span class="uf" aria-hidden="true">GO</span><span class="sg" aria-hidden="true">UNIÃO</span><span class="pc" aria-hidden="true">38,6%</span><span class="nm" aria-hidden="true">246 mun.</span></button><div class="tile df" style="grid-column:4;grid-row:4" role="note" aria-label="Distrito Federal: sem eleição municipal"><span class="uf">DF</span><span class="nm dfx">sem eleição municipal</span></div><button type="button" class="tile f2" style="grid-column:5;grid-row:4" data-uf="BA" data-lider="PSD" data-tip="&lt;b&gt;Bahia (BA)&lt;/b&gt; · 416 municípios&lt;br&gt;Maior participação: &lt;b&gt;PSD&lt;/b&gt; 115 (27,6%)&lt;br&gt;2º: AVANTE 60 (14,4%)&lt;br&gt;17 partidos com prefeito" aria-label="Bahia (BA): PSD tem a maior participação, 115 de 416 prefeituras, 27,6%. Segundo: AVANTE 60 (14,4%). 17 partidos com prefeito."><span class="uf" aria-hidden="true">BA</span><span class="sg" aria-hidden="true">PSD</span><span class="pc" aria-hidden="true">27,6%</span><span class="nm" aria-hidden="true">416 mun.</span></button><button type="button" class="tile f5" style="grid-column:6;grid-row:4" data-uf="AL" data-lider="MDB" data-tip="&lt;b&gt;Alagoas (AL)&lt;/b&gt; · 102 municípios&lt;br&gt;Maior participação: &lt;b&gt;MDB&lt;/b&gt; 65 (63,7%)&lt;br&gt;2º: PP 27 (26,5%)&lt;br&gt;7 partidos com prefeito" aria-label="Alagoas (AL): MDB tem a maior participação, 65 de 102 prefeituras, 63,7%. Segundo: PP 27 (26,5%). 7 partidos com prefeito."><span class="uf" aria-hidden="true">AL</span><span class="sg" aria-hidden="true">MDB</span><span class="pc" aria-hidden="true">63,7%</span><span class="nm" aria-hidden="true">102 mun.</span></button><button type="button" class="tile f5" style="grid-column:2;grid-row:5" data-uf="MS" data-lider="PSDB" data-tip="&lt;b&gt;Mato Grosso do Sul (MS)&lt;/b&gt; · 79 municípios&lt;br&gt;Maior participação: &lt;b&gt;PSDB&lt;/b&gt; 44 (55,7%)&lt;br&gt;2º: PP 16 (20,3%)&lt;br&gt;6 partidos com prefeito" aria-label="Mato Grosso do Sul (MS): PSDB tem a maior participação, 44 de 79 prefeituras, 55,7%. Segundo: PP 16 (20,3%). 6 partidos com prefeito."><span class="uf" aria-hidden="true">MS</span><span class="sg" aria-hidden="true">PSDB</span><span class="pc" aria-hidden="true">55,7%</span><span class="nm" aria-hidden="true">79 mun.</span></button><button type="button" class="tile f3" style="grid-column:3;grid-row:5" data-uf="SP" data-lider="PSD" data-tip="&lt;b&gt;São Paulo (SP)&lt;/b&gt; · 636 municípios&lt;br&gt;Maior participação: &lt;b&gt;PSD&lt;/b&gt; 207 (32,5%)&lt;br&gt;2º: PL 105 (16,5%)&lt;br&gt;17 partidos com prefeito" aria-label="São Paulo (SP): PSD tem a maior participação, 207 de 636 prefeituras, 32,5%. Segundo: PL 105 (16,5%). 17 partidos com prefeito."><span class="uf" aria-hidden="true">SP</span><span class="sg" aria-hidden="true">PSD</span><span class="pc" aria-hidden="true">32,5%</span><span class="nm" aria-hidden="true">636 mun.</span></button><button type="button" class="tile f1" style="grid-column:4;grid-row:5" data-uf="MG" data-lider="PSD" data-tip="&lt;b&gt;Minas Gerais (MG)&lt;/b&gt; · 852 municípios&lt;br&gt;Maior participação: &lt;b&gt;PSD&lt;/b&gt; 142 (16,7%)&lt;br&gt;2º: REPUBLICANOS 83 (9,7%)&lt;br&gt;23 partidos com prefeito" aria-label="Minas Gerais (MG): PSD tem a maior participação, 142 de 852 prefeituras, 16,7%. Segundo: REPUBLICANOS 83 (9,7%). 23 partidos com prefeito."><span class="uf" aria-hidden="true">MG</span><span class="sg" aria-hidden="true">PSD</span><span class="pc" aria-hidden="true">16,7%</span><span class="nm" aria-hidden="true">852 mun.</span></button><button type="button" class="tile f2" style="grid-column:5;grid-row:5" data-uf="ES" data-lider="PSB" data-tip="&lt;b&gt;Espírito Santo (ES)&lt;/b&gt; · 78 municípios&lt;br&gt;Maior participação: &lt;b&gt;PSB&lt;/b&gt; 22 (28,2%)&lt;br&gt;2º: PP 12 (15,4%)&lt;br&gt;12 partidos com prefeito" aria-label="Espírito Santo (ES): PSB tem a maior participação, 22 de 78 prefeituras, 28,2%. Segundo: PP 12 (15,4%). 12 partidos com prefeito."><span class="uf" aria-hidden="true">ES</span><span class="sg" aria-hidden="true">PSB</span><span class="pc" aria-hidden="true">28,2%</span><span class="nm" aria-hidden="true">78 mun.</span></button><button type="button" class="tile f3" style="grid-column:6;grid-row:5" data-uf="SE" data-lider="PSD" data-tip="&lt;b&gt;Sergipe (SE)&lt;/b&gt; · 75 municípios&lt;br&gt;Maior participação: &lt;b&gt;PSD&lt;/b&gt; 26 (34,7%)&lt;br&gt;2º: UNIÃO 23 (30,7%)&lt;br&gt;11 partidos com prefeito" aria-label="Sergipe (SE): PSD tem a maior participação, 26 de 75 prefeituras, 34,7%. Segundo: UNIÃO 23 (30,7%). 11 partidos com prefeito."><span class="uf" aria-hidden="true">SE</span><span class="sg" aria-hidden="true">PSD</span><span class="pc" aria-hidden="true">34,7%</span><span class="nm" aria-hidden="true">75 mun.</span></button><button type="button" class="tile f4" style="grid-column:3;grid-row:6" data-uf="PR" data-lider="PSD" data-tip="&lt;b&gt;Paraná (PR)&lt;/b&gt; · 398 municípios&lt;br&gt;Maior participação: &lt;b&gt;PSD&lt;/b&gt; 164 (41,2%)&lt;br&gt;2º: PP 61 (15,3%)&lt;br&gt;15 partidos com prefeito" aria-label="Paraná (PR): PSD tem a maior participação, 164 de 398 prefeituras, 41,2%. Segundo: PP 61 (15,3%). 15 partidos com prefeito."><span class="uf" aria-hidden="true">PR</span><span class="sg" aria-hidden="true">PSD</span><span class="pc" aria-hidden="true">41,2%</span><span class="nm" aria-hidden="true">398 mun.</span></button><button type="button" class="tile f2" style="grid-column:4;grid-row:6" data-uf="RJ" data-lider="PL" data-tip="&lt;b&gt;Rio de Janeiro (RJ)&lt;/b&gt; · 90 municípios&lt;br&gt;Maior participação: &lt;b&gt;PL&lt;/b&gt; 22 (24,4%)&lt;br&gt;2º: PP 17 (18,9%)&lt;br&gt;12 partidos com prefeito" aria-label="Rio de Janeiro (RJ): PL tem a maior participação, 22 de 90 prefeituras, 24,4%. Segundo: PP 17 (18,9%). 12 partidos com prefeito."><span class="uf" aria-hidden="true">RJ</span><span class="sg" aria-hidden="true">PL</span><span class="pc" aria-hidden="true">24,4%</span><span class="nm" aria-hidden="true">90 mun.</span></button><button type="button" class="tile f3" style="grid-column:3;grid-row:7" data-uf="SC" data-lider="PL" data-tip="&lt;b&gt;Santa Catarina (SC)&lt;/b&gt; · 295 municípios&lt;br&gt;Maior participação: &lt;b&gt;PL&lt;/b&gt; 90 (30,5%)&lt;br&gt;2º: MDB 70 (23,7%)&lt;br&gt;11 partidos com prefeito" aria-label="Santa Catarina (SC): PL tem a maior participação, 90 de 295 prefeituras, 30,5%. Segundo: MDB 70 (23,7%). 11 partidos com prefeito."><span class="uf" aria-hidden="true">SC</span><span class="sg" aria-hidden="true">PL</span><span class="pc" aria-hidden="true">30,5%</span><span class="nm" aria-hidden="true">295 mun.</span></button><button type="button" class="tile f3" style="grid-column:3;grid-row:8" data-uf="RS" data-lider="PP" data-tip="&lt;b&gt;Rio Grande do Sul (RS)&lt;/b&gt; · 497 municípios&lt;br&gt;Maior participação: &lt;b&gt;PP&lt;/b&gt; 164 (33,0%)&lt;br&gt;2º: MDB 126 (25,4%)&lt;br&gt;13 partidos com prefeito" aria-label="Rio Grande do Sul (RS): PP tem a maior participação, 164 de 497 prefeituras, 33,0%. Segundo: MDB 126 (25,4%). 13 partidos com prefeito."><span class="uf" aria-hidden="true">RS</span><span class="sg" aria-hidden="true">PP</span><span class="pc" aria-hidden="true">33,0%</span><span class="nm" aria-hidden="true">497 mun.</span></button>
+        </div>
+        <div class="tip" id="tip" role="tooltip" hidden></div>
+      </div>
+      <ul class="escala" aria-label="Escala de tons do mapa">
+        <li><span class="sw s1"></span>menos de 20%</li>
+        <li><span class="sw s2"></span>20% a 30%</li>
+        <li><span class="sw s3"></span>30% a 40%</li>
+        <li><span class="sw s4"></span>40% a 50%</li>
+        <li><span class="sw s5"></span>50% ou mais</li>
+        <li><span class="sw df"></span>DF: sem eleição municipal</li>
+      </ul>
+      <p class="fig-note">* UF com menos de 30 municípios. REPUB. = REPUBLICANOS. Toque ou passe o cursor sobre uma UF para ver o número de municípios e o 2º colocado; a tabela abaixo traz todos os valores. No AC, REPUBLICANOS e PL empatam em 2º lugar (2 prefeituras cada).</p>
+      <p class="fonte">Fonte: TSE, eleições municipais de 2024 (dados/eleitos.csv), consolidado em 01/10/2026.</p>
+      <details>
+        <summary>Ver tabela de dados por UF</summary>
+        <div class="tabela-wrap"><table class="tabela"><caption>Partido com maior participação nas prefeituras de cada UF (ordenado pelo percentual)</caption><thead><tr><th scope="col">UF</th><th scope="col" class="num">Municípios</th><th scope="col">Maior participação</th><th scope="col" class="num">%</th><th scope="col" class="opt">2º colocado</th><th scope="col" class="num opt">Partidos</th></tr></thead><tbody><tr><th scope="row">AL</th><td class="num">102</td><td>MDB (65)</td><td class="num">63,7</td><td class="opt">PP 27 (26,5%)</td><td class="num opt">7</td></tr><tr><th scope="row">AC</th><td class="num">22</td><td>PP (14)</td><td class="num">63,6</td><td class="opt">REPUBLICANOS e PL empatados (2 cada, 9,1%)</td><td class="num opt">7</td></tr><tr><th scope="row">PA</th><td class="num">143</td><td>MDB (84)</td><td class="num">58,7</td><td class="opt">PP 16 (11,2%)</td><td class="num opt">13</td></tr><tr><th scope="row">AP</th><td class="num">16</td><td>UNIÃO (9)</td><td class="num">56,2</td><td class="opt">MDB 3 (18,8%)</td><td class="num opt">5</td></tr><tr><th scope="row">MS</th><td class="num">79</td><td>PSDB (44)</td><td class="num">55,7</td><td class="opt">PP 16 (20,3%)</td><td class="num opt">6</td></tr><tr><th scope="row">RR</th><td class="num">15</td><td>PP (7)</td><td class="num">46,7</td><td class="opt">REPUBLICANOS 6 (40,0%)</td><td class="num opt">4</td></tr><tr><th scope="row">MT</th><td class="num">142</td><td>UNIÃO (60)</td><td class="num">42,3</td><td class="opt">PL 22 (15,5%)</td><td class="num opt">11</td></tr><tr><th scope="row">PR</th><td class="num">398</td><td>PSD (164)</td><td class="num">41,2</td><td class="opt">PP 61 (15,3%)</td><td class="num opt">15</td></tr><tr><th scope="row">TO</th><td class="num">139</td><td>REPUBLICANOS (57)</td><td class="num">41,0</td><td class="opt">UNIÃO 37 (26,6%)</td><td class="num opt">13</td></tr><tr><th scope="row">AM</th><td class="num">62</td><td>UNIÃO (24)</td><td class="num">38,7</td><td class="opt">MDB 14 (22,6%)</td><td class="num opt">11</td></tr><tr><th scope="row">GO</th><td class="num">246</td><td>UNIÃO (95)</td><td class="num">38,6</td><td class="opt">MDB 47 (19,1%)</td><td class="num opt">15</td></tr><tr><th scope="row">CE</th><td class="num">184</td><td>PSB (65)</td><td class="num">35,3</td><td class="opt">PT 47 (25,5%)</td><td class="num opt">12</td></tr><tr><th scope="row">SE</th><td class="num">75</td><td>PSD (26)</td><td class="num">34,7</td><td class="opt">UNIÃO 23 (30,7%)</td><td class="num opt">11</td></tr><tr><th scope="row">RS</th><td class="num">497</td><td>PP (164)</td><td class="num">33,0</td><td class="opt">MDB 126 (25,4%)</td><td class="num opt">13</td></tr><tr><th scope="row">SP</th><td class="num">636</td><td>PSD (207)</td><td class="num">32,5</td><td class="opt">PL 105 (16,5%)</td><td class="num opt">17</td></tr><tr><th scope="row">PB</th><td class="num">223</td><td>PSB (69)</td><td class="num">30,9</td><td class="opt">REPUBLICANOS 50 (22,4%)</td><td class="num opt">13</td></tr><tr><th scope="row">RO</th><td class="num">52</td><td>UNIÃO (16)</td><td class="num">30,8</td><td class="opt">PL 12 (23,1%)</td><td class="num opt">9</td></tr><tr><th scope="row">SC</th><td class="num">295</td><td>PL (90)</td><td class="num">30,5</td><td class="opt">MDB 70 (23,7%)</td><td class="num opt">11</td></tr><tr><th scope="row">PI</th><td class="num">224</td><td>PSD (65)</td><td class="num">29,0</td><td class="opt">MDB 57 (25,4%)</td><td class="num opt">10</td></tr><tr><th scope="row">ES</th><td class="num">78</td><td>PSB (22)</td><td class="num">28,2</td><td class="opt">PP 12 (15,4%)</td><td class="num opt">12</td></tr><tr><th scope="row">BA</th><td class="num">416</td><td>PSD (115)</td><td class="num">27,6</td><td class="opt">AVANTE 60 (14,4%)</td><td class="num opt">17</td></tr><tr><th scope="row">RN</th><td class="num">167</td><td>MDB (45)</td><td class="num">26,9</td><td class="opt">UNIÃO 28 (16,8%)</td><td class="num opt">12</td></tr><tr><th scope="row">RJ</th><td class="num">90</td><td>PL (22)</td><td class="num">24,4</td><td class="opt">PP 17 (18,9%)</td><td class="num opt">12</td></tr><tr><th scope="row">MA</th><td class="num">217</td><td>PL (40)</td><td class="num">18,4</td><td class="opt">MDB 37 (17,1%)</td><td class="num opt">17</td></tr><tr><th scope="row">PE</th><td class="num">183</td><td>PSDB (32)</td><td class="num">17,5</td><td class="opt">PSB 31 (16,9%)</td><td class="num opt">16</td></tr><tr><th scope="row">MG</th><td class="num">852</td><td>PSD (142)</td><td class="num">16,7</td><td class="opt">REPUBLICANOS 83 (9,7%)</td><td class="num opt">23</td></tr><tr><th scope="row">DF</th><td class="num">—</td><td>sem eleição municipal</td><td class="num">—</td><td class="opt">—</td><td class="num opt">—</td></tr></tbody></table></div>
+      </details>
+    </figure>
+    <p class="prose transicao">O que, então, dá para dizer com segurança?</p>
+  </div>
+</section>
+
+<!-- 9 · Fechamento -->
+<section class="bloco" id="limites" aria-labelledby="h-fim">
+  <div class="wrap">
+    <p class="kicker">8 · Fechamento</p>
+    <h2 id="h-fim">O que os dados mostram e o que não mostram</h2>
+    <ul class="sintese prose">
+      <li><b>Nenhum partido concentra as prefeituras.</b> PSD, MDB e PP encabeçam juntos 45,0% dos 5.553 municípios da base; o maior, PSD, tem 16,0%.</li>
+      <li><b>A aliança foi a regra.</b> 94,3% das chapas vencedoras eram coligações, e em 77,5% delas prefeito e vice são de partidos diferentes. Contando a presença na composição, MDB, PP e PSD aparecem cada um em cerca de 4 de cada 10 chapas vencedoras, e várias siglas aparecem quase só como integrantes.</li>
+      <li><b>O mapa muda com o território.</b> Quatro partidos diferentes têm a maior fatia nas cinco regiões, e oito têm a maior participação em ao menos uma UF — de mais da metade das prefeituras em cinco estados a menos de 20% em três.</li>
+    </ul>
+
+    <h3>O que estes dados não permitem afirmar</h3>
+    <ul class="limites">
+      <li><b>Não é um retrato de hoje.</b> Os dados descrevem o resultado da eleição de 2024, consolidado em 01/10/2026. Não representam necessariamente quem ocupa os cargos atualmente: cassações, renúncias, eleições suplementares e trocas de partido posteriores não estão refletidas.</li>
+      <li><b>Partido</b> é a filiação registrada na candidatura de 2024, não a atual.</li>
+      <li><b>Presença na chapa não mede peso, influência, cargos nem a continuidade da aliança</b> depois da eleição. Federações aparecem como um bloco na composição; não é possível saber qual partido federado atuou.</li>
+      <li><b>Município não equivale a população nem a eleitorado.</b> Uma cidade pequena pesa o mesmo que uma capital nas contagens.</li>
+      <li><b>Só há chapas vencedoras.</b> Não é possível avaliar desempenho de derrotados nem dizer que uma forma de aliança “faz vencer”.</li>
+      <li><b>Não há classificação ideológica</b> na base, e nenhuma foi atribuída aos partidos.</li>
+      <li>Os dados mostram distribuições, não causas: diferenças regionais e estaduais não são explicadas aqui.</li>
+      <li>Percentuais arredondados podem não somar exatamente 100%.</li>
+    </ul>
+
+    <h3>Como os números foram calculados</h3>
+    <dl class="metodo">
+      <dt>Base</dt>
+      <dd>5.553 dos 5.569 municípios com eleição municipal ordinária em 2024. Outros 16 municípios ficaram fora da base por insuficiência de confirmação. O Distrito Federal não tem eleição municipal. São 26 UFs e 5 regiões.</dd>
+      <dt>Unidade de contagem</dt>
+      <dd>Uma linha de prefeito por chapa (uma por município), para não contar duas vezes prefeito e vice. Prefeito e vice são ligados pelo identificador da chapa (<code>id_chapa</code>), e o município é identificado por <code>codigo_municipio_tse</code>. Votos não foram usados.</dd>
+      <dt>Encabeça</dt>
+      <dd>Partido do prefeito. Nos blocos 1, 6 e 7, a contagem é por partido; nos blocos 4 e 5, o partido do prefeito é associado à sua federação, quando pertence a uma.</dd>
+      <dt>Integra</dt>
+      <dd>Sigla ou federação que aparece na composição da coligação registrada (<code>composicao_coligacao</code>). Cada federação conta como uma unidade. A métrica não é aditiva: a soma passa de 100%.</dd>
+      <dt>Validação</dt>
+      <dd>23 chapas estão em categorias de validação diferentes de ELEITO_ATUAL_TSE (9 com cassação registrada e 14 incluídas por evidência histórica documentada). Elas foram mantidas; retirá-las altera as participações em no máximo cerca de 0,05 ponto percentual e não muda a ordem dos dez maiores partidos.</dd>
+    </dl>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><b>Fonte:</b> TSE — eleições municipais de 2024, conforme <code>dados/eleitos.csv</code> e <code>dados/dicionario.md</code> (consolidação de 01/10/2026). Dados agregados embutidos nesta página; nenhum arquivo externo de dados é lido.</p>
+    <p>Atividade 1 · Storytelling de Dados · Tema 3 — O mapa partidário de 2024.</p>
+  </div>
+</footer>
+
+<noscript><p class="wrap fig-note">Os gráficos de barras dependem de JavaScript. As tabelas de dados abaixo de cada gráfico, a matriz regional e o mapa em quadrados funcionam sem ele.</p></noscript>
+
+<script id="dados" type="application/json">{"total":5553,"v1":[{"p":"PSD","n":890,"pct":16.0,"top3":true},{"p":"MDB","n":860,"pct":15.5,"top3":true},{"p":"PP","n":750,"pct":13.5,"top3":true},{"p":"UNIÃO","n":589,"pct":10.6,"top3":false},{"p":"PL","n":517,"pct":9.3,"top3":false},{"p":"REPUBLICANOS","n":437,"pct":7.9,"top3":false},{"p":"PSB","n":311,"pct":5.6,"top3":false},{"p":"PSDB","n":275,"pct":5.0,"top3":false},{"p":"PT","n":252,"pct":4.5,"top3":false},{"p":"Outros 15 partidos","n":672,"pct":12.1,"top3":false}],"tipo":[{"k":"Coligação","n":5238,"pct":94.3,"pct2":94.33},{"k":"Partido isolado","n":278,"pct":5.0,"pct2":5.01},{"k":"Federação sem coligação","n":37,"pct":0.7,"pct2":0.67}],"v3":[{"u":"MDB","integra":2245,"enc":860,"pi":40.4,"pe":15.5},{"u":"PP","integra":2168,"enc":750,"pi":39.0,"pe":13.5},{"u":"PSD","integra":2166,"enc":890,"pi":39.0,"pe":16.0},{"u":"UNIÃO","integra":1874,"enc":589,"pi":33.7,"pe":10.6},{"u":"REPUBLICANOS","integra":1723,"enc":437,"pi":31.0,"pe":7.9},{"u":"PL","integra":1569,"enc":517,"pi":28.3,"pe":9.3},{"u":"Fed. PSDB/Cidadania","integra":1342,"enc":308,"pi":24.2,"pe":5.5},{"u":"PSB","integra":1334,"enc":311,"pi":24.0,"pe":5.6},{"u":"PODE","integra":1130,"enc":127,"pi":20.3,"pe":2.3},{"u":"Fe Brasil","integra":1118,"enc":285,"pi":20.1,"pe":5.1}],"v4":[{"u":"PSD","integra":2166,"enc":890,"razao":41.1},{"u":"MDB","integra":2245,"enc":860,"razao":38.3},{"u":"PP","integra":2168,"enc":750,"razao":34.6},{"u":"PL","integra":1569,"enc":517,"razao":33.0},{"u":"UNIÃO","integra":1874,"enc":589,"razao":31.4},{"u":"Fe Brasil","integra":1118,"enc":285,"razao":25.5},{"u":"REPUBLICANOS","integra":1723,"enc":437,"razao":25.4},{"u":"PSB","integra":1334,"enc":311,"razao":23.3},{"u":"Fed. PSDB/Cidadania","integra":1342,"enc":308,"razao":23.0},{"u":"AVANTE","integra":727,"enc":136,"razao":18.7},{"u":"PDT","integra":960,"enc":151,"razao":15.7},{"u":"NOVO","integra":152,"enc":19,"razao":12.5},{"u":"PODE","integra":1130,"enc":127,"razao":11.2},{"u":"PRD","integra":782,"enc":77,"razao":9.8},{"u":"SOLIDARIEDADE","integra":651,"enc":63,"razao":9.7},{"u":"MOBILIZA","integra":227,"enc":21,"razao":9.3},{"u":"Fed. PSOL/Rede","integra":102,"enc":4,"razao":3.9},{"u":"PMB","integra":120,"enc":2,"razao":1.7},{"u":"AGIR","integra":250,"enc":3,"razao":1.2},{"u":"DC","integra":223,"enc":2,"razao":0.9},{"u":"PRTB","integra":153,"enc":1,"razao":0.7}]}</script>
+<script>
+(function(){
+  "use strict";
+  var D = JSON.parse(document.getElementById("dados").textContent);
+  var NS = "http://www.w3.org/2000/svg";
+  var C = {ink:"#1A1F24"};
+
+  function fInt(n){ return n.toLocaleString("pt-BR"); }
+  function fPct(v){ return v.toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1}); }
+  function el(tag, attrs, parent){
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) { if (attrs.hasOwnProperty(k)) e.setAttribute(k, attrs[k]); }
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function tx(parent, x, y, str, attrs){
+    var a = attrs || {}; a.x = x; a.y = y;
+    var t = el("text", a, parent); t.textContent = str; return t;
+  }
+  function root(container, w, h, label){
+    container.innerHTML = "";
+    var svg = el("svg", {width:w, height:h, viewBox:"0 0 "+w+" "+h, role:"img", "aria-label":label});
+    var t = el("title", {}, svg); t.textContent = label;
+    container.appendChild(svg);
+    return svg;
+  }
+
+  /* V1 — barras horizontais (encabeça) */
+  function drawV1(){
+    var c = document.getElementById("v1"), W = c.clientWidth, mob = W < 560;
+    var rows = D.v1, labelW = mob ? 0 : 150, valW = mob ? 100 : 116, top = 6;
+    var rowH = mob ? 44 : 32, barH = mob ? 16 : 18, max = 900;
+    var plotW = W - labelW - valW;
+    function x(v){ return labelW + v / max * plotW; }
+    var H = top + rows.length * rowH + 24;
+    var svg = root(c, W, H, "Gráfico de barras: prefeituras encabeçadas por partido. PSD 890 (16,0%), MDB 860 (15,5%), PP 750 (13,5%); os três somam 45,0% dos 5.553 municípios. Tabela equivalente disponível abaixo.");
+    [0,200,400,600,800].forEach(function(t){
+      el("line", {x1:x(t), x2:x(t), y1:top, y2:H-20, "class": t === 0 ? "axis" : "grid"}, svg);
+      tx(svg, x(t), H-4, fInt(t), {"class":"tick", "text-anchor": (t === 0 && mob) ? "start" : "middle"});
+    });
+    rows.forEach(function(r, i){
+      var y0 = top + i * rowH;
+      var by = mob ? y0 + 20 : y0 + (rowH - barH) / 2;
+      var ly = mob ? y0 + 14 : by + barH / 2 + 4.5;
+      tx(svg, mob ? 0 : labelW - 10, ly, r.p, {"class": "lab" + (r.top3 ? " strong" : ""), "text-anchor": mob ? "start" : "end"});
+      el("rect", {x:x(0), y:by, width:Math.max(1, x(r.n) - x(0)), height:barH, "class": r.top3 ? "b-ink" : "b-ctx"}, svg);
+      tx(svg, x(r.n) + 6, by + barH / 2 + 4.5, fInt(r.n) + " · " + fPct(r.pct) + "%", {"class": r.top3 ? "strong" : "val-ink"});
+    });
+  }
+
+  /* V2 — barra 100% de tipo de agremiação */
+  function drawV2(){
+    var c = document.getElementById("v2"), W = c.clientWidth;
+    var segs = D.tipo, total = D.total, H = 100, by = 4, bh = 30;
+    var svg = root(c, W, H, "Barra 100%: das 5.553 chapas vencedoras, 94,3% eram coligações (5.238), 5,0% partido isolado (278) e 0,7% federação sem coligação (37).");
+    var acc = 0, pos = [];
+    segs.forEach(function(s){
+      var x0 = W * acc / total; acc += s.n; var x1 = W * acc / total;
+      var w = Math.max(2, x1 - x0); if (x0 + w > W) x0 = W - w;
+      pos.push({x0:x0, w:w, cx:x0 + w / 2});
+    });
+    el("rect", {x:pos[0].x0, y:by, width:pos[0].w - 1, height:bh, "class":"b-acc"}, svg);
+    el("rect", {x:pos[1].x0, y:by, width:pos[1].w - 1, height:bh, "class":"b-iso"}, svg);
+    el("rect", {x:pos[2].x0, y:by, width:pos[2].w, height:bh, "class":"b-fed"}, svg);
+    tx(svg, 10, by + bh / 2 + 5, segs[0].k + " · " + fPct(segs[0].pct) + "% (" + fInt(segs[0].n) + ")", {"class":"on-dark"});
+    el("line", {x1:pos[1].cx, x2:pos[1].cx, y1:by + bh, y2:by + bh + 24, "class":"lead"}, svg);
+    tx(svg, pos[1].cx - 6, by + bh + 26, segs[1].k + " · " + fPct(segs[1].pct) + "% (" + fInt(segs[1].n) + ")", {"text-anchor":"end", "class":"val-ink"});
+    el("line", {x1:pos[2].cx, x2:pos[2].cx, y1:by + bh, y2:by + bh + 52, "class":"lead"}, svg);
+    tx(svg, pos[2].cx - 6, by + bh + 54, segs[2].k + " · " + fPct(segs[2].pct) + "% (" + fInt(segs[2].n) + ")", {"text-anchor":"end", "class":"val-ink"});
+  }
+
+  /* V3 — halteres encabeça × integra */
+  function drawV3(){
+    var c = document.getElementById("v3"), W = c.clientWidth, mob = W < 560;
+    var rows = D.v3, labelW = mob ? 0 : 170, rightPad = 58, top = 26;
+    var rowH = mob ? 56 : 42, max = 50;
+    var plotW = W - labelW - rightPad;
+    function x(v){ return labelW + v / max * plotW; }
+    var H = top + rows.length * rowH + 6;
+    var svg = root(c, W, H, "Gráfico de halteres: para cada sigla ou federação, % dos 5.553 municípios em que encabeça a prefeitura e em que integra a chapa vencedora. MDB encabeça 15,5% e integra 40,4%; PP 13,5% e 39,0%; PSD 16,0% e 39,0%; PODE 2,3% e 20,3%. Tabela equivalente disponível abaixo.");
+    [0,10,20,30,40,50].forEach(function(t){
+      el("line", {x1:x(t), x2:x(t), y1:top - 6, y2:H - 4, "class": t === 0 ? "axis" : "grid"}, svg);
+      tx(svg, x(t), 12, t + "%", {"class":"tick", "text-anchor": (t === 0 && mob) ? "start" : "middle"});
+    });
+    rows.forEach(function(r, i){
+      var y0 = top + i * rowH;
+      var cy = mob ? y0 + 30 : y0 + rowH / 2 - 4;
+      if (mob) tx(svg, 0, y0 + 13, r.u, {"class":"lab"});
+      else tx(svg, labelW - 12, cy + 4.5, r.u, {"class":"lab", "text-anchor":"end"});
+      el("line", {x1:x(r.pe), x2:x(r.pi), y1:cy, y2:cy, "class":"conn"}, svg);
+      el("rect", {x:x(r.pe) - 5, y:cy - 5, width:10, height:10, "class":"sq"}, svg);
+      el("circle", {cx:x(r.pi), cy:cy, r:6.5, "class":"dot"}, svg);
+      tx(svg, x(r.pi) + 11, cy + 4.5, fPct(r.pi) + "%", {"class":"val-acc"});
+      var near = (x(r.pe) - labelW) < 20;
+      tx(svg, near ? x(r.pe) - 5 : x(r.pe), cy + 20, fPct(r.pe) + "%", {"class":"val-ink", "text-anchor": near ? "start" : "middle"});
+      if (i === 0) {
+        tx(svg, x(r.pe), cy - 11, "encabeça", {"class":"val-ink", "text-anchor":"middle"});
+        tx(svg, x(r.pi), cy - 11, "integra", {"class":"val-acc", "text-anchor":"middle"});
+      }
+    });
+  }
+
+  /* V4 — encabeça × só integra (barras 100%) */
+  function drawV4(){
+    var c = document.getElementById("v4"), W = c.clientWidth, mob = W < 560;
+    var rows = D.v4, labelW = mob ? 0 : 170, rightW = mob ? 52 : 92, top = 4;
+    var rowH = mob ? 42 : 28, barH = 16;
+    var plotW = W - labelW - rightW;
+    var H = top + rows.length * rowH + 4;
+    var svg = root(c, W, H, "Barras 100%: das chapas vencedoras em que cada sigla aparece, a parcela que ela encabeça. PSD 41,1%, MDB 38,3%, PODE 11,2%, PRD 9,8%, SOLIDARIEDADE 9,7%, DC 0,9%, PRTB 0,7%. Tabela equivalente disponível abaixo.");
+    rows.forEach(function(r, i){
+      var y0 = top + i * rowH;
+      var by = mob ? y0 + 20 : y0 + (rowH - barH) / 2;
+      if (mob) tx(svg, 0, y0 + 14, r.u, {"class":"lab"});
+      else tx(svg, labelW - 12, by + barH / 2 + 4.5, r.u, {"class":"lab", "text-anchor":"end"});
+      el("rect", {x:labelW + .5, y:by + .5, width:plotW - 1, height:barH - 1, "class":"b-light"}, svg);
+      var iw = Math.max(2, plotW * r.razao / 100);
+      el("rect", {x:labelW, y:by, width:iw, height:barH, "class":"b-ink"}, svg);
+      tx(svg, labelW + iw + 5, by + barH / 2 + 4.5, fPct(r.razao) + "%" + (i === 0 ? " encabeça" : ""), {"class":"val-ink"});
+      tx(svg, W, by + barH / 2 + 4.5, fInt(r.integra) + (mob ? "" : " chapas"), {"class":"tick", "text-anchor":"end"});
+    });
+  }
+
+  function drawAll(){ drawV1(); drawV2(); drawV3(); drawV4(); }
+  drawAll();
+  var lastW = window.innerWidth, timer = null;
+  window.addEventListener("resize", function(){
+    if (window.innerWidth === lastW) return;
+    lastW = window.innerWidth;
+    clearTimeout(timer); timer = setTimeout(drawAll, 120);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawAll);
+
+  /* V6 — tooltip e destaque do tile map */
+  var box = document.getElementById("tilebox"), tip = document.getElementById("tip");
+  var tiles = Array.prototype.slice.call(document.querySelectorAll(".tile[data-uf]"));
+  var current = null;
+  function show(t){
+    current = t;
+    tip.innerHTML = t.getAttribute("data-tip");
+    tip.hidden = false;
+    var b = box.getBoundingClientRect(), r = t.getBoundingClientRect();
+    var tw = tip.offsetWidth, th = tip.offsetHeight;
+    var left = r.left - b.left + r.width / 2 - tw / 2;
+    left = Math.max(0, Math.min(left, b.width - tw));
+    var topPos = r.top - b.top - th - 8;
+    if (topPos < 0) topPos = r.bottom - b.top + 8;
+    tip.style.left = left + "px"; tip.style.top = topPos + "px";
+    t.setAttribute("aria-describedby", "tip");
+  }
+  function hide(){
+    tip.hidden = true;
+    if (current) current.removeAttribute("aria-describedby");
+    current = null;
+  }
+  tiles.forEach(function(t){
+    t.addEventListener("mouseenter", function(){ show(t); });
+    t.addEventListener("mouseleave", hide);
+    t.addEventListener("focus", function(){ show(t); });
+    t.addEventListener("blur", hide);
+    t.addEventListener("click", function(){ if (current === t && !tip.hidden) hide(); else show(t); });
+  });
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape") hide(); });
+  document.addEventListener("click", function(e){ if (!e.target.closest || !e.target.closest(".tile")) hide(); });
+
+  var sel = document.getElementById("hl"), out = document.getElementById("hl-out");
+  sel.addEventListener("change", function(){
+    var p = sel.value, list = [];
+    tiles.forEach(function(t){
+      var on = p !== "" && t.getAttribute("data-lider") === p;
+      t.classList.toggle("hl", on);
+      if (on) list.push(t.getAttribute("data-uf"));
+    });
+    out.textContent = p === "" ? "" : (sel.options[sel.selectedIndex].getAttribute("data-label") + ": maior participação em " + list.length + (list.length === 1 ? " UF" : " UFs") + " (" + list.join(", ") + ").");
+  });
+})();
+</script>
+</body>
+</html>
