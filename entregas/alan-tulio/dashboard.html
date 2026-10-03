@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A cor do poder municipal · Eleições 2024</title>
+<meta name="description" content="Retrato racial das pessoas eleitas para prefeituras e vice-prefeituras no Brasil em 2024, a partir da autodeclaração registrada no TSE.">
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#FBFAF7; --surface:#FFFFFF; --ink:#1F1D1A; --ink2:#55514A; --muted:#6F6A62; --line:#E4E0D8;
+    /* Categorias: cores NÃO imitam tons de pele. Cinza = pano de fundo; azul = foco da história. */
+    --c-branca:#A8A39A; --c-parda:#4A90D9; --c-preta:#1B4FA8; --c-amarela:#8A5FBF; --c-indigena:#12935F;
+    --accent:#1B4FA8; --bar:#5E5A53; --warn:#9A6700; --warn-bg:#FFF8E6;
+    --serif: Georgia, "Times New Roman", serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.6}
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px}
+  header.capa{padding:56px 0 28px;border-bottom:1px solid var(--line)}
+  .kicker{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 14px}
+  h1{font-family:var(--serif);font-weight:700;font-size:clamp(30px,5.4vw,46px);line-height:1.12;margin:0 0 18px;letter-spacing:-.01em}
+  .lede{font-size:clamp(18px,2.4vw,21px);color:var(--ink2);margin:0;max-width:44em}
+  section{padding:44px 0;border-bottom:1px solid var(--line)}
+  .passo{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin:0 0 8px}
+  h2{font-family:var(--serif);font-size:clamp(23px,3.6vw,30px);line-height:1.2;margin:0 0 14px}
+  p{margin:0 0 16px;max-width:42em}
+  strong{font-weight:700}
+  .fig{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;margin:22px 0 10px}
+  .fig h3{font-size:15px;margin:0 0 2px;font-weight:700}
+  .fig .sub{font-size:13.5px;color:var(--muted);margin:0 0 14px;max-width:none}
+  .nota{font-size:13.5px;color:var(--muted);margin:10px 0 0;max-width:none}
+
+  /* destaques numéricos */
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0 0}
+  .kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+  .kpi b{display:block;font-family:var(--serif);font-size:clamp(30px,5vw,40px);line-height:1.05}
+  .kpi span{display:block;font-size:14px;color:var(--ink2);margin-top:6px;line-height:1.4}
+  .kpi i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:baseline}
+
+  /* legenda */
+  .leg{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13.5px;color:var(--ink2);margin:0 0 14px;padding:0;list-style:none}
+  .leg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+  .c-branca{background:var(--c-branca)} .c-parda{background:var(--c-parda)} .c-preta{background:var(--c-preta)}
+  .c-amarela{background:var(--c-amarela)} .c-indigena{background:var(--c-indigena)}
+  .c-sem,.c-outras{background:repeating-linear-gradient(135deg,#fff 0 3px,#C9C4BA 3px 5px);outline:1px solid #C9C4BA;outline-offset:-1px}
+  .c-negra{background:linear-gradient(135deg,var(--c-parda) 50%,var(--c-preta) 50%)}
+
+  /* barras empilhadas 100% */
+  .row{display:grid;grid-template-columns:132px 1fr;gap:12px;align-items:center;margin:0 0 8px}
+  .row-l{font-size:14px;line-height:1.25}
+  .row-l b{display:block;font-weight:600}
+  .row-l small{color:var(--muted);font-size:12.5px}
+  .stack{display:flex;gap:2px;height:28px;width:100%}
+  .uf .stack{height:18px}
+  .uf .row{margin-bottom:5px;grid-template-columns:132px 1fr}
+  .seg{min-width:2px;border-radius:3px;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:12.5px;font-weight:600;cursor:default}
+  .seg.c-branca{color:#1F1D1A} .seg.c-parda{color:#0B1B2E} .seg.c-preta{color:#fff}
+  .seg:hover,.cel:hover,.hb-f:hover{filter:brightness(.92)}
+  .eixo{display:grid;grid-template-columns:132px 1fr;gap:12px;font-size:12px;color:var(--muted);margin-top:4px}
+  .eixo div:last-child{display:flex;justify-content:space-between}
+
+  /* barras horizontais simples */
+  .hb{margin:0 0 12px}
+  .hb-l{font-size:14.5px;line-height:1.35;margin-bottom:4px;display:flex;align-items:flex-start;gap:8px}
+  .hb-l .par{flex:0 0 auto;margin-top:3px}
+  .hb-t{display:flex;align-items:center;gap:10px}
+  .hb-f{height:20px;border-radius:0 4px 4px 0;min-width:2px;flex:0 0 auto}
+  .hb-f.neutro{background:var(--bar)}
+  .hb-f.hi{background:var(--accent)}
+  .hb-v{font-size:14px;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .hb-v b{font-weight:700}
+  .par{display:inline-flex;gap:2px;vertical-align:-2px}
+  .par i{width:14px;height:14px;border-radius:3px;display:inline-block}
+  .mini{font-size:12.5px;color:var(--muted);width:66px;flex:0 0 66px}
+  .cat{margin:0 0 14px;padding-bottom:12px;border-bottom:1px dashed var(--line)}
+  .cat:last-child{border:0;margin:0;padding:0}
+  .cat>b{font-size:14.5px;display:block;margin-bottom:4px}
+  .cat .hb-f{height:14px}
+  .cat .hb-t{margin-bottom:4px}
+
+  /* waffle */
+  .waffle-box{display:grid;grid-template-columns:minmax(200px,300px) 1fr;gap:28px;align-items:center}
+  .waffle{display:grid;grid-template-columns:repeat(10,1fr);gap:3px}
+  .cel{aspect-ratio:1;border-radius:3px}
+  .lista{list-style:none;margin:0;padding:0;font-size:15px}
+  .lista li{display:grid;grid-template-columns:16px 1fr auto;gap:8px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--line)}
+  .lista li:last-child{border:0}
+  .lista i{width:12px;height:12px;border-radius:3px;display:inline-block}
+  .lista span.n{font-variant-numeric:tabular-nums;color:var(--ink2);white-space:nowrap}
+  .lista span.n b{color:var(--ink)}
+
+  /* alternância */
+  .toggle{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;margin:0 0 16px;background:var(--surface)}
+  .toggle button{font:inherit;font-size:14px;padding:7px 14px;border:0;background:transparent;color:var(--ink2);cursor:pointer}
+  .toggle button[aria-pressed="true"]{background:var(--ink);color:#fff;font-weight:600}
+  .toggle button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+
+  /* tabelas */
+  details{margin-top:14px;font-size:13.5px}
+  summary{cursor:pointer;color:var(--accent);font-weight:600}
+  .tb{overflow-x:auto;margin-top:8px}
+  table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+  th,td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--muted);font-weight:600}
+
+  /* limites */
+  .limites{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+  .cx{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px}
+  .cx h3{font-size:16px;margin:0 0 10px}
+  .cx ul{margin:0;padding-left:18px;font-size:15px}
+  .cx li{margin-bottom:9px}
+  .cx.nao{background:var(--warn-bg);border-color:#EBD9A8}
+  .cx.nao h3{color:var(--warn)}
+  .ref{border-left:3px solid var(--warn);background:var(--warn-bg);padding:12px 16px;border-radius:0 8px 8px 0;font-size:15px;margin:18px 0 0;max-width:none}
+
+  .fecho ol{padding-left:22px;max-width:42em}
+  .fecho li{margin-bottom:10px}
+  footer{padding:28px 0 60px;font-size:13.5px;color:var(--muted)}
+  footer p{max-width:none;margin-bottom:8px}
+
+  #tip{position:fixed;z-index:10;pointer-events:none;background:#1F1D1A;color:#fff;font-size:13px;line-height:1.35;padding:8px 10px;border-radius:6px;max-width:240px;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+  #tip b{display:block}
+  #tip span{opacity:.8;display:block;font-size:12px}
+
+  @media (max-width:640px){
+    body{font-size:16px}
+    header.capa{padding-top:36px}
+    section{padding:34px 0}
+    .kpis{grid-template-columns:1fr}
+    .waffle-box{grid-template-columns:1fr}
+    .waffle{max-width:260px}
+    .row,.uf .row,.eixo{grid-template-columns:1fr;gap:3px}
+    .uf .row{grid-template-columns:74px 1fr;gap:8px}
+    .eixo div:first-child{display:none}
+    .uf .eixo{grid-template-columns:74px 1fr;gap:8px}
+    .uf .eixo div:first-child{display:block}
+    .limites{grid-template-columns:1fr}
+    .fig{padding:16px 14px}
+  }
+  @media (prefers-reduced-motion:no-preference){ .seg,.hb-f{transition:filter .12s} }
+</style>
+</head>
+<body>
+
+<header class="capa">
+  <div class="wrap">
+    <p class="kicker">A cor do poder municipal · Eleições 2024</p>
+    <h1>Dois em cada três prefeitos eleitos em 2024 se declararam brancos</h1>
+    <p class="lede">Em 5.553 municípios brasileiros, o registro eleitoral mostra como se declararam, em raça ou cor, as pessoas escolhidas para governar. O retrato é majoritariamente branco, muda muito de uma região para outra — e fica um pouco mais diverso só no cargo de vice.</p>
+    <div class="kpis" aria-label="Prefeitos eleitos por raça ou cor autodeclarada">
+      <div class="kpi"><b>65,8%</b><span><i class="c-branca"></i>dos prefeitos eleitos se declararam <strong>brancos</strong> (3.655 pessoas)</span></div>
+      <div class="kpi"><b>31,2%</b><span><i class="c-parda"></i>se declararam <strong>pardos</strong> (1.732 pessoas)</span></div>
+      <div class="kpi"><b>2,3%</b><span><i class="c-preta"></i>se declararam <strong>pretos</strong> (128 pessoas)</span></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section id="retrato">
+  <p class="passo">1 · O retrato geral</p>
+  <h2>De cada 100 prefeituras, 66 ficaram com alguém que se declara branco</h2>
+  <p>Se os 5.553 prefeitos eleitos coubessem em cem quadrados, 66 seriam de pessoas brancas, 31 de pardas e 2 de pretas. Pessoas que se declararam amarelas ou indígenas, somadas às que não têm a informação registrada, não chegariam a encher um quadrado.</p>
+  <div class="fig">
+    <h3>Prefeitos eleitos em 2024, por raça ou cor autodeclarada</h3>
+    <p class="sub">Cada quadrado representa 1% dos 5.553 prefeitos (cerca de 56 pessoas). Valores arredondados na grade; os exatos estão ao lado.</p>
+    <div class="waffle-box">
+      <div class="waffle" id="waffle" role="img" aria-label="Grade de 100 quadrados: 66 branca, 31 parda, 2 preta e 1 para as demais declarações e registros sem informação."></div>
+      <ul class="lista" id="lista-geral"></ul>
+    </div>
+    <p class="nota">Raça ou cor é a que a própria pessoa declarou ao registrar a candidatura. As cores do gráfico são convenções: não imitam tons de pele.</p>
+  </div>
+</section>
+
+<section id="cargo">
+  <p class="passo">2 · Titular e vice</p>
+  <h2>Um degrau abaixo, o dobro de pessoas pretas — e a maioria continua branca</h2>
+  <p>Cada município elege uma dupla. Entre os vices, 252 pessoas se declararam pretas, contra 128 entre os prefeitos. A fatia branca recua de 65,8% para 61,8%. A diversidade cresce na segunda cadeira da chapa, mas a ordem das categorias não muda.</p>
+  <div class="fig">
+    <h3>Participação de cada declaração entre prefeitos e entre vices</h3>
+    <p class="sub">Percentual sobre os 5.553 eleitos de cada cargo. Todas as barras usam a mesma escala e começam no zero.</p>
+    <div id="cargo-chart"></div>
+    <details><summary>Ver os números em tabela</summary><div class="tb" id="cargo-tab"></div></details>
+  </div>
+</section>
+
+<section id="chapas">
+  <p class="passo">3 · A dupla eleita</p>
+  <h2>Em quase metade dos municípios, a chapa vencedora é inteiramente branca</h2>
+  <p>Olhando prefeito e vice juntos, 2.722 municípios (49,0%) elegeram duas pessoas brancas. Chapas em que os dois se declaram pretos ou pardos venceram em 1.141 (20,5%). Quando a dupla é mista, a pessoa branca aparece mais vezes como titular: 913 chapas, contra 696 na ordem inversa.</p>
+  <div class="fig">
+    <h3>Composição das chapas eleitas</h3>
+    <p class="sub">Percentual dos 5.553 municípios. O primeiro quadrado é o prefeito; o segundo, o vice.</p>
+    <ul class="leg"><li><i class="c-branca"></i>Branca</li><li><i class="c-negra"></i>Preta ou parda</li><li><i class="c-outras"></i>Outra declaração ou sem informação</li></ul>
+    <div id="chapa-chart"></div>
+    <p class="nota">Aqui, pretos e pardos estão somados — agrupamento usado pelo IBGE e pelo Estatuto da Igualdade Racial sob o termo “população negra”. Separando: só 17 chapas têm prefeito e vice pretos; em 363 (6,5%) ao menos um dos dois se declara preto.</p>
+  </div>
+</section>
+
+<section id="territorio">
+  <p class="passo">4 · O território</p>
+  <h2>Não há um retrato só: no Sul, 94% dos prefeitos são brancos; no Norte, 62% são pardos</h2>
+  <p>A média nacional esconde países diferentes. No Sul e no Sudeste, a maioria branca é ampla. No Nordeste, brancos e pardos praticamente empatam. No Norte, pardos são maioria. Em todas as regiões, pessoas pretas são menos de 5% dos prefeitos.</p>
+  <div class="toggle" role="group" aria-label="Escolher o cargo">
+    <button type="button" data-cargo="prefeito" aria-pressed="true">Prefeitos</button>
+    <button type="button" data-cargo="vice" aria-pressed="false">Vices</button>
+  </div>
+  <div class="fig">
+    <h3 id="reg-tit">Prefeitos eleitos por região</h3>
+    <p class="sub">Participação de cada declaração no total da região. Regiões ordenadas da maior para a menor fatia branca.</p>
+    <ul class="leg" id="leg-reg"></ul>
+    <div id="reg-chart"></div>
+    <div class="eixo"><div></div><div><span>0%</span><span>50%</span><span>100%</span></div></div>
+    <details><summary>Ver os números em tabela</summary><div class="tb" id="reg-tab"></div></details>
+  </div>
+  <p>Dentro das regiões, os estados também variam. No Rio Grande do Sul, 488 dos 497 prefeitos se declararam brancos. No Amazonas, 49 dos 62 se declararam pardos. Sete estados não elegeram nenhum prefeito que se declare preto: Acre, Amapá, Paraná, Rio de Janeiro, Roraima, Santa Catarina e Sergipe.</p>
+  <div class="fig uf">
+    <h3 id="uf-tit">Prefeitos eleitos por estado</h3>
+    <p class="sub">Mesma leitura do gráfico anterior. O número ao lado da sigla é o total de municípios do estado na base.</p>
+    <div id="uf-chart"></div>
+    <div class="eixo"><div></div><div><span>0%</span><span>50%</span><span>100%</span></div></div>
+    <p class="nota">* Estados com menos de 30 municípios: uma única pessoa muda o percentual em vários pontos. O Distrito Federal não elege prefeito.</p>
+    <details><summary>Ver os números em tabela</summary><div class="tb" id="uf-tab"></div></details>
+  </div>
+</section>
+
+<section id="genero">
+  <p class="passo">5 · Cor e gênero</p>
+  <h2>Homens brancos venceram em 57% dos municípios; mulheres pretas ou pardas, em 4%</h2>
+  <p>Cruzar raça com gênero estreita ainda mais o retrato. Apenas 734 prefeituras (13,2%) foram conquistadas por mulheres. Entre elas, 243 se declararam pretas ou pardas — e só 20, pretas.</p>
+  <div class="fig">
+    <h3>Prefeitos eleitos, por gênero e raça ou cor</h3>
+    <p class="sub">Percentual dos 5.553 prefeitos. Pretos e pardos somados.</p>
+    <div id="gen-chart"></div>
+    <p class="nota">Gênero é o do cadastro do TSE (feminino ou masculino); não equivale a identidade de gênero.</p>
+  </div>
+</section>
+
+<section id="porte">
+  <p class="passo">6 · O tamanho da cidade</p>
+  <h2>Nas maiores disputas, o retrato fica mais branco</h2>
+  <p>Nos 152 municípios com mais de 100 mil votos válidos, 74% dos prefeitos eleitos se declararam brancos e apenas 2 se declararam pretos. Nas 51 cidades decididas em segundo turno, nenhuma pessoa preta foi eleita prefeita. As cidades muito pequenas também têm ampla maioria branca.</p>
+  <div class="fig">
+    <h3>Prefeitos eleitos, por tamanho da disputa</h3>
+    <p class="sub">Municípios agrupados pelo total de votos válidos para prefeito no turno decisivo.</p>
+    <ul class="leg" id="leg-porte"></ul>
+    <div id="porte-chart"></div>
+    <div class="eixo"><div></div><div><span>0%</span><span>50%</span><span>100%</span></div></div>
+    <p class="nota">Votos válidos são uma aproximação do tamanho do município, não a população. Nove municípios sem votos válidos na extração atual ficaram fora deste gráfico. Tamanho e região se misturam: a diferença entre faixas não pode ser atribuída só ao porte.</p>
+    <details><summary>Ver os números em tabela</summary><div class="tb" id="porte-tab"></div></details>
+  </div>
+</section>
+
+<section id="limites">
+  <p class="passo">7 · Como ler estes números</p>
+  <h2>O que esta base permite — e não permite — afirmar</h2>
+  <p>Os dados vêm dos registros de candidatura e de resultado do Tribunal Superior Eleitoral, consolidados em 1º de outubro de 2026. Eles sustentam um retrato, não uma explicação.</p>
+  <div class="limites">
+    <div class="cx">
+      <h3>Permite</h3>
+      <ul>
+        <li>Descrever como <strong>se declararam</strong>, em raça ou cor, as pessoas eleitas prefeitas e vices em 2024.</li>
+        <li>Comparar cargos, regiões, estados, gênero e a composição das chapas.</li>
+        <li>Contar municípios: cada prefeitura vale um, tenha a cidade 2 mil ou milhões de habitantes.</li>
+      </ul>
+    </div>
+    <div class="cx nao">
+      <h3>Não permite</h3>
+      <ul>
+        <li><strong>Medir sub-representação sozinha.</strong> A base não traz a composição da população; a comparação exige outra fonte.</li>
+        <li><strong>Explicar por quê.</strong> Só há vencedores. Sem os derrotados, não se sabe se pessoas negras concorreram menos, receberam menos recursos ou tiveram menos votos.</li>
+        <li><strong>Dizer quem governa hoje.</strong> O recorte é o resultado de 2024; inclui 9 chapas depois cassadas e 14 confirmadas por registro histórico.</li>
+        <li><strong>Atestar a cor de alguém.</strong> A declaração não é verificada e pode diferir de como a pessoa é vista.</li>
+        <li><strong>Falar de povos e comunidades.</strong> Declarar-se indígena em raça/cor não equivale a etnia nem a pertencimento quilombola, que têm campos próprios.</li>
+      </ul>
+    </div>
+  </div>
+  <p class="ref"><strong>Referência externa, fora desta base:</strong> no Censo 2022 do IBGE, 45,3% da população se declarou parda, 43,5% branca e 10,2% preta. A comparação com os prefeitos é indicativa: o Censo conta pessoas; aqui, cada município conta uma vez.</p>
+  <p class="nota">Cobertura: 5.553 dos 5.569 municípios com eleição em 2024 (16 ficaram fora por falta de confirmação). Em 42 registros (0,4%), de 29 municípios, a raça ou cor não está informada; eles aparecem como “sem informação” e não foram redistribuídos. Restringir a análise às 5.530 chapas com status de eleitas na extração atual do TSE não altera os percentuais (65,8% de brancos, 31,2% de pardos e 2,3% de pretos entre os prefeitos).</p>
+</section>
+
+<section class="fecho" id="fecho" style="border-bottom:0">
+  <p class="passo">8 · O que fica</p>
+  <h2>Um poder local majoritariamente branco, com geografia própria e pouca presença preta</h2>
+  <ol>
+    <li><strong>A cadeira principal é a mais branca.</strong> Dois em cada três prefeitos se declararam brancos; pessoas pretas são 128 em 5.553.</li>
+    <li><strong>A diversidade aparece mais na vice e no Norte e Nordeste.</strong> A média nacional não descreve nenhuma região em particular.</li>
+    <li><strong>Mulheres pretas ou pardas são a exceção da exceção:</strong> 243 prefeitas no país.</li>
+  </ol>
+  <p>Para saber onde o funil se estreita — na escolha das candidaturas, no financiamento ou no voto — é preciso olhar também para quem concorreu e não venceu. Esse é o próximo dado a cobrar.</p>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong>Fonte:</strong> Tribunal Superior Eleitoral — candidaturas e resultados das eleições municipais ordinárias de 2024, base consolidada da disciplina (extração de 01/10/2026). Raça ou cor e gênero conforme declarados no registro da candidatura.</p>
+    <p><strong>Método:</strong> contagem de pessoas por cargo; chapas ligadas pelo identificador da dupla; percentuais sobre o total de cada grupo, incluindo registros sem informação. Dados agregados embutidos nesta página.</p>
+    <p>Atividade 1 · Storytelling de Dados · Mestrado em Administração Pública · IDP · Alan Tulio</p>
+  </div>
+</footer>
+
+<div id="tip" hidden></div>
+
+<script>
+// Dados agregados a partir de dados/eleitos.csv (nenhum arquivo externo é lido).
+// Ordem dos vetores: branca, parda, preta, amarela, indígena, sem informação.
+const D = {"cargo":{"prefeito":[3655,1732,128,13,9,16],"vice":[3429,1810,252,24,12,26]},"regiao":{"prefeito":{"Sul":[1115,68,2,2,0,3],"Sudeste":[1253,360,28,6,2,7],"Centro-Oeste":[283,171,11,0,0,2],"Nordeste":[855,856,68,4,4,4],"Norte":[149,277,19,1,3,0]},"vice":{"Sul":[1102,71,14,0,0,3],"Sudeste":[1165,387,84,10,1,9],"Centro-Oeste":[253,191,17,2,0,4],"Nordeste":[773,897,99,9,3,10],"Norte":[136,264,38,3,8,0]}},"uf":{"prefeito":{"AC":[5,17,0,0,0,0],"AL":[48,50,3,0,1,0],"AM":[11,49,1,0,1,0],"AP":[5,11,0,0,0,0],"BA":[163,229,23,0,0,1],"CE":[100,82,1,0,0,1],"ES":[53,24,1,0,0,0],"GO":[134,102,8,0,0,2],"MA":[79,122,15,0,0,1],"MG":[558,260,25,2,2,5],"MS":[63,14,2,0,0,0],"MT":[86,55,1,0,0,0],"PA":[43,93,7,0,0,0],"PB":[134,85,2,0,1,1],"PE":[101,68,12,0,2,0],"PI":[85,130,7,2,0,0],"PR":[341,53,0,2,0,2],"RJ":[79,11,0,0,0,0],"RN":[108,52,5,2,0,0],"RO":[24,26,1,1,0,0],"RR":[6,7,0,0,2,0],"RS":[488,6,2,0,0,1],"SC":[286,9,0,0,0,0],"SE":[37,38,0,0,0,0],"SP":[563,65,2,4,0,2],"TO":[55,74,10,0,0,0]},"vice":{"AC":[6,13,0,1,2,0],"AL":[35,62,4,1,0,0],"AM":[17,40,1,0,4,0],"AP":[5,8,3,0,0,0],"BA":[126,249,41,0,0,0],"CE":[103,74,4,1,0,2],"ES":[56,18,4,0,0,0],"GO":[132,99,11,0,0,4],"MA":[82,117,17,0,0,1],"MG":[497,295,49,4,1,6],"MS":[56,22,0,1,0,0],"MT":[65,70,6,1,0,0],"PA":[40,90,12,0,1,0],"PB":[115,102,4,0,1,1],"PE":[100,69,8,1,2,3],"PI":[81,127,11,3,0,2],"PR":[332,55,9,0,0,2],"RJ":[68,16,5,0,0,1],"RN":[104,54,5,3,0,1],"RO":[28,20,4,0,0,0],"RR":[4,10,0,0,1,0],"RS":[483,9,4,0,0,1],"SC":[287,7,1,0,0,0],"SE":[27,43,5,0,0,0],"SP":[544,58,26,6,0,2],"TO":[36,83,18,2,0,0]}},"uf_nome":{"AC":"Acre","AL":"Alagoas","AM":"Amazonas","AP":"Amapá","BA":"Bahia","CE":"Ceará","ES":"Espírito Santo","GO":"Goiás","MA":"Maranhão","MG":"Minas Gerais","MS":"Mato Grosso do Sul","MT":"Mato Grosso","PA":"Pará","PB":"Paraíba","PE":"Pernambuco","PI":"Piauí","PR":"Paraná","RJ":"Rio de Janeiro","RN":"Rio Grande do Norte","RO":"Rondônia","RR":"Roraima","RS":"Rio Grande do Sul","SC":"Santa Catarina","SE":"Sergipe","SP":"São Paulo","TO":"Tocantins"},"genero":{"FEMININO":[485,223,20,5,1,0],"MASCULINO":[3170,1509,108,8,8,16]},"porte":{"Até 5 mil votos":[1338,523,32,4,0,8],"5 a 10 mil":[913,505,41,3,5,3],"10 a 25 mil":[885,489,46,4,3,3],"25 a 100 mil":[401,176,7,0,1,2],"Mais de 100 mil":[113,35,2,2,0,0]},"chapa":{"BB":2722,"NN":1141,"BN":913,"NB":696,"outros":81}};
+
+const O = ['branca','parda','preta','amarela','indigena','sem'];
+const ROT = {branca:'Branca',parda:'Parda',preta:'Preta',amarela:'Amarela',indigena:'Indígena',sem:'Sem informação'};
+const $ = id => document.getElementById(id);
+const soma = a => a.reduce((x,y)=>x+y,0);
+const fN = n => n.toLocaleString('pt-BR');
+const fP = (x,d=1) => (x*100).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d})+'%';
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+const tipAttr = (t,d,c) => `data-t="${esc(t)}" data-d="${esc(d)}"${c?` data-c="${esc(c)}"`:''}`;
+
+function legenda(id){
+  $(id).innerHTML = O.map(k=>`<li><i class="c-${k}"></i>${ROT[k]}</li>`).join('');
+}
+// Barra 100% empilhada: largura de cada segmento proporcional à contagem.
+function stack(vals, ctx){
+  const tot = soma(vals);
+  const desc = O.map((k,i)=>vals[i]?`${ROT[k]} ${fP(vals[i]/tot)}`:'').filter(Boolean).join(', ');
+  return `<div class="stack" role="img" aria-label="${esc(ctx+': '+desc)}">` + O.map((k,i)=>{
+    const v = vals[i]; if(!v) return '';
+    const p = v/tot;
+    return `<span class="seg c-${k}" style="flex:${v} 1 0%" ${tipAttr(ROT[k], `${fN(v)} de ${fN(tot)} · ${fP(p)}`, ctx)} data-l="${fP(p,0)}"></span>`;
+  }).join('') + '</div>';
+}
+function linhas(obj, ordem, unidade, marca){
+  return ordem.map(k=>{
+    const v = obj[k], n = soma(v);
+    return `<div class="row"><div class="row-l"><b>${k}${marca&&marca(k,n)?' *':''}</b><small>${fN(n)} ${unidade}</small></div>${stack(v,k)}</div>`;
+  }).join('');
+}
+function tabela(obj, ordem, cab){
+  const th = `<tr><th>${cab}</th><th>Total</th>${O.map(k=>`<th>${ROT[k]}</th>`).join('')}</tr>`;
+  const tr = ordem.map(k=>{
+    const v=obj[k], n=soma(v);
+    return `<tr><td>${k}</td><td>${fN(n)}</td>${v.map(x=>`<td>${fN(x)} (${fP(x/n)})</td>`).join('')}</tr>`;
+  }).join('');
+  return `<table><thead>${th}</thead><tbody>${tr}</tbody></table>`;
+}
+// Barra horizontal simples; razao = valor / maior valor do gráfico (todas partem do zero).
+function hbar(razao, rotuloValor, tip, cls, reserva){
+  return `<span class="hb-f ${cls||'neutro'}" style="width:calc((100% - ${reserva||150}px) * ${razao.toFixed(4)})" ${tip}></span><span class="hb-v">${rotuloValor}</span>`;
+}
+
+// Rótulo dentro do segmento só quando há largura para ele (refeito ao redimensionar).
+function rotulos(){
+  document.querySelectorAll('.seg[data-l]').forEach(el=>{ el.textContent = el.offsetWidth >= 36 ? el.dataset.l : ''; });
+}
+window.addEventListener('resize', rotulos);
+
+// 1 · retrato geral
+(function(){
+  const v = D.cargo.prefeito, tot = soma(v);
+  const outras = v[3]+v[4]+v[5];
+  const cel = [['branca',66,v[0]],['parda',31,v[1]],['preta',2,v[2]],['outras',1,outras]];
+  $('waffle').innerHTML = cel.map(([k,q,n])=>{
+    const r = k==='outras' ? 'Amarela, indígena ou sem informação' : ROT[k];
+    return Array(q).fill(`<span class="cel c-${k}" ${tipAttr(r, `${fN(n)} prefeitos · ${fP(n/tot)}`)}></span>`).join('');
+  }).join('');
+  $('lista-geral').innerHTML = O.map((k,i)=>`<li><i class="c-${k}"></i><span>${ROT[k]}</span><span class="n"><b>${fP(v[i]/tot)}</b> · ${fN(v[i])}</span></li>`).join('');
+})();
+
+// 2 · prefeito x vice
+(function(){
+  const p = D.cargo.prefeito, v = D.cargo.vice, tp = soma(p), tv = soma(v);
+  const max = Math.max(p[0]/tp, v[0]/tv);
+  $('cargo-chart').innerHTML = O.map((k,i)=>`<div class="cat"><b>${ROT[k]}</b>
+    <div class="hb-t"><span class="mini">Prefeitos</span>${hbar(p[i]/tp/max, `<b>${fP(p[i]/tp)}</b> · ${fN(p[i])}`, tipAttr(ROT[k], `${fN(p[i])} de ${fN(tp)} · ${fP(p[i]/tp)}`,'Prefeitos'), 'c-'+k, 195)}</div>
+    <div class="hb-t"><span class="mini">Vices</span>${hbar(v[i]/tv/max, `<b>${fP(v[i]/tv)}</b> · ${fN(v[i])}`, tipAttr(ROT[k], `${fN(v[i])} de ${fN(tv)} · ${fP(v[i]/tv)}`,'Vices'), 'c-'+k, 195)}</div>
+  </div>`).join('');
+  $('cargo-tab').innerHTML = tabela({Prefeitos:p, Vices:v}, ['Prefeitos','Vices'], 'Cargo');
+})();
+
+// 3 · chapas
+(function(){
+  const c = D.chapa, tot = soma(Object.values(c)), max = c.BB/tot;
+  const par = (a,b) => `<span class="par" aria-hidden="true"><i class="c-${a}"></i><i class="c-${b}"></i></span>`;
+  const itens = [
+    ['BB', par('branca','branca'), 'Prefeito branco e vice branco'],
+    ['NN', par('negra','negra'), 'Prefeito preto ou pardo e vice preto ou pardo'],
+    ['BN', par('branca','negra'), 'Prefeito branco e vice preto ou pardo'],
+    ['NB', par('negra','branca'), 'Prefeito preto ou pardo e vice branco'],
+    ['outros', par('outras','outras'), 'Ao menos um com outra declaração ou sem informação']
+  ];
+  $('chapa-chart').innerHTML = itens.map(([k,g,r])=>`<div class="hb"><div class="hb-l">${g}<span>${r}</span></div>
+    <div class="hb-t">${hbar(c[k]/tot/max, `<b>${fP(c[k]/tot)}</b> · ${fN(c[k])} municípios`, tipAttr(r, `${fN(c[k])} de ${fN(tot)} chapas · ${fP(c[k]/tot)}`), '', 190)}</div></div>`).join('');
+})();
+
+// 4 · território (com alternância de cargo)
+function territorio(cargo){
+  const nome = cargo==='prefeito' ? 'Prefeitos eleitos' : 'Vice-prefeitos eleitos';
+  const unid = cargo==='prefeito' ? 'prefeitos' : 'vices';
+  const R = D.regiao[cargo], U = D.uf[cargo];
+  const share = v => v[0]/soma(v);
+  const ordR = Object.keys(R).sort((a,b)=>share(R[b])-share(R[a]));
+  const ordU = Object.keys(U).sort((a,b)=>share(U[b])-share(U[a]));
+  $('reg-tit').textContent = nome+' por região';
+  $('uf-tit').textContent = nome+' por estado';
+  $('reg-chart').innerHTML = linhas(R, ordR, unid);
+  $('reg-tab').innerHTML = tabela(R, ordR, 'Região');
+  $('uf-chart').innerHTML = ordU.map(k=>{
+    const v = U[k], n = soma(v);
+    return `<div class="row"><div class="row-l" title="${esc(D.uf_nome[k])}"><b style="display:inline">${k}${n<30?' *':''}</b> <small>${fN(n)}</small></div>${stack(v, D.uf_nome[k])}</div>`;
+  }).join('');
+  const Unome = {}; ordU.forEach(k=>Unome[D.uf_nome[k]] = U[k]);
+  $('uf-tab').innerHTML = tabela(Unome, ordU.map(k=>D.uf_nome[k]), 'Estado');
+}
+legenda('leg-reg');
+territorio('prefeito');
+document.querySelectorAll('.toggle button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.toggle button').forEach(x=>x.setAttribute('aria-pressed', String(x===b)));
+  territorio(b.dataset.cargo);
+  rotulos();
+}));
+
+// 5 · gênero e raça
+(function(){
+  const f = D.genero.FEMININO, m = D.genero.MASCULINO, tot = soma(f)+soma(m);
+  const itens = [
+    ['Homens brancos', m[0], false],
+    ['Homens pretos ou pardos', m[1]+m[2], false],
+    ['Mulheres brancas', f[0], false],
+    ['Mulheres pretas ou pardas', f[1]+f[2], true],
+    ['Outras declarações ou sem informação', soma(f)+soma(m)-f[0]-f[1]-f[2]-m[0]-m[1]-m[2], false]
+  ];
+  const max = itens[0][1]/tot;
+  $('gen-chart').innerHTML = itens.map(([r,n,hi])=>`<div class="hb"><div class="hb-l"><span>${hi?`<strong>${r}</strong>`:r}</span></div>
+    <div class="hb-t">${hbar(n/tot/max, `<b>${fP(n/tot)}</b> · ${fN(n)}`, tipAttr(r, `${fN(n)} de ${fN(tot)} prefeitos · ${fP(n/tot)}`), hi?'hi':'', 130)}</div></div>`).join('');
+})();
+
+// 6 · porte
+legenda('leg-porte');
+$('porte-chart').innerHTML = linhas(D.porte, Object.keys(D.porte), 'municípios');
+$('porte-tab').innerHTML = tabela(D.porte, Object.keys(D.porte), 'Votos válidos');
+rotulos();
+
+// dica ao passar o mouse ou tocar
+(function(){
+  const tip = $('tip');
+  function mostra(el, x, y){
+    tip.textContent = '';
+    if(el.dataset.c){ const s=document.createElement('span'); s.textContent=el.dataset.c; tip.appendChild(s); }
+    const b=document.createElement('b'); b.textContent=el.dataset.t; tip.appendChild(b);
+    tip.appendChild(document.createTextNode(el.dataset.d));
+    tip.hidden = false;
+    const w = tip.offsetWidth, h = tip.offsetHeight;
+    let l = x+14, t = y+14;
+    if(l+w > window.innerWidth-8) l = Math.max(8, x-w-14);
+    if(t+h > window.innerHeight-8) t = Math.max(8, y-h-14);
+    tip.style.left = l+'px'; tip.style.top = t+'px';
+  }
+  function alvo(e){ return e.target && e.target.closest ? e.target.closest('[data-t]') : null; }
+  document.addEventListener('pointermove', e=>{ const el=alvo(e); if(el) mostra(el,e.clientX,e.clientY); else tip.hidden=true; });
+  document.addEventListener('pointerdown', e=>{ const el=alvo(e); if(el) mostra(el,e.clientX,e.clientY); else tip.hidden=true; });
+  window.addEventListener('scroll', ()=>{ tip.hidden=true; }, {passive:true});
+})();
+</script>
+</body>
+</html>
