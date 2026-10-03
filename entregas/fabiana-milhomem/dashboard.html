@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Em cada 100 municípios, 13 elegeram mulheres para a prefeitura</title>
+<meta name="description" content="Presença de mulheres e homens no comando dos municípios brasileiros nas eleições municipais de 2024: panorama nacional, regiões e UFs.">
+<style>
+:root{
+  --petroleo:#27424B; --azul:#6399AE; --azul2:#67A5BF; --cinza-azul:#859EB6; --areia:#DBD9D6;
+  --fundo:#F6F5F3; --texto:#27424B; --texto2:#3F5963; --linha:#DBD9D6;
+  --max:1040px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--fundo);color:var(--texto);font-family:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;font-size:18px;line-height:1.55;-webkit-text-size-adjust:100%}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 20px}
+h1,h2,h3{line-height:1.15;margin:0;font-weight:700;letter-spacing:-.01em}
+p{margin:0}
+.eyebrow{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--texto2)}
+
+/* HERO */
+.hero{background:var(--petroleo);color:#fff;padding:56px 0 48px}
+.hero .eyebrow{color:var(--areia)}
+.hero h1{font-size:clamp(2rem,5.4vw,3.6rem);margin:14px 0 12px;max-width:20ch}
+.hero .sub{font-size:clamp(1.05rem,2.4vw,1.3rem);color:var(--areia);max-width:46ch}
+.principal{display:flex;align-items:flex-end;gap:28px;flex-wrap:wrap;margin:40px 0 8px}
+.principal .grande{font-size:clamp(5rem,17vw,10.5rem);font-weight:700;line-height:.85;letter-spacing:-.04em;color:var(--azul2);font-variant-numeric:tabular-nums}
+.principal .legenda-g{font-size:clamp(1.15rem,2.6vw,1.55rem);line-height:1.25;max-width:17ch;padding-bottom:6px;color:#fff}
+.sec{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:12px 48px;margin:34px 0 28px}
+.sec .n{font-size:clamp(1.5rem,3.6vw,2.1rem);font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.sec .l{color:var(--areia);font-size:.95rem;margin-top:2px}
+.comp-bar{display:flex;height:22px;border-radius:3px;overflow:hidden;background:var(--areia)}
+.comp-f{background:var(--azul2)}
+.comp-leg{display:flex;justify-content:space-between;gap:16px;margin-top:10px;font-size:1rem;color:#fff;font-variant-numeric:tabular-nums}
+.comp-leg b{font-size:1.15rem}
+.comp-cap{margin-top:8px;font-size:.88rem;color:var(--areia)}
+.hero .lede{margin-top:30px;max-width:62ch;font-size:1.12rem;color:#fff}
+
+/* SEÇÕES */
+section.bloco{padding:64px 0 24px}
+section.bloco + section.bloco{border-top:1px solid var(--linha);margin-top:24px}
+.passo{font-size:.85rem;font-weight:700;color:var(--texto2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+.bloco h2{font-size:clamp(1.6rem,4vw,2.4rem);max-width:24ch}
+.bloco .pergunta{margin-top:12px;color:var(--texto2);max-width:62ch}
+.grafico{margin-top:34px}
+.legenda{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:.88rem;color:var(--texto2);margin-bottom:14px}
+.legenda>span{min-width:0;max-width:100%}
+.legenda i{display:inline-block;width:14px;height:14px;border-radius:2px;margin-right:7px;vertical-align:-2px}
+.legenda .ref{display:inline-block;width:0;height:14px;border-left:2px dashed var(--petroleo);margin-right:7px;vertical-align:-2px}
+.nota{margin-top:16px;font-size:.92rem;color:var(--texto2);max-width:70ch}
+
+/* BARRAS */
+.linhas{position:relative}
+.linha{display:grid;grid-template-columns:var(--lw,7.2rem) 1fr var(--vw,8.6rem);align-items:center;gap:12px;padding:5px 6px;border-radius:4px;transition:opacity .15s,background .15s;cursor:default}
+.linha:hover,.linha:focus-visible{background:#ECEAE7;outline:none}
+.linha:focus-visible{box-shadow:0 0 0 2px var(--petroleo)}
+.linha.apaga{opacity:.32}
+.rot{font-weight:600;font-size:.98rem;line-height:1.2}
+.rot small{display:block;font-weight:400;color:var(--texto2);font-size:.78rem}
+.trilho{position:relative;height:26px;background:linear-gradient(to right,transparent calc(33.333% - 1px),var(--linha) calc(33.333% - 1px),var(--linha) 33.333%,transparent 33.333%,transparent calc(66.666% - 1px),var(--linha) calc(66.666% - 1px),var(--linha) 66.666%,transparent 66.666%,transparent calc(100% - 1px),var(--linha) calc(100% - 1px))}
+.barra{height:100%;background:var(--azul);border-radius:0 3px 3px 0}
+.barra.alt{background:var(--petroleo)}
+.media{position:absolute;top:-4px;bottom:-4px;border-left:2px dashed var(--petroleo);pointer-events:none}
+.val{font-variant-numeric:tabular-nums;font-size:.98rem;line-height:1.2}
+.val b{font-size:1.15rem}
+.val small{display:block;color:var(--texto2);font-size:.78rem}
+.eixo{display:grid;grid-template-columns:var(--lw,7.2rem) 1fr var(--vw,8.6rem);gap:12px;padding:0 6px;font-size:.78rem;color:var(--texto2);margin-top:2px}
+.eixo .ticks{display:flex;justify-content:space-between}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.chip{font:inherit;font-size:.9rem;font-weight:600;border:1.5px solid var(--petroleo);background:transparent;color:var(--petroleo);padding:6px 14px;border-radius:999px;cursor:pointer}
+.chip:hover{background:var(--areia)}
+.chip[aria-pressed="true"]{background:var(--petroleo);color:#fff}
+.chip:focus-visible{outline:3px solid var(--azul2);outline-offset:2px}
+.dica{font-size:.85rem;color:var(--texto2);margin:0 0 14px}
+
+/* ESCOLARIDADE */
+.esc-gap{position:absolute;top:0;bottom:0;border:2px dashed var(--petroleo);border-left:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;color:var(--petroleo);white-space:nowrap;overflow:hidden}
+.esc .linha{padding:8px 6px}
+.esc .trilho{height:40px}
+.esc .val b{font-size:1.9rem;font-weight:700;display:block;line-height:1}
+.esc .rot{font-size:1.1rem}
+.diff-box{margin:22px 0 0;padding:14px 18px;border-left:4px solid var(--petroleo);background:#ECEAE7;max-width:60ch}
+.diff-box b{font-size:1.6rem}
+details.tab{margin-top:20px;font-size:.92rem;color:var(--texto2)}
+details.tab summary{cursor:pointer;font-weight:600;color:var(--texto)}
+details.tab summary:focus-visible{outline:3px solid var(--azul2);outline-offset:3px}
+.tabela{width:100%;border-collapse:collapse;margin-top:12px;font-variant-numeric:tabular-nums}
+.tabela th,.tabela td{padding:7px 10px;text-align:right;border-bottom:1px solid var(--linha)}
+.tabela th:first-child,.tabela td:first-child{text-align:left}
+.tabela caption{text-align:left;padding-bottom:6px}
+.tab-wrap{overflow-x:auto}
+
+/* FECHAMENTO */
+.fecho{background:var(--petroleo);color:#fff;margin-top:64px;padding:60px 0}
+.fecho h2{font-size:clamp(1.6rem,4vw,2.3rem);margin-bottom:28px}
+.msgs{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.msg{border-top:3px solid var(--azul2);padding-top:14px}
+.msg .n{font-size:2.3rem;font-weight:700;color:var(--azul2);line-height:1;font-variant-numeric:tabular-nums}
+.msg p{margin-top:10px;color:#fff;font-size:1.05rem}
+
+/* FONTE */
+.fonte{padding:40px 0 56px;font-size:.88rem;color:var(--texto2)}
+.fonte h3{font-size:1rem;margin-bottom:10px;color:var(--texto)}
+.fonte ul{margin:0;padding-left:1.1em}
+.fonte li{margin-bottom:6px;max-width:92ch}
+
+#tip{position:fixed;z-index:10;pointer-events:none;background:var(--petroleo);color:#fff;font-size:.85rem;line-height:1.4;padding:9px 12px;border-radius:4px;max-width:260px;opacity:0;transition:opacity .1s;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+#tip b{display:block;font-size:.95rem;margin-bottom:2px}
+
+@media (max-width:720px){
+  body{font-size:17px}
+  .principal{gap:14px;margin-top:30px}
+  .sec{grid-template-columns:1fr 1fr;gap:14px 24px}
+  .sec>div:first-child{grid-column:1 / -1}
+  .msgs{grid-template-columns:1fr;gap:22px}
+  .linha,.eixo{--lw:3.6rem!important;--vw:5.4rem!important;gap:8px}
+  .esc .linha,.esc .eixo{--lw:4.8rem!important;--vw:5.6rem!important}
+  .esc .val b{font-size:1.4rem}
+  .esc .rot{font-size:.95rem}
+  .esc-gap{font-size:0}
+  .rot small{display:none}
+  .val small{font-size:.72rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Eleições municipais de 2024 · Poder Executivo municipal</div>
+    <h1>Em cada 100 municípios, 13 elegeram mulheres para a prefeitura</h1>
+    <p class="sub">5.553 municípios analisados nas eleições municipais de 2024.</p>
+
+    <div class="principal">
+      <div class="grande">13,2%</div>
+      <div class="legenda-g">dos municípios analisados elegeram mulheres para a prefeitura</div>
+    </div>
+
+    <div class="sec">
+      <div><div class="n">5.553</div><div class="l">municípios analisados</div></div>
+      <div><div class="n">734</div><div class="l">prefeitas</div></div>
+      <div><div class="n">4.819</div><div class="l">prefeitos</div></div>
+    </div>
+
+    <div role="img" aria-label="Composição dos 5.553 municípios analisados: 13,2% com prefeitas e 86,8% com prefeitos">
+      <div class="comp-bar"><div class="comp-f" style="width:13.2181%"></div></div>
+      <div class="comp-leg"><span><b>13,2%</b> prefeitas</span><span><b>86,8%</b> prefeitos</span></div>
+    </div>
+    <div class="comp-cap">Gênero conforme o cadastro do TSE. Percentuais sobre os 5.553 municípios analisados.</div>
+
+    <p class="lede">Entre os 5.553 municípios analisados, 734 elegeram mulheres e 4.819 elegeram homens para a prefeitura. Mas essa proporção é a mesma em todo o território?</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="bloco" id="regioes">
+    <div class="passo">2 · O território</div>
+    <h2>A proporção muda quando olhamos para o território</h2>
+    <p class="pergunta">Entre as cinco regiões, a presença de prefeitas varia de 9,2% a 18,5%. A comparação usa o percentual dentro de cada região, e não o número absoluto de prefeitas.</p>
+
+    <div class="grafico">
+      <div class="legenda"><span><i style="background:var(--azul)"></i>% de prefeitas entre os municípios da região</span><span><span class="ref"></span>Média nacional: 13,2%</span></div>
+      <div class="linhas" id="reg" style="--lw:7.2rem;--vw:9.6rem"></div>
+      <div class="eixo" style="--lw:7.2rem;--vw:9.6rem"><span></span><div class="ticks"><span>0%</span><span>10%</span><span>20%</span><span>30%</span></div><span></span></div>
+    </div>
+    <p class="nota">Exemplo: o Sudeste tem 152 prefeitas em 1.656 municípios (9,2%); o Norte tem 74 em 449 (16,5%).</p>
+  </section>
+
+  <section class="bloco" id="ufs">
+    <div class="passo">3 · As diferenças entre as UFs</div>
+    <h2>A diferença aumenta quando olhamos estado por estado</h2>
+    <p class="pergunta">Nas 26 UFs com municípios, a proporção de prefeitas varia de 2,6% a 26,7%. A média nacional é 13,2%.</p>
+
+    <div class="grafico">
+      <div class="chips" id="chips" role="group" aria-label="Destacar região"></div>
+      <p class="dica">Clique em uma região para destacar suas UFs.</p>
+      <div class="legenda"><span><i style="background:var(--azul)"></i>% de prefeitas entre os municípios da UF</span><span><span class="ref"></span>Média nacional: 13,2%</span></div>
+      <div class="linhas" id="ufs-g" style="--lw:3.8rem;--vw:9.2rem"></div>
+      <div class="eixo" style="--lw:3.8rem;--vw:9.2rem"><span></span><div class="ticks"><span>0%</span><span>10%</span><span>20%</span><span>30%</span></div><span></span></div>
+    </div>
+    <p class="nota">À direita de cada barra: percentual de prefeitas e, abaixo, número de prefeitas sobre o total de municípios da UF.<br>* Percentuais mais sensíveis porque essas UFs (RR, AP, AC) têm menos de 30 municípios.</p>
+  </section>
+
+  <section class="bloco" id="perfil">
+    <div class="passo">4 · Uma dimensão complementar</div>
+    <h2>A escolaridade declarada também difere entre os grupos</h2>
+    <p class="pergunta">Entre os eleitos analisados, 80,8% das prefeitas e 56,3% dos prefeitos declararam ter superior completo, uma diferença de 24,5 pontos percentuais.</p>
+
+    <div class="grafico esc">
+      <div class="legenda"><span><i style="background:var(--petroleo)"></i>Prefeitas</span><span><i style="background:var(--azul)"></i>Prefeitos</span><span>Pessoas com superior completo, em % de cada grupo</span></div>
+      <div class="linhas" id="esc" style="--lw:7.2rem;--vw:8.4rem"></div>
+      <div class="eixo" style="--lw:7.2rem;--vw:8.4rem"><span></span><div class="ticks"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div><span></span></div>
+    </div>
+    <div class="diff-box"><b>24,5 p.p.</b> de diferença entre os dois grupos na proporção com superior completo.</div>
+    <details class="tab">
+      <summary>Ver todas as categorias de escolaridade declarada</summary>
+      <div class="tab-wrap"><table class="tabela" id="tab-esc"></table></div>
+    </details>
+    <p class="nota">Os dados descrevem o perfil declarado no registro de candidatura; não permitem explicar por que os perfis diferem.</p>
+  </section>
+
+</main>
+
+<section class="fecho">
+  <div class="wrap">
+    <h2>O que os dados mostram</h2>
+    <div class="msgs">
+      <div class="msg"><div class="n">13,2%</div><p>Dos 5.553 municípios analisados, 734 elegeram mulheres e 4.819 elegeram homens para a prefeitura.</p></div>
+      <div class="msg"><div class="n">9,2–18,5%</div><p>A proporção de prefeitas varia entre as cinco regiões.</p></div>
+      <div class="msg"><div class="n">2,6–26,7%</div><p>Entre as 26 UFs com municípios, a variação é ainda maior.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer class="fonte">
+  <div class="wrap">
+    <h3>Fonte e método</h3>
+    <ul>
+      <li><b>Base:</b> eleitos.csv, com prefeitos e vice-prefeitos eleitos nas eleições municipais ordinárias de 2024 (dados do TSE e do IBGE), consultada e consolidada em 01/10/2026.</li>
+      <li><b>Universo analisado:</b> 5.553 municípios com informação suficiente na base para o recorte de prefeitos (filtro <code>cargo = Prefeito</code>). Unidade de análise: a pessoa eleita prefeita ou prefeito, uma por município; municípios contados por <code>codigo_municipio_tse</code>. Vice-prefeitos ficaram fora. Percentuais = prefeitas ÷ municípios do recorte (nacional, região ou UF).</li>
+      <li><b>Gênero:</b> campo <code>genero_tse</code>, conforme o cadastro do TSE; não equivale a identidade de gênero. <b>Escolaridade:</b> grau declarado no registro de candidatura; fundamental, “lê e escreve” e médio incompleto foram agrupados em “Médio incompleto ou menos”.</li>
+      <li><b>Territorial:</b> são 26 UFs com municípios; o Distrito Federal não possui municípios nem eleição municipal para prefeito.</li>
+      <li><b>Temporalidade:</b> a análise representa os eleitos nas eleições municipais de 2024, e <b>não</b> uma fotografia de quem ocupa o cargo atualmente.</li>
+      <li><b>Observação secundária:</b> dos 5.569 municípios com eleição ordinária em 2024, 16 ficaram fora da base por falta de confirmação suficiente; 23 dos 5.553 têm chapa com cassação registrada ou eleição documentada historicamente, e foram mantidos.</li>
+      <li><b>Limitações:</b> a análise é descritiva, sem causalidade. Os dados agregados estão embutidos neste arquivo.</li>
+    </ul>
+  </div>
+</footer>
+
+<div id="tip" role="tooltip"></div>
+
+<script>
+const D = {"total": 5553, "municipios": 5553, "f": 734, "m": 4819, "regioes": [{"nome": "Nordeste", "n": 1791, "f": 332, "pct": 18.53713009491904}, {"nome": "Norte", "n": 449, "f": 74, "pct": 16.481069042316257}, {"nome": "Centro-Oeste", "n": 467, "f": 61, "pct": 13.062098501070663}, {"nome": "Sul", "n": 1190, "f": 115, "pct": 9.663865546218487}, {"nome": "Sudeste", "n": 1656, "f": 152, "pct": 9.178743961352657}], "ufs": [{"uf": "RR", "nome": "Roraima", "regiao": "Norte", "n": 15, "f": 4, "pct": 26.666666666666668}, {"uf": "RN", "nome": "Rio Grande do Norte", "regiao": "Nordeste", "n": 167, "f": 42, "pct": 25.149700598802394}, {"uf": "PB", "nome": "Paraíba", "regiao": "Nordeste", "n": 223, "f": 54, "pct": 24.2152466367713}, {"uf": "AL", "nome": "Alagoas", "regiao": "Nordeste", "n": 102, "f": 24, "pct": 23.529411764705884}, {"uf": "CE", "nome": "Ceará", "regiao": "Nordeste", "n": 184, "f": 38, "pct": 20.652173913043477}, {"uf": "PA", "nome": "Pará", "regiao": "Norte", "n": 143, "f": 28, "pct": 19.58041958041958}, {"uf": "MA", "nome": "Maranhão", "regiao": "Nordeste", "n": 217, "f": 42, "pct": 19.35483870967742}, {"uf": "TO", "nome": "Tocantins", "regiao": "Norte", "n": 139, "f": 25, "pct": 17.985611510791365}, {"uf": "AM", "nome": "Amazonas", "regiao": "Norte", "n": 62, "f": 11, "pct": 17.741935483870968}, {"uf": "SE", "nome": "Sergipe", "regiao": "Nordeste", "n": 75, "f": 13, "pct": 17.333333333333332}, {"uf": "MS", "nome": "Mato Grosso do Sul", "regiao": "Centro-Oeste", "n": 79, "f": 13, "pct": 16.455696202531644}, {"uf": "PE", "nome": "Pernambuco", "regiao": "Nordeste", "n": 183, "f": 30, "pct": 16.39344262295082}, {"uf": "RJ", "nome": "Rio de Janeiro", "regiao": "Sudeste", "n": 90, "f": 14, "pct": 15.555555555555555}, {"uf": "BA", "nome": "Bahia", "regiao": "Nordeste", "n": 416, "f": 60, "pct": 14.423076923076923}, {"uf": "GO", "nome": "Goiás", "regiao": "Centro-Oeste", "n": 246, "f": 35, "pct": 14.227642276422765}, {"uf": "SC", "nome": "Santa Catarina", "regiao": "Sul", "n": 295, "f": 39, "pct": 13.220338983050848}, {"uf": "PI", "nome": "Piauí", "regiao": "Nordeste", "n": 224, "f": 29, "pct": 12.946428571428571}, {"uf": "AP", "nome": "Amapá", "regiao": "Norte", "n": 16, "f": 2, "pct": 12.5}, {"uf": "SP", "nome": "São Paulo", "regiao": "Sudeste", "n": 636, "f": 68, "pct": 10.69182389937107}, {"uf": "PR", "nome": "Paraná", "regiao": "Sul", "n": 398, "f": 37, "pct": 9.296482412060302}, {"uf": "MT", "nome": "Mato Grosso", "regiao": "Centro-Oeste", "n": 142, "f": 13, "pct": 9.154929577464788}, {"uf": "MG", "nome": "Minas Gerais", "regiao": "Sudeste", "n": 852, "f": 68, "pct": 7.981220657276995}, {"uf": "RS", "nome": "Rio Grande do Sul", "regiao": "Sul", "n": 497, "f": 39, "pct": 7.847082494969819}, {"uf": "RO", "nome": "Rondônia", "regiao": "Norte", "n": 52, "f": 3, "pct": 5.769230769230769}, {"uf": "AC", "nome": "Acre", "regiao": "Norte", "n": 22, "f": 1, "pct": 4.545454545454546}, {"uf": "ES", "nome": "Espírito Santo", "regiao": "Sudeste", "n": 78, "f": 2, "pct": 2.5641025641025643}], "esc": {"ordem": ["Superior completo", "Superior incompleto", "Médio completo", "Médio incompleto ou menos"], "Prefeitas": {"n": 734, "g": [593, 30, 97, 14]}, "Prefeitos": {"n": 4819, "g": [2713, 226, 1302, 578]}}};
+const nf = new Intl.NumberFormat('pt-BR');
+const pf = (x,d=1)=>new Intl.NumberFormat('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d}).format(x)+'%';
+const NAT = 100*D.f/D.total, MAXV = 30;
+const tip = document.getElementById('tip');
+function showTip(e,html){tip.innerHTML=html;tip.style.opacity=1;moveTip(e)}
+function moveTip(e){
+  const r=e.target.getBoundingClientRect();
+  const x=(e.clientX!==undefined?e.clientX:r.left+20), y=(e.clientY!==undefined?e.clientY:r.top);
+  const w=tip.offsetWidth,h=tip.offsetHeight;
+  tip.style.left=Math.max(8,Math.min(innerWidth-w-8,x+14))+'px';
+  tip.style.top=Math.max(8,Math.min(innerHeight-h-8,y+14))+'px';
+}
+function hideTip(){tip.style.opacity=0}
+function liga(el,tipHtml){
+  el.setAttribute('aria-label', tipHtml.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim());
+  el.addEventListener('mousemove',e=>showTip(e,tipHtml));
+  el.addEventListener('mouseleave',hideTip);
+  el.addEventListener('focus',e=>showTip(e,tipHtml));
+  el.addEventListener('blur',hideTip);
+}
+
+function linha(d, rotulo, sub, tipHtml, attrs){
+  const el=document.createElement('div');
+  el.className='linha'; el.tabIndex=0; el.setAttribute('role','group');
+  if(attrs) for(const k in attrs) el.dataset[k]=attrs[k];
+  el.innerHTML =
+    '<div class="rot">'+rotulo+(sub?'<small>'+sub+'</small>':'')+'</div>'+
+    '<div class="trilho"><div class="barra" style="width:'+(d.pct/MAXV*100)+'%"></div><div class="media" style="left:'+(NAT/MAXV*100)+'%"></div></div>'+
+    '<div class="val"><b>'+pf(d.pct)+'</b><small>'+nf.format(d.f)+' de '+nf.format(d.n)+' municípios</small></div>';
+  liga(el,tipHtml);
+  return el;
+}
+
+// Regiões (ordenadas por % de prefeitas)
+const regEl=document.getElementById('reg');
+D.regioes.forEach(r=>{
+  regEl.appendChild(linha(r, r.nome, '',
+    '<b>'+r.nome+'</b>'+pf(r.pct)+' de prefeitas<br>'+nf.format(r.f)+' prefeitas e '+nf.format(r.n-r.f)+' prefeitos<br>'+nf.format(r.n)+' municípios na região',
+    {regiao:r.nome}));
+});
+
+// UFs
+const ufEl=document.getElementById('ufs-g');
+D.ufs.forEach(u=>{
+  const peq=u.n<30;
+  ufEl.appendChild(linha(u, u.uf+(peq?'*':''), u.nome,
+    '<b>'+u.nome+' ('+u.uf+') · '+u.regiao+'</b>'+pf(u.pct)+' de prefeitas<br>'+nf.format(u.f)+' prefeitas e '+nf.format(u.n-u.f)+' prefeitos<br>'+nf.format(u.n)+' municípios'+(peq?'<br><i>* UF com menos de 30 municípios: percentual mais sensível</i>':''),
+    {regiao:u.regiao}));
+});
+
+// Chips de região
+const chips=document.getElementById('chips');
+['Todas',...[...new Set(D.regioes.map(r=>r.nome))].sort()].forEach((nome,i)=>{
+  const b=document.createElement('button'); b.className='chip'; b.type='button'; b.textContent=nome;
+  b.setAttribute('aria-pressed', i===0?'true':'false');
+  b.onclick=()=>{
+    chips.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',c===b?'true':'false'));
+    ufEl.querySelectorAll('.linha').forEach(l=>l.classList.toggle('apaga', nome!=='Todas' && l.dataset.regiao!==nome));
+  };
+  chips.appendChild(b);
+});
+
+// Escolaridade: % com superior completo
+const escEl=document.getElementById('esc');
+const sup={}, cats=D.esc.ordem;
+['Prefeitas','Prefeitos'].forEach(g=>{const e=D.esc[g]; sup[g]={n:e.n,v:e.g[0],pct:100*e.g[0]/e.n}});
+const gapIni=sup.Prefeitos.pct, dif=sup.Prefeitas.pct-sup.Prefeitos.pct;
+['Prefeitas','Prefeitos'].forEach(g=>{
+  const s=sup[g], e=D.esc[g], el=document.createElement('div');
+  el.className='linha'; el.tabIndex=0; el.setAttribute('role','group');
+  const tabela=cats.map((c,i)=>c+': '+nf.format(e.g[i])+' ('+pf(100*e.g[i]/e.n)+')').join('<br>');
+  const gapHtml = g==='Prefeitos' ? '<div class="esc-gap" style="left:'+gapIni+'%;width:'+dif+'%">+'+pf(dif).replace('%','')+' p.p.</div>' : '';
+  el.innerHTML='<div class="rot">'+g+'</div>'+
+   '<div class="trilho" style="background:linear-gradient(to right,transparent calc(25% - 1px),var(--linha) calc(25% - 1px),var(--linha) 25%,transparent 25%,transparent calc(50% - 1px),var(--linha) calc(50% - 1px),var(--linha) 50%,transparent 50%,transparent calc(75% - 1px),var(--linha) calc(75% - 1px),var(--linha) 75%,transparent 75%,transparent calc(100% - 1px),var(--linha) calc(100% - 1px))"><div class="barra '+(g==='Prefeitas'?'alt':'')+'" style="width:'+s.pct+'%"></div>'+gapHtml+'</div>'+
+   '<div class="val"><b>'+pf(s.pct)+'</b><small>'+nf.format(s.v)+' de '+nf.format(s.n)+'</small></div>';
+  liga(el,'<b>'+g+' · escolaridade declarada</b>'+tabela);
+  escEl.appendChild(el);
+});
+
+// Tabela acessível com todas as categorias
+const tb=document.getElementById('tab-esc');
+tb.innerHTML='<caption>Escolaridade declarada dos prefeitos eleitos, por grupo (pessoas e % do grupo)</caption><thead><tr><th scope="col">Escolaridade</th><th scope="col">Prefeitas</th><th scope="col">Prefeitos</th></tr></thead><tbody>'+
+ cats.map((c,i)=>'<tr><th scope="row" style="font-weight:400">'+c+'</th>'+['Prefeitas','Prefeitos'].map(g=>{const e=D.esc[g];return '<td>'+nf.format(e.g[i])+' ('+pf(100*e.g[i]/e.n)+')</td>'}).join('')+'</tr>').join('')+
+ '<tr><th scope="row">Total</th><td><b>'+nf.format(D.esc.Prefeitas.n)+'</b></td><td><b>'+nf.format(D.esc.Prefeitos.n)+'</b></td></tr></tbody>';
+
+document.addEventListener('touchstart',e=>{if(!e.target.closest('.linha'))hideTip()},{passive:true});
+</script>
+</body>
+</html>
